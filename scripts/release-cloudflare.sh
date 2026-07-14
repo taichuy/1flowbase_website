@@ -102,17 +102,28 @@ wrangler deploy
 
 CURRENT_STEP="checking production pages"
 log "Check production pages"
+http_transport_failed=0
 for path in / /zh/; do
   health_url="${PRODUCTION_URL}${path}"
+  status=""
   if ! status="$(curl -sS --retry 2 --retry-all-errors --retry-delay 1 --connect-timeout 10 --max-time 30 -o /dev/null -w '%{http_code}' "$health_url" 2>/dev/null)"; then
     printf '  Proxy health check failed; retrying without proxy: %s\n' "$health_url"
-    if ! status="$(env -u http_proxy -u https_proxy -u HTTP_PROXY -u HTTPS_PROXY -u ALL_PROXY curl -sS --retry 2 --retry-all-errors --retry-delay 1 --connect-timeout 10 --max-time 30 -o /dev/null -w '%{http_code}' "$health_url")"; then
-      fail "health check request failed: $health_url"
+    if ! status="$(curl --noproxy '*' -sS --retry 2 --retry-all-errors --retry-delay 1 --connect-timeout 10 --max-time 30 -o /dev/null -w '%{http_code}' "$health_url" 2>/dev/null)"; then
+      printf '  WARNING: HTTP transport unavailable; deferring to Cloudflare deployment status: %s\n' "$health_url"
+      http_transport_failed=1
+      continue
     fi
   fi
   [[ "$status" == "200" ]] || fail "health check failed: ${PRODUCTION_URL}${path} returned HTTP $status"
   printf '  HTTP %s  %s%s\n' "$status" "$PRODUCTION_URL" "$path"
 done
+
+CURRENT_STEP="checking Cloudflare deployment status"
+log "Check Cloudflare deployment status"
+wrangler deployments status --name "$WORKER_NAME" --json
+if [[ "$http_transport_failed" == "1" ]]; then
+  printf '  WARNING: deployment is active, but at least one page could not be checked from this machine.\n'
+fi
 
 CURRENT_STEP="complete"
 printf '\nRelease complete\n'

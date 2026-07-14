@@ -133,7 +133,7 @@ const count = useCases.length;
     if (!(list instanceof HTMLElement)) return;
     const count = parseInt(list.getAttribute('data-count') || '0', 10);
     const rows = list.querySelectorAll('[data-use-case-row]');
-    
+
     if (count === 0 || rows.length === 0) return;
 
     if (reduceMotion) {
@@ -180,10 +180,10 @@ const count = useCases.length;
 
       const scrollNext = () => {
         activeVirtualIndex++;
-        
+
         list.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
         list.style.transform = `translateY(${- (activeVirtualIndex - 1) * rowHeight}px)`;
-        
+
         updateHighlight();
 
         // Reset offset when reaching clone index count + 1

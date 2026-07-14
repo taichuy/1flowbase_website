@@ -1,0 +1,212 @@
+---
+interface Props {
+  useCases: string[];
+  lang: string;
+}
+
+const { useCases, lang } = Astro.props;
+const count = useCases.length;
+---
+
+<div class="hero-scene__use-cases" data-use-cases-viewport>
+  <h3 class="hero-scene__use-cases-title">{lang === 'zh' ? '应用场景' : 'Use Cases'}</h3>
+  <div class="hero-scene__use-cases-viewport">
+    <div class="hero-scene__use-cases-list" data-use-cases-list data-count={count}>
+      <!-- prepended clone: last item -->
+      {count > 0 && (
+        <div class="hero-scene__use-case-row" data-use-case-row>
+          <span class="hero-scene__use-case-text">{useCases[count - 1]}</span>
+        </div>
+      )}
+
+      <!-- original items -->
+      {useCases.map((text) => (
+        <div class="hero-scene__use-case-row" data-use-case-row>
+          <span class="hero-scene__use-case-text">{text}</span>
+        </div>
+      ))}
+
+      <!-- appended clones: first and second items -->
+      {count > 0 && (
+        <div class="hero-scene__use-case-row" data-use-case-row>
+          <span class="hero-scene__use-case-text">{useCases[0]}</span>
+        </div>
+      )}
+      {count > 1 && (
+        <div class="hero-scene__use-case-row" data-use-case-row>
+          <span class="hero-scene__use-case-text">{useCases[1]}</span>
+        </div>
+      )}
+    </div>
+  </div>
+</div>
+
+<style>
+  .hero-scene__use-cases {
+    width: 100%;
+    max-width: 780px;
+    margin-inline: auto;
+  }
+
+  .hero-scene__use-cases-title {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #087b58;
+    margin: 0 0 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .hero-scene__use-cases-title::before,
+  .hero-scene__use-cases-title::after {
+    content: '';
+    width: 1.5rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.4;
+  }
+
+  .hero-scene__use-cases-viewport {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 132px; /* 3 rows * 44px */
+    margin-top: clamp(0.6rem, 2vh, 1.2rem);
+    mask-image: linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%);
+  }
+
+  .hero-scene__use-cases-list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    will-change: transform;
+  }
+
+  .hero-scene__use-case-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    font-size: clamp(0.92rem, 1.5vw, 1.08rem);
+    font-weight: 600;
+    color: #526a63;
+    text-align: center;
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), color 0.5s;
+    opacity: 0;
+    width: 100%;
+    padding-inline: 0.8rem;
+    line-height: 1.35;
+    box-sizing: border-box;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    will-change: transform;
+  }
+
+  .hero-scene__use-case-row.is-active {
+    color: #08231c;
+    transform: scale(1.16) !important;
+  }
+
+  .hero-scene__use-case-text {
+    margin: 0;
+    max-width: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-scene__use-case-row {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll('[data-use-cases-viewport]').forEach((viewport) => {
+    if (!(viewport instanceof HTMLElement)) return;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const list = viewport.querySelector('[data-use-cases-list]');
+    if (!(list instanceof HTMLElement)) return;
+    const count = parseInt(list.getAttribute('data-count') || '0', 10);
+    const rows = list.querySelectorAll('[data-use-case-row]');
+    
+    if (count === 0 || rows.length === 0) return;
+
+    if (reduceMotion) {
+      rows.forEach((row) => {
+        if (row instanceof HTMLElement) {
+          row.style.opacity = '1';
+        }
+      });
+      // Center the first original item statically
+      list.style.transform = 'translateY(0px)';
+      if (rows[1] instanceof HTMLElement) {
+        rows[1].classList.add('is-active');
+      }
+    } else {
+      // 1. Entrance animation (sequential fade-in on load)
+      rows.forEach((row, index) => {
+        if (row instanceof HTMLElement) {
+          setTimeout(() => {
+            row.style.opacity = '1';
+          }, 800 + index * 100);
+        }
+      });
+
+      // 2. Scrolling Loop Setup
+      const rowHeight = 44; // match style height (44px)
+      let activeVirtualIndex = 1; // Start at index 1 (Item 1 original)
+      let loopInterval: number | undefined;
+
+      // Set initial transform
+      list.style.transform = 'translateY(0px)';
+      list.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+
+      const updateHighlight = () => {
+        rows.forEach((row, index) => {
+          if (row instanceof HTMLElement) {
+            if (index === activeVirtualIndex) {
+              row.classList.add('is-active');
+            } else {
+              row.classList.remove('is-active');
+            }
+          }
+        });
+      };
+
+      const scrollNext = () => {
+        activeVirtualIndex++;
+        
+        list.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+        list.style.transform = `translateY(${- (activeVirtualIndex - 1) * rowHeight}px)`;
+        
+        updateHighlight();
+
+        // Reset offset when reaching clone index count + 1
+        if (activeVirtualIndex === count + 1) {
+          setTimeout(() => {
+            list.style.transition = 'none';
+            list.style.transform = 'translateY(0px)';
+            activeVirtualIndex = 1;
+            updateHighlight();
+          }, 600); // match transition duration
+        }
+      };
+
+      // Start looping after entrance animation is complete
+      setTimeout(() => {
+        updateHighlight();
+        loopInterval = window.setInterval(scrollNext, 3000);
+      }, 1600);
+
+      // Store cleanup on before-swap to prevent memory leaks/multiple intervals
+      document.addEventListener('astro:before-swap', () => {
+        if (loopInterval) clearInterval(loopInterval);
+      }, { once: true });
+    }
+  });
+</script>

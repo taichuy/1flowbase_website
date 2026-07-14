@@ -3,10 +3,15 @@ import type { Locale } from '../config';
 export const homeCopy = {
   en: {
     badge: 'Open source · Self-hosted · Observable',
-    heroTitle: 'Conversation is the moat.',
-    heroAccent: 'The native foundation for AI apps.',
+    heroTitle: '1flowbase',
+    heroSubTitle: 'Conversation is the moat. The native foundation for AI apps.',
     heroDescription:
       'Compose models, tools, and workflows into reusable AI capabilities, then publish them through one observable, OpenAI- and Claude-compatible runtime.',
+    heroUseCases: [
+      'Add vision capabilities to LLM text models, such as DeepSeek V4 and GLM 5.2',
+      'Daily review, path optimization, and cost control based on AI chat logs.',
+      'MCP Gateway: convert any HTTP to MCP, integrate third-party MCPs to publish exclusive MCP',
+    ],
     primaryCta: 'Explore on GitHub',
     secondaryCta: 'Read the guides',
     worksWith: 'Works with the tools you already use',
@@ -91,10 +96,15 @@ export const homeCopy = {
   },
   zh: {
     badge: '开源 · 自托管 · 全链路可观测',
-    heroTitle: '对话即是壁垒，',
-    heroAccent: 'AI 应用原生底座',
+    heroTitle: '1flowbase',
+    heroSubTitle: '对话即是壁垒，AI 应用原生底座',
     heroDescription:
       '把模型、工具与工作流组合成可复用的 AI 能力，通过一个兼容 OpenAI 与 Claude、全链路可观测的运行时持续发布。',
+    heroUseCases: [
+      'LLM 文本模型增加看图能力，如 DeepSeek V4、GLM 5.2',
+      '基于 AI 聊天记录进行每日复盘，路径优化，成本控制。',
+      'MCP 网关，将任意 HTTP 转为 MCP，将第三方 MCP 整合发布专属 MCP',
+    ],
     primaryCta: '前往 GitHub',
     secondaryCta: '阅读教程',
     worksWith: '兼容你已经在使用的工具',

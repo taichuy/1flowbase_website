@@ -11,9 +11,7 @@ fi
 REMOTE="${REMOTE:-origin}"
 TARGET_BRANCH="${TARGET_BRANCH:-main}"
 SOURCE_BRANCH="${1:-${SOURCE_BRANCH:-taichuy/dev}}"
-WORKER_NAME="${WORKER_NAME:-1flowbase-website}"
-PRODUCTION_URL="${PRODUCTION_URL:-https://1flowbase-website.taichuy2021.workers.dev}"
-CREDENTIALS_FILE="${CLOUDFLARE_CREDENTIALS_FILE:-$HOME/.config/cloudflare/wrangler.env}"
+ACTION_URL="${ACTION_URL:-https://github.com/taichuy/1flowbase_website/actions/workflows/deploy.yml}"
 CURRENT_STEP="startup"
 
 log() {
@@ -33,7 +31,7 @@ on_error() {
 
 trap on_error ERR
 
-for command_name in git pnpm wrangler curl; do
+for command_name in git pnpm; do
   command -v "$command_name" >/dev/null 2>&1 || fail "required command not found: $command_name"
 done
 
@@ -45,15 +43,6 @@ if [[ -n "$(git status --porcelain)" ]]; then
   git status --short
   fail "working tree is not clean; commit or stash changes before releasing"
 fi
-
-if [[ -z "${CLOUDFLARE_API_TOKEN:-}" && -f "$CREDENTIALS_FILE" ]]; then
-  set -a
-  # shellcheck disable=SC1090
-  source "$CREDENTIALS_FILE"
-  set +a
-fi
-
-[[ -n "${CLOUDFLARE_API_TOKEN:-}" ]] || fail "CLOUDFLARE_API_TOKEN is missing; expected it in the environment or $CREDENTIALS_FILE"
 
 CURRENT_STEP="fetching remote branches"
 log "Fetch $REMOTE"
@@ -83,12 +72,8 @@ CURRENT_STEP="building production site"
 log "Build production site"
 pnpm build
 
-CURRENT_STEP="checking Cloudflare upload"
-log "Validate Cloudflare upload"
-wrangler deploy --dry-run
-
 if [[ "$MODE" == "check" ]]; then
-  printf '\nRelease check complete; no merge, push, or deployment was performed.\n'
+  printf '\nRelease check complete; no merge or push was performed.\n'
   exit 0
 fi
 
@@ -96,37 +81,8 @@ CURRENT_STEP="pushing target branch"
 log "Push $TARGET_BRANCH to $REMOTE"
 git push "$REMOTE" "$TARGET_BRANCH"
 
-CURRENT_STEP="deploying Cloudflare Worker"
-log "Deploy $WORKER_NAME to Cloudflare"
-wrangler deploy
-
-CURRENT_STEP="checking production pages"
-log "Check production pages"
-http_transport_failed=0
-for path in / /zh/; do
-  health_url="${PRODUCTION_URL}${path}"
-  status=""
-  if ! status="$(curl -sS --retry 2 --retry-all-errors --retry-delay 1 --connect-timeout 10 --max-time 30 -o /dev/null -w '%{http_code}' "$health_url" 2>/dev/null)"; then
-    printf '  Proxy health check failed; retrying without proxy: %s\n' "$health_url"
-    if ! status="$(curl --noproxy '*' -sS --retry 2 --retry-all-errors --retry-delay 1 --connect-timeout 10 --max-time 30 -o /dev/null -w '%{http_code}' "$health_url" 2>/dev/null)"; then
-      printf '  WARNING: HTTP transport unavailable; deferring to Cloudflare deployment status: %s\n' "$health_url"
-      http_transport_failed=1
-      continue
-    fi
-  fi
-  [[ "$status" == "200" ]] || fail "health check failed: ${PRODUCTION_URL}${path} returned HTTP $status"
-  printf '  HTTP %s  %s%s\n' "$status" "$PRODUCTION_URL" "$path"
-done
-
-CURRENT_STEP="checking Cloudflare deployment status"
-log "Check Cloudflare deployment status"
-wrangler deployments status --name "$WORKER_NAME" --json
-if [[ "$http_transport_failed" == "1" ]]; then
-  printf '  WARNING: deployment is active, but at least one page could not be checked from this machine.\n'
-fi
-
 CURRENT_STEP="complete"
-printf '\nRelease complete\n'
+printf '\nPush complete; GitHub Actions will deploy this commit to Cloudflare.\n'
 printf '  source: %s/%s\n' "$REMOTE" "$SOURCE_BRANCH"
 printf '  target: %s/%s @ %s\n' "$REMOTE" "$TARGET_BRANCH" "$(git rev-parse --short HEAD)"
-printf '  site:   %s\n' "$PRODUCTION_URL"
+printf '  action: %s\n' "$ACTION_URL"

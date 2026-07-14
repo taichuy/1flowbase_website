@@ -38,24 +38,26 @@ reads the deployment settings from `wrangler.jsonc`.
 pnpm deploy
 ```
 
-To merge the remote `taichuy/dev` branch into `main`, push `main`, and deploy
-the same commit to Cloudflare in one command:
+Every push to `main` is built and deployed automatically by GitHub Actions.
+The workflow reads the build and Worker settings from this repository and uses
+the `CLOUDFLARE_API_TOKEN` Actions Secret plus the
+`CLOUDFLARE_ACCOUNT_ID` Actions Variable for authentication.
+
+To merge the remote `taichuy/dev` branch into `main` and push `main` in one
+command, which triggers the deployment workflow:
 
 ```bash
 pnpm release
 ```
 
-To run the same preflight, build, and Cloudflare dry-run checks without
-merging, pushing, or deploying:
+To run the same branch and build checks without merging or pushing:
 
 ```bash
 pnpm release:check
 ```
 
-The release command requires a clean working tree and reads
-`CLOUDFLARE_API_TOKEN` from the environment or
-`~/.config/cloudflare/wrangler.env`. To release another remote branch, pass it
-after `--`:
+The release command requires a clean working tree. To release another remote
+branch, pass it after `--`:
 
 ```bash
 pnpm release -- feature/my-branch
@@ -77,5 +79,5 @@ Blog posts live in `src/content/blog/`. Each post declares its language in front
 | `pnpm check` | Run Astro and TypeScript checks |
 | `pnpm build` | Build the static production site |
 | `pnpm preview` | Preview `dist/` locally |
-| `pnpm release` | Merge `origin/taichuy/dev` into `main`, push, deploy, and verify production |
-| `pnpm release:check` | Validate release prerequisites and upload bundle without changing remote state |
+| `pnpm release` | Merge `origin/taichuy/dev` into `main` and push; GitHub Actions deploys production |
+| `pnpm release:check` | Validate branch and build prerequisites without changing remote state |

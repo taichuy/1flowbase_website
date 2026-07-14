@@ -38,6 +38,29 @@ reads the deployment settings from `wrangler.jsonc`.
 pnpm deploy
 ```
 
+To merge the remote `taichuy/dev` branch into `main`, push `main`, and deploy
+the same commit to Cloudflare in one command:
+
+```bash
+pnpm release
+```
+
+To run the same preflight, build, and Cloudflare dry-run checks without
+merging, pushing, or deploying:
+
+```bash
+pnpm release:check
+```
+
+The release command requires a clean working tree and reads
+`CLOUDFLARE_API_TOKEN` from the environment or
+`~/.config/cloudflare/wrangler.env`. To release another remote branch, pass it
+after `--`:
+
+```bash
+pnpm release -- feature/my-branch
+```
+
 Set `SITE_URL` to the production origin, for example `https://www.example.com`. It is used for canonical URLs, the sitemap, RSS, and structured data. Until configured, builds use `https://1flowbase-website.taichu2021.workers.dev`.
 
 No Astro server adapter, Worker runtime code, or runtime database is required for the current site.
@@ -54,3 +77,5 @@ Blog posts live in `src/content/blog/`. Each post declares its language in front
 | `pnpm check` | Run Astro and TypeScript checks |
 | `pnpm build` | Build the static production site |
 | `pnpm preview` | Preview `dist/` locally |
+| `pnpm release` | Merge `origin/taichuy/dev` into `main`, push, deploy, and verify production |
+| `pnpm release:check` | Validate release prerequisites and upload bundle without changing remote state |

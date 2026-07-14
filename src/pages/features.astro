@@ -1,0 +1,8 @@
+---
+import FeaturesPage from '../components/FeaturesPage.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { pageCopy } from '../data/copy';
+---
+<BaseLayout title="Features" description={pageCopy.en.features.description}>
+  <FeaturesPage lang="en" />
+</BaseLayout>

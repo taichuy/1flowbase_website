@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Page not found" noindex>
+  <section class="dark-panel min-h-[65vh]">
+    <div class="site-container relative z-10 flex min-h-[65vh] flex-col items-start justify-center py-20">
+      <span class="font-mono text-sm font-black text-emerald">404 / route.not_found</span>
+      <h1 class="mt-5 text-6xl font-[760] tracking-[-0.065em] text-white sm:text-8xl">This node is not connected.</h1>
+      <p class="mt-6 max-w-xl text-lg leading-8 text-white/58">The page may have moved, or the workflow never published this route.</p>
+      <a class="mt-8 rounded-full bg-night px-6 py-3.5 text-sm font-black text-[#fff]" href="/">Return home →</a>
+    </div>
+  </section>
+</BaseLayout>

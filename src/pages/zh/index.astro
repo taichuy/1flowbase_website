@@ -1,0 +1,32 @@
+---
+import HomePage from '../../components/HomePage.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE } from '../../config';
+import { homeCopy } from '../../data/copy';
+
+const copy = homeCopy.zh;
+const site = Astro.site ?? new URL('https://1flowbase-website.pages.dev');
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: '1flowbase',
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'Linux, macOS, Windows, Docker',
+    description: copy.heroDescription,
+    url: new URL('/zh/', site),
+    codeRepository: SITE.repository,
+    license: 'https://www.apache.org/licenses/LICENSE-2.0',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: copy.faqs.map(([question, answer]) => ({ '@type': 'Question', name: question, acceptedAnswer: { '@type': 'Answer', text: answer } })),
+  },
+];
+---
+
+<BaseLayout lang="zh" title="可观测的工作流虚拟模型" description={copy.heroDescription} structuredData={structuredData}>
+  <HomePage lang="zh" />
+</BaseLayout>

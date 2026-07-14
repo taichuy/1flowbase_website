@@ -1,0 +1,88 @@
+---
+import { Image } from 'astro:assets';
+import apiPublish from '../assets/product/api-publish.jpeg';
+import executionLogs from '../assets/product/execution-logs.jpeg';
+import tokenDashboard from '../assets/product/token-dashboard.jpeg';
+import workflowEditor from '../assets/product/workflow-editor.png';
+import { SITE, type Locale } from '../config';
+import { pageCopy } from '../data/copy';
+
+interface Props { lang: Locale }
+const { lang } = Astro.props;
+const intro = pageCopy[lang].features;
+const content = lang === 'zh'
+  ? {
+      sections: [
+        ['构建', '把模型、工具、分支与综合逻辑放在一张可视化工作流中。复杂编排不再散落在客户端脚本和多个代理配置里。', ['可视化节点与连线', '模型和工具统一注册', '可复用的工作流模板']],
+        ['发布', '把整个工作流发布成标准虚拟模型。已有客户端只需要修改端点和模型名，无需理解背后的编排细节。', ['OpenAI Responses API', 'Chat Completions API', 'Claude Messages API']],
+        ['观测', '从最终回答反查每次模型调用和工具回调，定位哪一个节点消耗了 Token、制造了延迟或产生了错误。', ['节点级输入输出', 'Token 与耗时统计', '错误和工具回调轨迹']],
+      ],
+      galleryTitle: '从设计到运行证据，保持在同一个系统里。',
+      galleryDescription: '工作流、API 发布、执行日志和成本统计相互连接，减少跨工具排查与上下文丢失。',
+      images: ['工作流编辑器', 'API 发布配置', '详细执行日志', 'Token 消耗面板'],
+      ctaTitle: '在自己的基础设施中运行完整工作流。',
+      ctaBody: '开源、自托管，并面向扩展节点、供应商和工具而设计。',
+      cta: '查看源码',
+    }
+  : {
+      sections: [
+        ['Build', 'Put models, tools, branches, and synthesis logic on one visual workflow. Orchestration no longer has to be scattered across client scripts and agent configurations.', ['Visual nodes and edges', 'Shared model and tool registry', 'Reusable workflow templates']],
+        ['Publish', 'Expose the whole workflow as a standard virtual model. Existing clients only need an endpoint and model name, not knowledge of the orchestration behind it.', ['OpenAI Responses API', 'Chat Completions API', 'Claude Messages API']],
+        ['Observe', 'Trace a final answer back through every model call and tool callback to find the node that consumed tokens, added latency, or produced an error.', ['Node-level inputs and outputs', 'Token and duration metrics', 'Errors and tool callback traces']],
+      ],
+      galleryTitle: 'Keep design and runtime evidence in the same system.',
+      galleryDescription: 'Workflows, API publishing, execution logs, and token metrics stay connected, reducing cross-tool debugging and lost context.',
+      images: ['Workflow editor', 'API publishing', 'Detailed execution logs', 'Token dashboard'],
+      ctaTitle: 'Run the complete workflow on infrastructure you control.',
+      ctaBody: 'Open source, self-hosted, and designed for custom nodes, providers, and tools.',
+      cta: 'View source',
+    };
+
+const gallery = [workflowEditor, apiPublish, executionLogs, tokenDashboard];
+---
+
+<section class="dark-panel">
+  <div class="site-container relative z-10 py-20 sm:py-28">
+    <span class="eyebrow !text-emerald">{intro.eyebrow}</span>
+    <h1 class="mt-5 max-w-5xl text-[clamp(3rem,7vw,6rem)] font-[760] leading-[0.95] tracking-[-0.068em] text-white">{intro.title}</h1>
+    <p class="mt-7 max-w-2xl text-lg leading-8 text-white/62">{intro.description}</p>
+  </div>
+</section>
+
+<section class="section-shell">
+  <div class="site-container grid gap-5 lg:grid-cols-3">
+    {content.sections.map(([title, body, bullets], index) => (
+      <article class="glass-card p-7 sm:p-9">
+        <span class="font-mono text-xs font-black text-emerald">0{index + 1}</span>
+        <h2 class="mt-12 text-3xl font-[750] tracking-[-0.045em] text-ink">{title}</h2>
+        <p class="mt-5 leading-7 text-muted">{body}</p>
+        <ul class="mt-8 grid gap-3 border-t border-line pt-6 text-sm font-bold text-ink">
+          {(bullets as string[]).map((bullet) => <li class="flex gap-3"><span class="text-emerald">✓</span>{bullet}</li>)}
+        </ul>
+      </article>
+    ))}
+  </div>
+</section>
+
+<section class="section-shell bg-white">
+  <div class="site-container">
+    <h2 class="section-title">{content.galleryTitle}</h2>
+    <p class="section-copy">{content.galleryDescription}</p>
+    <div class="mt-12 grid gap-5 md:grid-cols-2">
+      {gallery.map((image, index) => (
+        <figure class="overflow-hidden rounded-[1.5rem] border border-line bg-paper p-3 shadow-[0_20px_65px_rgba(4,61,49,0.08)]">
+          <div class="flex items-center gap-2 px-2 pb-3"><span class="size-2 rounded-full bg-[#ff8c7e]"></span><span class="size-2 rounded-full bg-[#ffd476]"></span><span class="size-2 rounded-full bg-mint"></span><figcaption class="ml-2 font-mono text-[0.65rem] text-muted">{content.images[index]}</figcaption></div>
+          <Image src={image} alt={content.images[index]} widths={[520, 780, 1080]} sizes="(max-width: 768px) 100vw, 50vw" class="aspect-[16/8.5] w-full rounded-xl border border-line bg-white object-cover object-top" loading="lazy" />
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="section-shell">
+  <div class="site-container rounded-[2rem] border border-line bg-gradient-to-br from-white via-[#f4fff9] to-[#eff9ff] px-6 py-14 text-center text-ink shadow-[0_30px_90px_rgba(4,61,49,0.1)] sm:px-12 sm:py-20">
+    <h2 class="mx-auto max-w-4xl text-4xl font-[760] leading-tight tracking-[-0.055em] sm:text-6xl">{content.ctaTitle}</h2>
+    <p class="mx-auto mt-5 max-w-2xl text-lg leading-8 text-muted">{content.ctaBody}</p>
+    <a class="mt-8 inline-flex rounded-full bg-night px-6 py-3.5 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-forest" href={SITE.repository}>{content.cta} ↗</a>
+  </div>
+</section>

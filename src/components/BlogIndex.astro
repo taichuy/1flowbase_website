@@ -1,0 +1,59 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import type { Locale } from '../config';
+
+interface Props {
+  lang: Locale;
+  posts: CollectionEntry<'blog'>[];
+}
+
+const { lang, posts } = Astro.props;
+const copy = lang === 'zh'
+  ? {
+      eyebrow: '1flowbase 博客',
+      title: '工作流、模型编排与本地 Agent 的实践记录。',
+      description: '围绕虚拟模型、多模型协作、视觉工具、协议兼容和可观测性的技术文章。',
+      read: '阅读文章',
+      empty: '文章正在准备中。',
+    }
+  : {
+      eyebrow: '1flowbase Blog',
+      title: 'Notes on workflows, model orchestration, and local agents.',
+      description: 'Technical writing about virtual models, multi-model collaboration, vision tools, protocol compatibility, and observability.',
+      read: 'Read article',
+      empty: 'Articles are being prepared.',
+    };
+const base = lang === 'zh' ? '/zh/blog' : '/blog';
+---
+
+<section class="dark-panel">
+  <div class="site-container relative z-10 py-20 sm:py-28">
+    <span class="eyebrow !text-emerald">{copy.eyebrow}</span>
+    <h1 class="mt-5 max-w-5xl text-[clamp(3rem,7vw,6rem)] font-[760] leading-[0.95] tracking-[-0.068em] text-white">{copy.title}</h1>
+    <p class="mt-7 max-w-2xl text-lg leading-8 text-white/62">{copy.description}</p>
+  </div>
+</section>
+
+<section class="section-shell">
+  <div class="site-container">
+    {posts.length > 0 ? (
+      <div class="grid gap-5 md:grid-cols-2">
+        {posts.map((post, index) => (
+          <article class:list={['glass-card group flex flex-col p-7 sm:p-9', index === 0 && 'md:col-span-2 md:grid md:grid-cols-[0.7fr_1.3fr] md:gap-12']}>
+            <div>
+              <div class="flex flex-wrap gap-2">
+                {post.data.tags.map((tag) => <span class="rounded-full bg-emerald/8 px-2.5 py-1 text-[0.65rem] font-black uppercase tracking-[0.1em] text-emerald">{tag}</span>)}
+              </div>
+              <p class="mt-5 font-mono text-xs text-muted">{post.data.publishedAt.toLocaleDateString(lang === 'zh' ? 'zh-CN' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            </div>
+            <div class:list={[index !== 0 && 'mt-10']}>
+              <h2 class:list={['font-[760] leading-tight tracking-[-0.045em] text-ink transition group-hover:text-emerald', index === 0 ? 'text-3xl sm:text-5xl' : 'text-3xl']}>{post.data.title}</h2>
+              <p class="mt-5 leading-7 text-muted">{post.data.description}</p>
+              <a class="mt-8 inline-flex items-center gap-2 text-sm font-black text-emerald" href={`${base}/${post.data.slug}/`}>{copy.read} <span>→</span></a>
+            </div>
+          </article>
+        ))}
+      </div>
+    ) : <p class="text-muted">{copy.empty}</p>}
+  </div>
+</section>

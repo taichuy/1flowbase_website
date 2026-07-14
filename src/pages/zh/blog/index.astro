@@ -1,0 +1,10 @@
+---
+import { getCollection } from 'astro:content';
+import BlogIndex from '../../../components/BlogIndex.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const posts = (await getCollection('blog', ({ data }) => data.lang === 'zh' && !data.draft)).sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+---
+<BaseLayout lang="zh" title="博客" description="关于工作流虚拟模型、多模型编排、本地 Agent 和可观测性的技术文章。">
+  <BlogIndex lang="zh" posts={posts} />
+</BaseLayout>

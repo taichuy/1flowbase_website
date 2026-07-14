@@ -1,0 +1,8 @@
+---
+import FeaturesPage from '../../components/FeaturesPage.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { pageCopy } from '../../data/copy';
+---
+<BaseLayout lang="zh" title="产品能力" description={pageCopy.zh.features.description}>
+  <FeaturesPage lang="zh" />
+</BaseLayout>

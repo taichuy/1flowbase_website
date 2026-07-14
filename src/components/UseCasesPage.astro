@@ -1,0 +1,99 @@
+---
+import { SITE, type Locale } from '../config';
+import { pageCopy } from '../data/copy';
+
+interface Props { lang: Locale }
+const { lang } = Astro.props;
+const intro = pageCopy[lang].useCases;
+const cases = lang === 'zh'
+  ? [
+      {
+        index: '01',
+        title: '为文本编程模型挂载视觉能力',
+        problem: '文本优先的编程模型无法直接理解截图、UI、图表或 PDF 页面，主模型因此缺少关键上下文。',
+        solution: '把视觉模型或 OCR 作为主模型可调用的工具。主模型继续负责规划，只有真正需要看图时才触发多模态模型。',
+        flow: ['Claude Code', '虚拟模型端点', '主文本模型', '视觉工具', '最终回答'],
+        guide: 'Make-GLM-5.2-See-Images-in-Claude-Code-with-1flowbase',
+      },
+      {
+        index: '02',
+        title: '把多模型评审面板发布成一个模型',
+        problem: '单模型容易受自身盲区影响，但让客户端直接管理多个模型、并行调用和结果综合会带来大量重复工程。',
+        solution: '用 Fusion 工作流并行调用多个评审模型，再由综合模型生成最终结果。客户端只看到一个模型名。',
+        flow: ['Agent 请求', '并行评审 A/B/C', '综合模型', '虚拟模型响应'],
+        guide: 'Fusion-Style-Workflow',
+      },
+      {
+        index: '03',
+        title: '发布可观测的模型 API',
+        problem: '传统模型代理通常只能看到一次 HTTP 请求，很难解释最终答案经过了哪些模型与工具，以及成本到底发生在哪里。',
+        solution: '把工作流本身发布成 OpenAI 或 Claude 兼容 API，并保留节点、模型、工具、Token、耗时与错误的完整关联。',
+        flow: ['标准模型 API', '工作流运行时', '执行轨迹', '成本与错误归因'],
+        guide: '',
+      },
+    ]
+  : [
+      {
+        index: '01',
+        title: 'Mount vision for text-first coding models',
+        problem: 'Text-first coding models cannot directly understand screenshots, user interfaces, charts, or PDF pages, leaving the planner without critical context.',
+        solution: 'Expose a vision model or OCR engine as a callable tool. The main model keeps planning and invokes multimodal intelligence only when visual evidence is needed.',
+        flow: ['Claude Code', 'Virtual model endpoint', 'Main text model', 'Vision tool', 'Final answer'],
+        guide: 'Make-GLM-5.2-See-Images-in-Claude-Code-with-1flowbase',
+      },
+      {
+        index: '02',
+        title: 'Publish a multi-model review panel as one model',
+        problem: 'A single model has blind spots, but making every client manage parallel calls, multiple providers, and synthesis creates repeated orchestration work.',
+        solution: 'Use a Fusion workflow to ask several reviewers in parallel and synthesize one result. The client still sees a single model name.',
+        flow: ['Agent request', 'Parallel reviewers A/B/C', 'Synthesis model', 'Virtual model response'],
+        guide: 'Fusion-Style-Workflow',
+      },
+      {
+        index: '03',
+        title: 'Publish an observable model API',
+        problem: 'Traditional model proxies often expose one HTTP request but cannot explain the models and tools behind the answer or where the cost actually occurred.',
+        solution: 'Publish the workflow itself through an OpenAI- or Claude-compatible API and preserve the connected nodes, calls, tools, tokens, duration, and errors.',
+        flow: ['Standard model API', 'Workflow runtime', 'Execution trace', 'Cost and failure attribution'],
+        guide: '',
+      },
+    ];
+---
+
+<section class="dark-panel">
+  <div class="site-container relative z-10 py-20 sm:py-28">
+    <span class="eyebrow !text-emerald">{intro.eyebrow}</span>
+    <h1 class="mt-5 max-w-5xl text-[clamp(3rem,7vw,6rem)] font-[760] leading-[0.95] tracking-[-0.068em] text-white">{intro.title}</h1>
+    <p class="mt-7 max-w-2xl text-lg leading-8 text-white/62">{intro.description}</p>
+  </div>
+</section>
+
+<section class="section-shell">
+  <div class="site-container grid gap-7">
+    {cases.map((item) => (
+      <article class="glass-card overflow-hidden">
+        <div class="grid lg:grid-cols-[0.9fr_1.1fr]">
+          <div class="border-b border-line p-7 sm:p-10 lg:border-b-0 lg:border-r">
+            <span class="font-mono text-xs font-black text-emerald">{item.index}</span>
+            <h2 class="mt-10 text-3xl font-[760] leading-tight tracking-[-0.05em] text-ink sm:text-4xl">{item.title}</h2>
+            <div class="mt-8 grid gap-6 text-sm leading-7 text-muted">
+              <div><h3 class="mb-1 font-black text-ink">{lang === 'zh' ? '现有问题' : 'The limitation'}</h3><p>{item.problem}</p></div>
+              <div><h3 class="mb-1 font-black text-ink">{lang === 'zh' ? '工作流方案' : 'The workflow'}</h3><p>{item.solution}</p></div>
+            </div>
+            {item.guide && <a class="mt-8 inline-flex text-sm font-black text-emerald hover:text-forest" href={`${SITE.wiki}/${item.guide}`}>{lang === 'zh' ? '阅读实现教程' : 'Read the implementation guide'} →</a>}
+          </div>
+          <div class="border-line bg-gradient-to-br from-[#effff8] via-white to-[#eef8ff] p-7 sm:p-10 lg:border-l">
+            <div class="relative z-10 flex h-full min-h-[21rem] flex-col justify-center gap-3">
+              {item.flow.map((step, index) => (
+                <>
+                <div class="rounded-xl border border-line bg-white/85 px-5 py-4 text-sm font-bold text-ink shadow-sm"><span class="mr-3 font-mono text-xs text-emerald">0{index + 1}</span>{step}</div>
+                  {index < item.flow.length - 1 && <div class="pl-7 text-emerald/50">↓</div>}
+                </>
+              ))}
+            </div>
+          </div>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>

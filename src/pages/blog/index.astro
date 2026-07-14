@@ -1,0 +1,10 @@
+---
+import { getCollection } from 'astro:content';
+import BlogIndex from '../../components/BlogIndex.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const posts = (await getCollection('blog', ({ data }) => data.lang === 'en' && !data.draft)).sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+---
+<BaseLayout title="Blog" description="Technical writing about workflow-backed virtual models, multi-model orchestration, local agents, and observability.">
+  <BlogIndex lang="en" posts={posts} />
+</BaseLayout>

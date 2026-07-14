@@ -1,0 +1,15 @@
+---
+interface Props {
+  inverse?: boolean;
+}
+
+const { inverse = false } = Astro.props;
+---
+
+<span class:list={['inline-flex items-center gap-2.5 font-bold tracking-[-0.045em]', inverse ? 'text-white' : 'text-ink']}>
+  <span class="relative grid size-8 place-items-center overflow-hidden rounded-[0.7rem] bg-gradient-to-br from-mint via-emerald to-forest text-sm font-black text-night shadow-[0_8px_30px_rgba(7,150,103,0.24)]">
+    1f
+    <span class="absolute inset-x-1 bottom-1 h-px bg-white/45"></span>
+  </span>
+  <span class="text-[1.18rem]">1flowbase</span>
+</span>

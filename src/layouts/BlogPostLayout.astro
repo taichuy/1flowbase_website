@@ -1,0 +1,47 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+import type { Locale } from '../config';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+  lang: Locale;
+}
+
+const { post, lang } = Astro.props;
+const base = lang === 'zh' ? '/zh/blog/' : '/blog/';
+const site = Astro.site ?? new URL('https://1flowbase-website.pages.dev');
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.publishedAt.toISOString(),
+  dateModified: (post.data.updatedAt ?? post.data.publishedAt).toISOString(),
+  inLanguage: lang === 'zh' ? 'zh-CN' : 'en',
+  author: { '@type': 'Organization', name: '1flowbase' },
+  publisher: { '@type': 'Organization', name: '1flowbase' },
+  mainEntityOfPage: new URL(`${base}${post.data.slug}/`, site),
+};
+---
+
+<BaseLayout lang={lang} title={post.data.title} description={post.data.description} type="article" structuredData={structuredData}>
+  <article>
+    <header class="dark-panel">
+      <div class="site-container relative z-10 max-w-4xl py-20 sm:py-28">
+        <div class="flex flex-wrap gap-2">
+          {post.data.tags.map((tag) => <span class="rounded-full border border-emerald/20 bg-white/70 px-2.5 py-1 text-[0.65rem] font-black uppercase tracking-[0.1em] text-emerald">{tag}</span>)}
+        </div>
+        <h1 class="mt-7 text-[clamp(2.8rem,7vw,5.8rem)] font-[760] leading-[0.97] tracking-[-0.065em] text-white">{post.data.title}</h1>
+        <p class="mt-6 max-w-2xl text-lg leading-8 text-white/62">{post.data.description}</p>
+        <p class="mt-8 font-mono text-xs text-white/38">{post.data.publishedAt.toLocaleDateString(lang === 'zh' ? 'zh-CN' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+      </div>
+    </header>
+    <div class="site-container max-w-3xl py-16 sm:py-24">
+      <div class="prose-site"><slot /></div>
+      <div class="mt-16 border-t border-line pt-8">
+        <a class="text-sm font-black text-emerald" href={base}>← {lang === 'zh' ? '返回博客' : 'Back to blog'}</a>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

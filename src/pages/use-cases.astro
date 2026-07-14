@@ -1,0 +1,8 @@
+---
+import UseCasesPage from '../components/UseCasesPage.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { pageCopy } from '../data/copy';
+---
+<BaseLayout title="Use cases" description={pageCopy.en.useCases.description}>
+  <UseCasesPage lang="en" />
+</BaseLayout>

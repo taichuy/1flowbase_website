@@ -1,0 +1,66 @@
+---
+import Logo from './Logo.astro';
+import { SITE, type Locale, localePath } from '../config';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const copy = lang === 'zh'
+  ? {
+      intro: '把可观测的多模型工作流发布成标准模型 API。',
+      product: '产品',
+      resources: '资源',
+      features: '产品能力',
+      useCases: '使用场景',
+      blog: '博客',
+      docs: '文档',
+      issues: 'Issues',
+      source: '官网源码',
+      rights: '开源、可自托管。',
+    }
+  : {
+      intro: 'Publish observable multi-model workflows as standard model APIs.',
+      product: 'Product',
+      resources: 'Resources',
+      features: 'Features',
+      useCases: 'Use cases',
+      blog: 'Blog',
+      docs: 'Documentation',
+      issues: 'Issues',
+      source: 'Website source',
+      rights: 'Open source and self-hostable.',
+    };
+---
+
+<footer class="border-t border-line bg-white">
+  <div class="site-container grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.8fr_1fr_1fr]">
+    <div>
+      <a href={localePath(lang)}><Logo /></a>
+      <p class="mt-4 max-w-sm text-sm leading-7 text-muted">{copy.intro}</p>
+    </div>
+    <div>
+      <h2 class="text-sm font-black text-ink">{copy.product}</h2>
+      <ul class="mt-4 grid gap-3 text-sm text-muted">
+        <li><a class="hover:text-emerald" href={localePath(lang, '/features/')}>{copy.features}</a></li>
+        <li><a class="hover:text-emerald" href={localePath(lang, '/use-cases/')}>{copy.useCases}</a></li>
+        <li><a class="hover:text-emerald" href={localePath(lang, '/blog/')}>{copy.blog}</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2 class="text-sm font-black text-ink">{copy.resources}</h2>
+      <ul class="mt-4 grid gap-3 text-sm text-muted">
+        <li><a class="hover:text-emerald" href={SITE.wiki}>{copy.docs}</a></li>
+        <li><a class="hover:text-emerald" href={SITE.issues}>{copy.issues}</a></li>
+        <li><a class="hover:text-emerald" href={SITE.websiteRepository}>{copy.source}</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-line">
+    <div class="site-container flex flex-col gap-2 py-5 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
+      <p>© {new Date().getFullYear()} 1flowbase. {copy.rights}</p>
+      <p>{SITE.license} · Built with Astro</p>
+    </div>
+  </div>
+</footer>

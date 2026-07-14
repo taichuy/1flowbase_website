@@ -24,8 +24,8 @@ const {
   structuredData,
 } = Astro.props;
 
-const pageTitle = title ? `${title} · ${SITE.name}` : `${SITE.name} · Observable workflow-backed virtual models`;
-const site = Astro.site ?? new URL('https://1flowbase-website.pages.dev');
+const pageTitle = title ? `${title} · ${SITE.name}` : `${SITE.name} · The native foundation for AI apps`;
+const site = Astro.site ?? new URL('https://1flowbase-website.taichu2021.workers.dev');
 const canonical = new URL(Astro.url.pathname, site);
 const englishPath = Astro.url.pathname.replace(/^\/zh(?=\/|$)/, '') || '/';
 const chinesePath = `/zh${englishPath === '/' ? '/' : englishPath}`;

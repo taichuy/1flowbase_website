@@ -1,0 +1,340 @@
+---
+import { SITE, type Locale } from '../config';
+
+interface Props {
+  lang: Locale;
+  badge: string;
+  title: string;
+  accent: string;
+  description: string;
+  primaryCta: string;
+  secondaryCta: string;
+  worksWith: string;
+}
+
+const { lang, badge, title, accent, description, primaryCta, secondaryCta, worksWith } = Astro.props;
+---
+
+<section class="hero-scene min-h-[calc(100svh-4.5rem)]" data-hero-scene>
+  <canvas class="hero-scene__canvas" aria-hidden="true"></canvas>
+  <div class="hero-scene__glow hero-scene__glow--mint" aria-hidden="true"></div>
+  <div class="hero-scene__glow hero-scene__glow--sky" aria-hidden="true"></div>
+
+  <div class="site-container hero-scene__content">
+    <div class="inline-flex items-center gap-2 rounded-full border border-emerald/20 bg-white/70 px-3.5 py-2 text-xs font-black tracking-wide text-emerald shadow-sm backdrop-blur-xl">
+      <span class="size-1.5 rounded-full bg-emerald shadow-[0_0_14px_rgba(7,150,103,.55)]"></span>
+      {badge}
+    </div>
+
+    <h1 class:list={['hero-scene__title', lang === 'zh' && 'hero-scene__title--zh']}>
+      <span>{title}</span>
+      <span class="hero-scene__accent">{accent}</span>
+    </h1>
+
+    <p class="hero-scene__description">{description}</p>
+
+    <div class="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+      <a class="inline-flex min-w-44 items-center justify-center gap-2 rounded-full bg-night px-6 py-3.5 text-sm font-black text-white shadow-[0_18px_45px_rgba(4,61,49,.2)] transition hover:-translate-y-0.5 hover:bg-forest" href={SITE.repository} target="_blank" rel="noreferrer">
+        {primaryCta}
+        <span class="inline-flex items-center gap-1 border-l border-white/20 pl-2 text-white/75" data-github-stars>
+          <span aria-hidden="true">★</span><span data-github-stars-value>197</span>
+        </span>
+      </a>
+      <a class="inline-flex min-w-36 items-center justify-center gap-2 rounded-full border border-line bg-white/76 px-6 py-3.5 text-sm font-black text-ink shadow-sm backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-emerald/30 hover:text-emerald" href={SITE.wiki} target="_blank" rel="noreferrer">
+        {secondaryCta}<span aria-hidden="true">→</span>
+      </a>
+    </div>
+
+    <div class="hero-scene__compatibility">
+      <p>{worksWith}</p>
+      <div>
+        <span>Claude Code</span><span>Codex</span><span>OpenCode</span><span>Cline</span><span>Continue</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scene__scroll" aria-hidden="true">
+    <span>{lang === 'zh' ? '向下探索' : 'Explore'}</span><i></i>
+  </div>
+</section>
+
+<style>
+  .hero-scene {
+    position: relative;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border-bottom: 1px solid #dce9e4;
+    background:
+      radial-gradient(circle at 15% 8%, rgb(100 227 177 / 18%), transparent 30rem),
+      radial-gradient(circle at 82% 88%, rgb(104 200 255 / 14%), transparent 34rem),
+      linear-gradient(135deg, #fff 38%, #effbf6 100%);
+  }
+
+  .hero-scene::before {
+    position: absolute;
+    inset: 0;
+    content: '';
+    background-image: radial-gradient(rgb(7 150 103 / 10%) 1px, transparent 1px);
+    background-size: 24px 24px;
+    mask-image: linear-gradient(to bottom, black 15%, rgb(0 0 0 / 62%) 70%, transparent 100%);
+  }
+
+  .hero-scene__canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .hero-scene__glow {
+    position: absolute;
+    z-index: 0;
+    border-radius: 999px;
+    filter: blur(70px);
+    animation: hero-float 22s ease-in-out infinite alternate;
+  }
+
+  .hero-scene__glow--mint {
+    top: -16rem;
+    left: -12rem;
+    width: 42rem;
+    height: 42rem;
+    background: rgb(100 227 177 / 20%);
+  }
+
+  .hero-scene__glow--sky {
+    right: -18rem;
+    bottom: -20rem;
+    width: 54rem;
+    height: 54rem;
+    background: rgb(104 200 255 / 16%);
+    animation-delay: -8s;
+    animation-duration: 30s;
+  }
+
+  .hero-scene__content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-block: clamp(5rem, 11vh, 8rem);
+    text-align: center;
+    animation: hero-arrive 900ms cubic-bezier(.16, 1, .3, 1) both;
+  }
+
+  .hero-scene__title {
+    display: flex;
+    max-width: 1050px;
+    flex-direction: column;
+    margin: clamp(1.5rem, 4vh, 2.5rem) 0 0;
+    color: #08231c;
+    font-size: clamp(3.1rem, 8.2vw, 7.8rem);
+    font-weight: 820;
+    letter-spacing: -.075em;
+    line-height: .9;
+  }
+
+  .hero-scene__title--zh > span {
+    white-space: nowrap;
+  }
+
+  .hero-scene__accent {
+    margin-top: .14em;
+    background: linear-gradient(120deg, #073d31 5%, #079667 55%, #65d7aa 100%);
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 8px 22px rgb(7 150 103 / 12%));
+  }
+
+  .hero-scene__description {
+    max-width: 760px;
+    margin: clamp(1.5rem, 4vh, 2.5rem) auto 0;
+    color: #526a63;
+    font-size: clamp(1rem, 1.7vw, 1.25rem);
+    line-height: 1.75;
+  }
+
+  .hero-scene__compatibility {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .8rem;
+    margin-top: clamp(2.4rem, 6vh, 4.4rem);
+    color: #526a63;
+  }
+
+  .hero-scene__compatibility p {
+    margin: 0;
+    font-size: .67rem;
+    font-weight: 850;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+
+  .hero-scene__compatibility div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .55rem 1.35rem;
+    font-family: var(--font-mono);
+    font-size: .76rem;
+    font-weight: 700;
+  }
+
+  .hero-scene__scroll {
+    position: absolute;
+    right: 1.5rem;
+    bottom: 1.3rem;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    color: #6f857e;
+    font-family: var(--font-mono);
+    font-size: .62rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+  }
+
+  .hero-scene__scroll i {
+    width: 1px;
+    height: 2.2rem;
+    background: linear-gradient(#079667, transparent);
+  }
+
+  @keyframes hero-arrive {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes hero-float {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to { transform: translate3d(35px, -25px, 0) scale(1.08); }
+  }
+
+  @media (max-width: 640px) {
+    .hero-scene__title { font-size: clamp(2.5rem, 11.5vw, 3.6rem); line-height: .94; }
+    .hero-scene__description { max-width: 34rem; font-size: 1rem; line-height: 1.7; }
+    .hero-scene__scroll { display: none; }
+    .hero-scene__content { padding-block: 4.5rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-scene__content, .hero-scene__glow { animation: none; }
+  }
+</style>
+
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll('[data-hero-scene]').forEach((scene) => {
+    if (reduceMotion || !(scene instanceof HTMLElement)) return;
+    const canvas = scene.querySelector('canvas');
+    if (!(canvas instanceof HTMLCanvasElement)) return;
+    const context = canvas.getContext('2d');
+    if (!context) return;
+
+    let width = 0;
+    let height = 0;
+    let frame = 0;
+    const pointer = { x: -1000, y: -1000 };
+    type Leaf = {
+      x: number; y: number; depth: number; speed: number; drift: number;
+      angle: number; spin: number; size: number;
+    };
+    type Ripple = { x: number; y: number; radius: number; alpha: number; depth: number };
+
+    const leaves: Leaf[] = Array.from({ length: 38 }, () => ({
+      x: Math.random(), y: Math.random(), depth: .3 + Math.random() * .7,
+      speed: .00022 + Math.random() * .00038, drift: Math.random() * Math.PI * 2,
+      angle: Math.random() * Math.PI * 2, spin: (Math.random() - .5) * .018,
+      size: 4 + Math.random() * 7,
+    }));
+    const ripples: Ripple[] = [];
+
+    const resize = () => {
+      const rect = scene.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = rect.width;
+      height = rect.height;
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      context.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+
+    const drawLeaf = (leaf: Leaf, x: number, y: number) => {
+      const scale = .45 + leaf.depth * .65;
+      context.save();
+      context.translate(x, y);
+      context.rotate(leaf.angle);
+      context.scale(scale, scale * Math.sin(leaf.angle * .7));
+      context.beginPath();
+      context.moveTo(0, -leaf.size);
+      context.quadraticCurveTo(-leaf.size * .8, 0, 0, leaf.size);
+      context.quadraticCurveTo(leaf.size * .8, 0, 0, -leaf.size);
+      context.fillStyle = `rgba(7, 150, 103, ${.09 + leaf.depth * .16})`;
+      context.shadowColor = 'rgba(100, 227, 177, .28)';
+      context.shadowBlur = 8;
+      context.fill();
+      context.restore();
+    };
+
+    const animate = (time: number) => {
+      context.clearRect(0, 0, width, height);
+      const waterline = height * .82;
+
+      for (const leaf of leaves) {
+        leaf.y += leaf.speed * leaf.depth;
+        leaf.angle += leaf.spin;
+        const x = leaf.x * width + Math.sin(time * .00045 + leaf.drift) * 26 * leaf.depth;
+        const y = leaf.y * height;
+        const dx = x - pointer.x;
+        const dy = y - pointer.y;
+        if (dx * dx + dy * dy < 15000) leaf.x += Math.sign(dx || 1) * .00045;
+
+        if (y >= waterline) {
+          ripples.push({ x, y: waterline, radius: 2, alpha: .2, depth: leaf.depth });
+          leaf.y = -.06 - Math.random() * .15;
+          leaf.x = Math.random();
+        }
+        drawLeaf(leaf, x, y);
+      }
+
+      for (let index = ripples.length - 1; index >= 0; index -= 1) {
+        const ripple = ripples[index];
+        ripple.radius += 1.15;
+        ripple.alpha *= .955;
+        context.beginPath();
+        context.ellipse(ripple.x, ripple.y, ripple.radius, ripple.radius * .18, 0, 0, Math.PI * 2);
+        context.strokeStyle = `rgba(7, 150, 103, ${ripple.alpha})`;
+        context.lineWidth = .8;
+        context.stroke();
+        if (ripple.alpha < .008) ripples.splice(index, 1);
+      }
+
+      frame = requestAnimationFrame(animate);
+    };
+
+    scene.addEventListener('pointermove', (event) => {
+      const rect = scene.getBoundingClientRect();
+      pointer.x = event.clientX - rect.left;
+      pointer.y = event.clientY - rect.top;
+    });
+    scene.addEventListener('pointerleave', () => { pointer.x = -1000; pointer.y = -1000; });
+    const observer = new ResizeObserver(resize);
+    observer.observe(scene);
+    resize();
+    frame = requestAnimationFrame(animate);
+    document.addEventListener('astro:before-swap', () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    }, { once: true });
+  });
+</script>

@@ -4,6 +4,7 @@ import executionLogs from '../assets/product/execution-logs.jpeg';
 import workflowEditor from '../assets/product/workflow-editor.png';
 import { SITE, type Locale, localePath } from '../config';
 import { homeCopy } from '../data/copy';
+import HeroScene from './HeroScene.astro';
 
 interface Props {
   lang: Locale;
@@ -14,78 +15,50 @@ const copy = homeCopy[lang];
 const installCommand = 'curl -fsSL https://raw.githubusercontent.com/taichuy/1flowbase/main/scripts/shell/docker-deploy.sh | sh';
 ---
 
-<section class="dark-panel min-h-[calc(100vh-4.5rem)]">
-  <div class="site-container relative z-10 grid items-center gap-14 py-16 lg:grid-cols-[0.92fr_1.08fr] lg:py-24">
-    <div>
-      <div class="inline-flex items-center gap-2 rounded-full border border-emerald/20 bg-white/72 px-3 py-1.5 text-xs font-bold tracking-wide text-emerald shadow-sm shadow-emerald/5">
-        <span class="size-1.5 rounded-full bg-emerald shadow-[0_0_12px_rgba(7,150,103,.4)]"></span>
-        {copy.badge}
-      </div>
-      <h1 class:list={['mt-7 max-w-4xl font-[760] tracking-[-0.07em] text-white', lang === 'zh' ? 'text-[clamp(3rem,5.3vw,5rem)] leading-[1.02]' : 'text-[clamp(3rem,7vw,6.4rem)] leading-[0.94]']}>
-        {copy.heroTitle}
-      </h1>
-      <p class="mt-7 max-w-2xl text-lg leading-8 text-white/66 sm:text-xl">{copy.heroDescription}</p>
-      <div class="mt-9 flex flex-col gap-3 sm:flex-row">
-        <a class="inline-flex items-center justify-center gap-2 rounded-full bg-night px-6 py-3.5 text-sm font-black text-[#fff] shadow-[0_16px_45px_rgba(4,61,49,0.18)] transition hover:-translate-y-0.5 hover:bg-forest" href={SITE.repository} target="_blank" rel="noreferrer">
-          {copy.primaryCta}
-          <span aria-hidden="true">↗</span>
-        </a>
-        <a class="inline-flex items-center justify-center gap-2 rounded-full border border-line bg-white/80 px-6 py-3.5 text-sm font-black text-ink shadow-sm transition hover:-translate-y-0.5 hover:border-emerald/30 hover:text-emerald" href={SITE.wiki} target="_blank" rel="noreferrer">
-          {copy.secondaryCta}
-          <span aria-hidden="true">→</span>
-        </a>
-      </div>
-      <div class="mt-10 border-t border-line pt-6">
-        <p class="text-xs font-bold uppercase tracking-[0.15em] text-white/36">{copy.worksWith}</p>
-        <div class="mt-4 flex flex-wrap gap-x-6 gap-y-3 text-sm font-bold text-white/58">
-          <span>Claude Code</span><span>Codex</span><span>OpenCode</span><span>Cline</span><span>Continue</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="relative lg:pl-4">
-      <div class="absolute -left-7 top-10 hidden h-24 w-px bg-gradient-to-b from-transparent via-emerald/30 to-transparent lg:block"></div>
-      <div class="overflow-hidden rounded-[1.6rem] border border-line bg-white/92 shadow-[0_35px_110px_rgba(4,61,49,0.14)] backdrop-blur-xl">
-        <div class="flex items-center justify-between border-b border-line px-5 py-3.5 text-xs">
-          <div class="flex items-center gap-2 text-white/58"><span class="size-2 rounded-full bg-[#ff766f]"></span><span class="size-2 rounded-full bg-[#ffd36e]"></span><span class="size-2 rounded-full bg-mint"></span><span class="ml-2 font-mono">{copy.visualLabel}</span></div>
-          <span class="rounded-full bg-mint/20 px-2.5 py-1 font-bold text-forest">● {copy.visualStatus}</span>
-        </div>
-        <div class="relative p-4 sm:p-6">
-          <div class="grid gap-3 sm:grid-cols-[0.8fr_1fr]">
-            <div class="rounded-xl border border-line bg-paper/80 p-4">
-              <p class="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#1479a8]">Agent request</p>
-              <p class="mt-3 text-sm font-bold text-white">Review this implementation and verify the UI screenshot.</p>
-            </div>
-            <div class="rounded-xl border border-emerald/18 bg-mint/10 p-4">
-              <p class="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-emerald">Virtual model endpoint</p>
-              <p class="mt-3 font-mono text-sm text-white/75">POST /v1/responses</p>
-            </div>
-          </div>
-          <div class="my-3 flex justify-center text-emerald/50">↓</div>
-          <div class="grid gap-3 sm:grid-cols-3">
-            {['vision-tool', 'review-panel', 'synthesis'].map((node, index) => (
-              <div class="rounded-xl border border-line bg-paper/72 p-4">
-                <div class="flex items-center justify-between"><span class="grid size-7 place-items-center rounded-lg bg-mint/20 font-mono text-xs text-emerald">{index + 1}</span><span class="size-1.5 rounded-full bg-emerald shadow-[0_0_10px_rgba(7,150,103,.35)]"></span></div>
-                <p class="mt-6 font-mono text-xs font-bold text-white/76">{node}</p>
-              </div>
-            ))}
-          </div>
-          <div class="my-3 flex justify-center text-emerald/50">↓</div>
-          <div class="rounded-xl border border-sky/25 bg-sky/8 p-4">
-            <div class="flex items-center justify-between gap-4"><div><p class="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#1479a8]">Observable answer</p><p class="mt-2 text-sm font-bold text-ink">Final response + full execution trace</p></div><div class="text-right font-mono text-[0.65rem] leading-5 text-muted"><p>4 calls</p><p>8.2s</p><p>12.4k tokens</p></div></div>
-          </div>
-        </div>
-      </div>
-      <div class="absolute -bottom-6 -right-2 hidden rounded-xl border border-line bg-white/95 px-4 py-3 text-xs text-muted shadow-2xl shadow-forest/10 backdrop-blur-xl sm:block">
-        <span class="font-mono text-emerald">trace.complete</span> · every branch preserved
-      </div>
-    </div>
-  </div>
-</section>
+<HeroScene
+  lang={lang}
+  badge={copy.badge}
+  title={copy.heroTitle}
+  accent={copy.heroAccent}
+  description={copy.heroDescription}
+  primaryCta={copy.primaryCta}
+  secondaryCta={copy.secondaryCta}
+  worksWith={copy.worksWith}
+/>
 
 <section class="border-b border-line bg-white">
   <div class="site-container grid grid-cols-2 divide-x divide-line py-5 md:grid-cols-4">
     {copy.protocols.map((protocol) => <div class="px-3 py-2 text-center text-[0.72rem] font-black uppercase tracking-[0.12em] text-muted">{protocol}</div>)}
+  </div>
+</section>
+
+<section id="composition" class="border-b border-line bg-paper py-16 sm:py-20">
+  <div class="site-container">
+    <div class="mx-auto max-w-3xl text-center">
+      <span class="eyebrow">{copy.compositionEyebrow}</span>
+      <h2 class="mt-4 text-[clamp(2rem,4.5vw,4rem)] font-[780] leading-[1.02] tracking-[-0.055em] text-ink">{copy.compositionTitle}</h2>
+      <p class="mx-auto mt-5 max-w-2xl text-base leading-7 text-muted sm:text-lg">{copy.compositionDescription}</p>
+    </div>
+
+    <ol class="mx-auto mt-10 grid max-w-5xl overflow-hidden rounded-[1.75rem] border border-line bg-white shadow-[0_28px_90px_rgba(4,61,49,.08)] md:grid-cols-4">
+      {copy.compositionSteps.map((step, index) => (
+        <li class:list={['relative min-h-48 p-6 sm:p-7', index > 0 && 'border-t border-line md:border-l md:border-t-0']}>
+          <div class="flex items-center justify-between gap-4">
+            <span class="grid size-8 place-items-center rounded-xl bg-mint/18 font-mono text-xs font-black text-emerald">0{index + 1}</span>
+            <span class="size-1.5 rounded-full bg-emerald shadow-[0_0_12px_rgba(7,150,103,.4)]"></span>
+          </div>
+          <p class="mt-10 font-mono text-[.65rem] font-black uppercase tracking-[.16em] text-emerald">{step.label}</p>
+          <h3 class="mt-2 text-lg font-[760] tracking-[-.025em] text-ink">{step.title}</h3>
+          <p class="mt-2 text-sm leading-6 text-muted">{step.body}</p>
+          {index < copy.compositionSteps.length - 1 && <span class="absolute -right-3 top-1/2 z-10 hidden size-6 -translate-y-1/2 place-items-center rounded-full border border-line bg-white text-xs text-emerald md:grid">→</span>}
+        </li>
+      ))}
+    </ol>
+
+    <div class="mx-auto mt-4 flex max-w-5xl items-center justify-between rounded-2xl border border-emerald/18 bg-mint/10 px-5 py-4 text-sm">
+      <span class="font-mono font-black text-emerald">{copy.compositionOutputLabel}</span>
+      <span class="font-bold text-ink">{copy.compositionOutput}</span>
+    </div>
   </div>
 </section>
 

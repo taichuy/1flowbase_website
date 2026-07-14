@@ -3,15 +3,28 @@ import type { Locale } from '../config';
 export const homeCopy = {
   en: {
     badge: 'Open source · Self-hosted · Observable',
-    heroTitle: 'One endpoint. Your own observable model workflow.',
+    heroTitle: 'Conversation is the moat.',
+    heroAccent: 'The native foundation for AI apps.',
     heroDescription:
-      'Turn multi-model chains into OpenAI- and Claude-compatible virtual models for Claude Code, Codex, OpenCode, Cline, Continue, and any SDK.',
+      'Compose models, tools, and workflows into reusable AI capabilities, then publish them through one observable, OpenAI- and Claude-compatible runtime.',
     primaryCta: 'Explore on GitHub',
     secondaryCta: 'Read the guides',
     worksWith: 'Works with the tools you already use',
     protocols: ['OpenAI Responses', 'Chat Completions', 'Claude Messages', 'Tool callbacks'],
     visualLabel: 'workflow / fusion-reviewer',
     visualStatus: 'published',
+    compositionEyebrow: 'A concrete composition',
+    compositionTitle: 'Turn text models into one multimodal virtual model.',
+    compositionDescription:
+      'Keep each model focused on what it does best. 1flowbase connects perception, reasoning, and synthesis behind one endpoint while preserving the full execution trace.',
+    compositionSteps: [
+      { label: 'Input', title: 'Text · image · files', body: 'Accept a multimodal request through one compatible endpoint.' },
+      { label: 'Reasoning', title: 'DeepSeek V4', body: 'Plan the task, reason over evidence, and decide which capability to call.' },
+      { label: 'Synthesis', title: 'GLM 5.2', body: 'Review intermediate results and assemble the final response.' },
+      { label: 'Perception', title: 'Vision + OCR tools', body: 'Convert visual and document context into evidence text models can use.' },
+    ],
+    compositionOutputLabel: 'PUBLISHED AS',
+    compositionOutput: 'One observable multimodal model endpoint',
     useCasesEyebrow: 'Compose, publish, observe',
     useCasesTitle: 'Build a better virtual model from the models you already trust.',
     useCasesDescription:
@@ -19,9 +32,9 @@ export const homeCopy = {
     useCases: [
       {
         number: '01',
-        title: 'Give coding models vision',
-        body: 'Keep a strong text model as planner, then mount Gemini, GPT vision, OCR, or any multimodal model as a callable visual tool.',
-        flow: 'coding model → vision tool → grounded answer',
+        title: 'Compose text models into multimodal capability',
+        body: 'Use DeepSeek V4 for reasoning, GLM 5.2 for synthesis, and visual tools for perception, then publish the whole workflow as one model.',
+        flow: 'DeepSeek V4 + GLM 5.2 + vision tools → multimodal model',
       },
       {
         number: '02',
@@ -73,20 +86,33 @@ export const homeCopy = {
       ['Can I use local or private model providers?', 'Yes. 1flowbase is designed for self-hosted deployments and provider-compatible endpoints, so credentials and traffic can remain in infrastructure you control.'],
       ['How is this different from coding an agent graph?', 'Agent frameworks help you write orchestration in code. 1flowbase gives that orchestration a visual editor, a reusable runtime, protocol publishing, and connected observability for local agent clients.'],
     ],
-    finalTitle: 'Build the model endpoint your agents actually need.',
-    finalDescription: 'Start with the fusion template, mount a vision model, or publish your own workflow from scratch.',
+    finalTitle: 'Make every conversation compound into your AI application moat.',
+    finalDescription: 'Start with the multimodal composition, adapt the workflow, and publish it as your own model endpoint.',
   },
   zh: {
     badge: '开源 · 自托管 · 全链路可观测',
-    heroTitle: '一个端点，运行你的可观测多模型工作流。',
+    heroTitle: '对话即是壁垒，',
+    heroAccent: 'AI 应用原生底座',
     heroDescription:
-      '把多模型链路发布成 OpenAI 与 Claude 兼容的虚拟模型，让 Claude Code、Codex、OpenCode、Cline、Continue 和各种 SDK 直接调用。',
+      '把模型、工具与工作流组合成可复用的 AI 能力，通过一个兼容 OpenAI 与 Claude、全链路可观测的运行时持续发布。',
     primaryCta: '前往 GitHub',
     secondaryCta: '阅读教程',
     worksWith: '兼容你已经在使用的工具',
     protocols: ['OpenAI Responses', 'Chat Completions', 'Claude Messages', '工具回调'],
     visualLabel: '工作流 / fusion-reviewer',
     visualStatus: '已发布',
+    compositionEyebrow: '一个可落地的组合样例',
+    compositionTitle: '让文本模型组合成一个多模态虚拟模型。',
+    compositionDescription:
+      '让每个模型只负责最擅长的部分。1flowbase 在一个端点背后连接感知、推理与综合，同时保留完整执行轨迹。',
+    compositionSteps: [
+      { label: '输入', title: '文本 · 图片 · 文件', body: '通过一个兼容端点接收多模态请求。' },
+      { label: '推理', title: 'DeepSeek V4', body: '规划任务、推理证据，并决定调用哪一种能力。' },
+      { label: '综合', title: 'GLM 5.2', body: '复核中间结果，综合生成最终回答。' },
+      { label: '感知', title: '视觉 + OCR 工具', body: '把图片与文档转换成文本模型可使用的证据。' },
+    ],
+    compositionOutputLabel: '发布结果',
+    compositionOutput: '一个可观测的多模态模型端点',
     useCasesEyebrow: '编排、发布、观测',
     useCasesTitle: '用你信任的模型，组合出更强的虚拟模型。',
     useCasesDescription:
@@ -94,9 +120,9 @@ export const homeCopy = {
     useCases: [
       {
         number: '01',
-        title: '让编程模型拥有视觉能力',
-        body: '保留强文本模型作为主规划器，再把 Gemini、GPT Vision、OCR 或任意多模态模型挂载成可调用的视觉工具。',
-        flow: '编程模型 → 视觉工具 → 有依据的回答',
+        title: '用文本模型组合出多模态能力',
+        body: '让 DeepSeek V4 负责推理、GLM 5.2 负责综合，再接入视觉工具负责感知，把整个工作流发布成一个模型。',
+        flow: 'DeepSeek V4 + GLM 5.2 + 视觉工具 → 多模态模型',
       },
       {
         number: '02',
@@ -148,8 +174,8 @@ export const homeCopy = {
       ['可以接入本地或私有模型供应商吗？', '可以。1flowbase 面向自托管与兼容协议设计，模型凭据和调用流量可以保留在你掌控的基础设施中。'],
       ['它和直接编写 Agent Graph 有什么区别？', 'Agent 框架帮助你用代码实现编排；1flowbase 在此基础上提供可视化编辑、可复用运行时、协议发布以及面向本地 Agent 客户端的全链路观测。'],
     ],
-    finalTitle: '构建你的 Agent 真正需要的模型端点。',
-    finalDescription: '从 Fusion 模板开始，挂载视觉模型，或者从零发布你自己的多模型工作流。',
+    finalTitle: '让每一次对话，都沉淀为 AI 应用的壁垒。',
+    finalDescription: '从多模态组合样例开始，调整工作流，并发布成属于你的模型端点。',
   },
 } satisfies Record<Locale, Record<string, unknown>>;
 

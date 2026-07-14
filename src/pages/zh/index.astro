@@ -5,7 +5,7 @@ import { SITE } from '../../config';
 import { homeCopy } from '../../data/copy';
 
 const copy = homeCopy.zh;
-const site = Astro.site ?? new URL('https://1flowbase-website.pages.dev');
+const site = Astro.site ?? new URL('https://1flowbase-website.taichu2021.workers.dev');
 const structuredData = [
   {
     '@context': 'https://schema.org',
@@ -27,6 +27,6 @@ const structuredData = [
 ];
 ---
 
-<BaseLayout lang="zh" title="可观测的工作流虚拟模型" description={copy.heroDescription} structuredData={structuredData}>
+<BaseLayout lang="zh" title="对话即是壁垒，AI 应用原生底座" description={copy.heroDescription} structuredData={structuredData}>
   <HomePage lang="zh" />
 </BaseLayout>

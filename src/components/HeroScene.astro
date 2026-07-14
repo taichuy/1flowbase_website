@@ -1,5 +1,6 @@
 ---
 import { SITE, type Locale } from '../config';
+import HeroUseCases from './HeroUseCases.astro';
 
 interface Props {
   lang: Locale;
@@ -7,9 +8,10 @@ interface Props {
   subTitle: string;
   primaryCta: string;
   secondaryCta: string;
+  useCases: string[];
 }
 
-const { lang, title, subTitle, primaryCta, secondaryCta } = Astro.props;
+const { lang, title, subTitle, primaryCta, secondaryCta, useCases } = Astro.props;
 ---
 
 <section class="hero-scene min-h-[calc(100svh-4.5rem)]" data-hero-scene>
@@ -24,7 +26,12 @@ const { lang, title, subTitle, primaryCta, secondaryCta } = Astro.props;
 
     <p class="hero-scene__subtitle">{subTitle}</p>
 
-    <div class="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+    <!-- Animated Use Cases Section -->
+    <div class="mt-9 w-full">
+      <HeroUseCases useCases={useCases} lang={lang} />
+    </div>
+
+    <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
       <a class="inline-flex min-w-44 items-center justify-center gap-2 rounded-full bg-night px-6 py-3.5 text-sm font-black text-white shadow-[0_18px_45px_rgba(4,61,49,.2)] transition hover:-translate-y-0.5 hover:bg-forest" href={SITE.repository} target="_blank" rel="noreferrer">
         {primaryCta}
         <span class="inline-flex items-center gap-1 border-l border-white/20 pl-2 text-white/75" data-github-stars>
@@ -34,31 +41,6 @@ const { lang, title, subTitle, primaryCta, secondaryCta } = Astro.props;
       <a class="inline-flex min-w-36 items-center justify-center gap-2 rounded-full border border-line bg-white/76 px-6 py-3.5 text-sm font-black text-ink shadow-sm backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-emerald/30 hover:text-emerald" href={SITE.wiki} target="_blank" rel="noreferrer">
         {secondaryCta}<span aria-hidden="true">→</span>
       </a>
-    </div>
-
-    <!-- Animated Use Cases Section -->
-    <div class="hero-scene__use-cases">
-      <h3 class="hero-scene__use-cases-title">{lang === 'zh' ? '应用场景' : 'Use Cases'}</h3>
-      <div class="hero-scene__use-cases-list">
-        <div class="hero-scene__use-case-row" data-use-case-row>
-          <span class="hero-scene__use-case-num">01</span>
-          <span class="hero-scene__use-case-text">
-            {lang === 'zh' ? 'LLM 文本模型增加看图能力，如 DeepSeek V4、GLM 5.2' : 'Add vision capabilities to LLM text models, such as DeepSeek V4 and GLM 5.2'}
-          </span>
-        </div>
-        <div class="hero-scene__use-case-row" data-use-case-row>
-          <span class="hero-scene__use-case-num">02</span>
-          <span class="hero-scene__use-case-text">
-            {lang === 'zh' ? '基于 AI 聊天记录进行每日复盘，路径优化，成本控制。' : 'Daily review, path optimization, and cost control based on AI chat logs.'}
-          </span>
-        </div>
-        <div class="hero-scene__use-case-row" data-use-case-row>
-          <span class="hero-scene__use-case-num">03</span>
-          <span class="hero-scene__use-case-text">
-            {lang === 'zh' ? 'MCP 网关，将任意 HTTP 转为 MCP，将第三方 MCP 整合发布专属 MCP' : 'MCP Gateway: convert any HTTP to MCP, integrate third-party MCPs to publish exclusive MCP'}
-          </span>
-        </div>
-      </div>
     </div>
 
   </div>
@@ -217,93 +199,6 @@ const { lang, title, subTitle, primaryCta, secondaryCta } = Astro.props;
     to { transform: translate3d(35px, -25px, 0) scale(1.08); }
   }
 
-  .hero-scene__use-cases {
-    margin-top: clamp(2.5rem, 5vh, 4rem);
-    width: 100%;
-    max-width: 780px;
-    margin-inline: auto;
-  }
-
-  .hero-scene__use-cases-title {
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: #087b58;
-    margin: 0 0 1.6rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-  }
-
-  .hero-scene__use-cases-title::before,
-  .hero-scene__use-cases-title::after {
-    content: '';
-    width: 1.5rem;
-    height: 1px;
-    background: currentColor;
-    opacity: 0.4;
-  }
-
-  .hero-scene__use-cases-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
-    width: 100%;
-    align-items: flex-start;
-  }
-
-  .hero-scene__use-case-row {
-    display: flex;
-    align-items: center;
-    gap: 1.2rem;
-    font-size: clamp(0.95rem, 1.6vw, 1.12rem);
-    font-weight: 550;
-    color: #526a63;
-    text-align: left;
-    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), color 0.5s, font-weight 0.5s;
-    opacity: 0;
-    transform: translateY(12px);
-    width: 100%;
-    padding: 0.45rem 0.8rem;
-    border-radius: 0.5rem;
-  }
-
-  .hero-scene__use-case-row.is-active {
-    color: #08231c;
-    transform: scale(1.03) translateX(8px) !important;
-  }
-
-  .hero-scene__use-case-row.is-active .hero-scene__use-case-num {
-    color: #079667;
-    background: rgba(100, 227, 177, 0.15);
-    border-color: rgba(7, 150, 103, 0.3);
-  }
-
-  .hero-scene__use-case-num {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.2rem;
-    height: 1.5rem;
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    font-weight: 800;
-    color: #6f857e;
-    background: rgba(220, 233, 228, 0.4);
-    border: 1px solid rgba(220, 233, 228, 0.8);
-    border-radius: 0.25rem;
-    transition: all 0.3s;
-    flex-shrink: 0;
-  }
-
-  .hero-scene__use-case-text {
-    margin: 0;
-    flex: 1;
-    line-height: 1.5;
-  }
-
   @media (max-width: 640px) {
     .hero-scene__title { font-size: clamp(2.5rem, 11.5vw, 3.6rem); line-height: .94; }
     .hero-scene__subtitle { font-size: clamp(1.2rem, 5.5vw, 1.6rem); line-height: 1.25; margin-top: 1rem; }
@@ -355,57 +250,7 @@ const { lang, title, subTitle, primaryCta, secondaryCta } = Astro.props;
       }
     }
 
-    // Use Case Rows Animation
-    const rows = scene.querySelectorAll('[data-use-case-row]');
-    if (rows.length > 0) {
-      if (reduceMotion) {
-        rows.forEach((row) => {
-          if (row instanceof HTMLElement) {
-            row.style.opacity = '1';
-            row.style.transform = 'translateY(0)';
-          }
-        });
-      } else {
-        // 1. Entrance animation (sequential fade-in and slide-up)
-        rows.forEach((row, index) => {
-          if (row instanceof HTMLElement) {
-            setTimeout(() => {
-              row.style.transition = 'opacity 0.8s ease, transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), color 0.5s, font-weight 0.5s';
-              row.style.opacity = '1';
-              row.style.transform = 'translateY(0)';
-            }, 800 + index * 200);
-          }
-        });
 
-        // 2. Infinite looping highlight scale animation
-        let activeIndex = 0;
-        let loopInterval: number | undefined;
-
-        const updateHighlight = () => {
-          rows.forEach((row, index) => {
-            if (row instanceof HTMLElement) {
-              if (index === activeIndex) {
-                row.classList.add('is-active');
-              } else {
-                row.classList.remove('is-active');
-              }
-            }
-          });
-          activeIndex = (activeIndex + 1) % rows.length;
-        };
-
-        // Start looping after the entrance animation finishes
-        setTimeout(() => {
-          updateHighlight(); // highlight the first one immediately
-          loopInterval = window.setInterval(updateHighlight, 3000);
-        }, 1600);
-
-        // Store cleanup on before-swap to prevent memory leaks/multiple intervals
-        document.addEventListener('astro:before-swap', () => {
-          if (loopInterval) clearInterval(loopInterval);
-        }, { once: true });
-      }
-    }
 
     if (reduceMotion) return;
     const canvas = scene.querySelector('canvas');

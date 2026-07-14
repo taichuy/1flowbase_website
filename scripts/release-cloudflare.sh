@@ -103,8 +103,13 @@ wrangler deploy
 CURRENT_STEP="checking production pages"
 log "Check production pages"
 for path in / /zh/; do
-  status="$(curl -sS --retry 4 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 30 -o /dev/null -w '%{http_code}' "${PRODUCTION_URL}${path}")" \
-    || fail "health check request failed: ${PRODUCTION_URL}${path}"
+  health_url="${PRODUCTION_URL}${path}"
+  if ! status="$(curl -sS --retry 2 --retry-all-errors --retry-delay 1 --connect-timeout 10 --max-time 30 -o /dev/null -w '%{http_code}' "$health_url" 2>/dev/null)"; then
+    printf '  Proxy health check failed; retrying without proxy: %s\n' "$health_url"
+    if ! status="$(env -u http_proxy -u https_proxy -u HTTP_PROXY -u HTTPS_PROXY -u ALL_PROXY curl -sS --retry 2 --retry-all-errors --retry-delay 1 --connect-timeout 10 --max-time 30 -o /dev/null -w '%{http_code}' "$health_url")"; then
+      fail "health check request failed: $health_url"
+    fi
+  fi
   [[ "$status" == "200" ]] || fail "health check failed: ${PRODUCTION_URL}${path} returned HTTP $status"
   printf '  HTTP %s  %s%s\n' "$status" "$PRODUCTION_URL" "$path"
 done

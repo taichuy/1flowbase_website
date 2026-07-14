@@ -3,16 +3,13 @@ import { SITE, type Locale } from '../config';
 
 interface Props {
   lang: Locale;
-  badge: string;
   title: string;
-  accent: string;
-  description: string;
+  subTitle: string;
   primaryCta: string;
   secondaryCta: string;
-  worksWith: string;
 }
 
-const { lang, badge, title, accent, description, primaryCta, secondaryCta, worksWith } = Astro.props;
+const { lang, title, subTitle, primaryCta, secondaryCta } = Astro.props;
 ---
 
 <section class="hero-scene min-h-[calc(100svh-4.5rem)]" data-hero-scene>
@@ -21,17 +18,11 @@ const { lang, badge, title, accent, description, primaryCta, secondaryCta, works
   <div class="hero-scene__glow hero-scene__glow--sky" aria-hidden="true"></div>
 
   <div class="site-container hero-scene__content">
-    <div class="inline-flex items-center gap-2 rounded-full border border-emerald/20 bg-white/70 px-3.5 py-2 text-xs font-black tracking-wide text-emerald shadow-sm backdrop-blur-xl">
-      <span class="size-1.5 rounded-full bg-emerald shadow-[0_0_14px_rgba(7,150,103,.55)]"></span>
-      {badge}
-    </div>
-
-    <h1 class:list={['hero-scene__title', lang === 'zh' && 'hero-scene__title--zh']}>
-      <span>{title}</span>
-      <span class="hero-scene__accent">{accent}</span>
+    <h1 class="hero-scene__title">
+      <span class="hero-scene__typing" data-typing-text={title}>{title}</span><span class="hero-scene__cursor" aria-hidden="true">|</span>
     </h1>
 
-    <p class="hero-scene__description">{description}</p>
+    <p class="hero-scene__subtitle">{subTitle}</p>
 
     <div class="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
       <a class="inline-flex min-w-44 items-center justify-center gap-2 rounded-full bg-night px-6 py-3.5 text-sm font-black text-white shadow-[0_18px_45px_rgba(4,61,49,.2)] transition hover:-translate-y-0.5 hover:bg-forest" href={SITE.repository} target="_blank" rel="noreferrer">
@@ -45,12 +36,31 @@ const { lang, badge, title, accent, description, primaryCta, secondaryCta, works
       </a>
     </div>
 
-    <div class="hero-scene__compatibility">
-      <p>{worksWith}</p>
-      <div>
-        <span>Claude Code</span><span>Codex</span><span>OpenCode</span><span>Cline</span><span>Continue</span>
+    <!-- Animated Use Cases Section -->
+    <div class="hero-scene__use-cases">
+      <h3 class="hero-scene__use-cases-title">{lang === 'zh' ? '应用场景' : 'Use Cases'}</h3>
+      <div class="hero-scene__use-cases-list">
+        <div class="hero-scene__use-case-row" data-use-case-row>
+          <span class="hero-scene__use-case-num">01</span>
+          <span class="hero-scene__use-case-text">
+            {lang === 'zh' ? 'LLM 文本模型增加看图能力，如 DeepSeek V4、GLM 5.2' : 'Add vision capabilities to LLM text models, such as DeepSeek V4 and GLM 5.2'}
+          </span>
+        </div>
+        <div class="hero-scene__use-case-row" data-use-case-row>
+          <span class="hero-scene__use-case-num">02</span>
+          <span class="hero-scene__use-case-text">
+            {lang === 'zh' ? '基于 AI 聊天记录进行每日复盘，路径优化，成本控制。' : 'Daily review, path optimization, and cost control based on AI chat logs.'}
+          </span>
+        </div>
+        <div class="hero-scene__use-case-row" data-use-case-row>
+          <span class="hero-scene__use-case-num">03</span>
+          <span class="hero-scene__use-case-text">
+            {lang === 'zh' ? 'MCP 网关，将任意 HTTP 转为 MCP，将第三方 MCP 整合发布专属 MCP' : 'MCP Gateway: convert any HTTP to MCP, integrate third-party MCPs to publish exclusive MCP'}
+          </span>
+        </div>
       </div>
     </div>
+
   </div>
 
   <div class="hero-scene__scroll" aria-hidden="true">
@@ -121,15 +131,18 @@ const { lang, badge, title, accent, description, primaryCta, secondaryCta, works
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-block: clamp(5rem, 11vh, 8rem);
+    padding-top: clamp(2rem, 5.5vh, 4rem);
+    padding-bottom: clamp(2.5rem, 6vh, 4.5rem);
     text-align: center;
     animation: hero-arrive 900ms cubic-bezier(.16, 1, .3, 1) both;
+    width: 100%;
   }
 
   .hero-scene__title {
-    display: flex;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     max-width: 1050px;
-    flex-direction: column;
     margin: clamp(1.5rem, 4vh, 2.5rem) 0 0;
     color: #08231c;
     font-size: clamp(3.1rem, 8.2vw, 7.8rem);
@@ -138,52 +151,39 @@ const { lang, badge, title, accent, description, primaryCta, secondaryCta, works
     line-height: .9;
   }
 
-  .hero-scene__title--zh > span {
-    white-space: nowrap;
-  }
-
-  .hero-scene__accent {
-    margin-top: .14em;
+  .hero-scene__typing {
     background: linear-gradient(120deg, #073d31 5%, #079667 55%, #65d7aa 100%);
     background-clip: text;
     color: transparent;
     filter: drop-shadow(0 8px 22px rgb(7 150 103 / 12%));
+    padding-right: 0.08em;
   }
 
-  .hero-scene__description {
-    max-width: 760px;
-    margin: clamp(1.5rem, 4vh, 2.5rem) auto 0;
-    color: #526a63;
-    font-size: clamp(1rem, 1.7vw, 1.25rem);
-    line-height: 1.75;
+  .hero-scene__cursor {
+    display: inline-block;
+    color: #079667;
+    margin-left: 0.05em;
+    animation: blink 1s step-end infinite;
   }
 
-  .hero-scene__compatibility {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: .8rem;
-    margin-top: clamp(2.4rem, 6vh, 4.4rem);
-    color: #526a63;
+  .hero-scene__subtitle {
+    max-width: 850px;
+    margin: clamp(1.2rem, 3vh, 2rem) auto 0;
+    color: #08231c;
+    font-size: clamp(1.4rem, 3.2vw, 2.5rem);
+    font-weight: 750;
+    letter-spacing: -0.04em;
+    line-height: 1.15;
   }
 
-  .hero-scene__compatibility p {
-    margin: 0;
-    font-size: .67rem;
-    font-weight: 850;
-    letter-spacing: .16em;
-    text-transform: uppercase;
+  @keyframes blink {
+    from, to { color: transparent }
+    50% { color: #079667 }
   }
 
-  .hero-scene__compatibility div {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: .55rem 1.35rem;
-    font-family: var(--font-mono);
-    font-size: .76rem;
-    font-weight: 700;
-  }
+
+
+
 
   .hero-scene__scroll {
     position: absolute;
@@ -217,15 +217,103 @@ const { lang, badge, title, accent, description, primaryCta, secondaryCta, works
     to { transform: translate3d(35px, -25px, 0) scale(1.08); }
   }
 
+  .hero-scene__use-cases {
+    margin-top: clamp(2.5rem, 5vh, 4rem);
+    width: 100%;
+    max-width: 780px;
+    margin-inline: auto;
+  }
+
+  .hero-scene__use-cases-title {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #087b58;
+    margin: 0 0 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .hero-scene__use-cases-title::before,
+  .hero-scene__use-cases-title::after {
+    content: '';
+    width: 1.5rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.4;
+  }
+
+  .hero-scene__use-cases-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .hero-scene__use-case-row {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    font-size: clamp(0.95rem, 1.6vw, 1.12rem);
+    font-weight: 550;
+    color: #526a63;
+    text-align: left;
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), color 0.5s, font-weight 0.5s;
+    opacity: 0;
+    transform: translateY(12px);
+    width: 100%;
+    padding: 0.45rem 0.8rem;
+    border-radius: 0.5rem;
+  }
+
+  .hero-scene__use-case-row.is-active {
+    color: #08231c;
+    transform: scale(1.03) translateX(8px) !important;
+  }
+
+  .hero-scene__use-case-row.is-active .hero-scene__use-case-num {
+    color: #079667;
+    background: rgba(100, 227, 177, 0.15);
+    border-color: rgba(7, 150, 103, 0.3);
+  }
+
+  .hero-scene__use-case-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2rem;
+    height: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #6f857e;
+    background: rgba(220, 233, 228, 0.4);
+    border: 1px solid rgba(220, 233, 228, 0.8);
+    border-radius: 0.25rem;
+    transition: all 0.3s;
+    flex-shrink: 0;
+  }
+
+  .hero-scene__use-case-text {
+    margin: 0;
+    flex: 1;
+    line-height: 1.5;
+  }
+
   @media (max-width: 640px) {
     .hero-scene__title { font-size: clamp(2.5rem, 11.5vw, 3.6rem); line-height: .94; }
-    .hero-scene__description { max-width: 34rem; font-size: 1rem; line-height: 1.7; }
+    .hero-scene__subtitle { font-size: clamp(1.2rem, 5.5vw, 1.6rem); line-height: 1.25; margin-top: 1rem; }
     .hero-scene__scroll { display: none; }
-    .hero-scene__content { padding-block: 4.5rem; }
+    .hero-scene__content { padding-top: 2rem; padding-bottom: 3.5rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .hero-scene__content, .hero-scene__glow { animation: none; }
+    .hero-scene__cursor { display: none; }
   }
 </style>
 
@@ -233,7 +321,93 @@ const { lang, badge, title, accent, description, primaryCta, secondaryCta, works
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   document.querySelectorAll('[data-hero-scene]').forEach((scene) => {
-    if (reduceMotion || !(scene instanceof HTMLElement)) return;
+    if (!(scene instanceof HTMLElement)) return;
+
+    // Typing animation
+    const typingSpan = scene.querySelector('[data-typing-text]');
+    const cursorSpan = scene.querySelector('.hero-scene__cursor');
+    if (typingSpan instanceof HTMLElement) {
+      const targetText = typingSpan.getAttribute('data-typing-text') || '';
+      if (reduceMotion) {
+        typingSpan.textContent = targetText;
+        if (cursorSpan instanceof HTMLElement) {
+          cursorSpan.style.display = 'none';
+        }
+      } else {
+        typingSpan.textContent = ''; // clear static text
+        let charIndex = 0;
+        const typeSpeed = 120; // ms per char
+        const type = () => {
+          if (charIndex < targetText.length) {
+            typingSpan.textContent += targetText.charAt(charIndex);
+            charIndex++;
+            setTimeout(type, typeSpeed + (Math.random() - 0.5) * 45);
+          } else {
+            if (cursorSpan instanceof HTMLElement) {
+              setTimeout(() => {
+                cursorSpan.style.transition = 'opacity 0.6s ease';
+                cursorSpan.style.opacity = '0';
+              }, 3000);
+            }
+          }
+        };
+        setTimeout(type, 300);
+      }
+    }
+
+    // Use Case Rows Animation
+    const rows = scene.querySelectorAll('[data-use-case-row]');
+    if (rows.length > 0) {
+      if (reduceMotion) {
+        rows.forEach((row) => {
+          if (row instanceof HTMLElement) {
+            row.style.opacity = '1';
+            row.style.transform = 'translateY(0)';
+          }
+        });
+      } else {
+        // 1. Entrance animation (sequential fade-in and slide-up)
+        rows.forEach((row, index) => {
+          if (row instanceof HTMLElement) {
+            setTimeout(() => {
+              row.style.transition = 'opacity 0.8s ease, transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), color 0.5s, font-weight 0.5s';
+              row.style.opacity = '1';
+              row.style.transform = 'translateY(0)';
+            }, 800 + index * 200);
+          }
+        });
+
+        // 2. Infinite looping highlight scale animation
+        let activeIndex = 0;
+        let loopInterval: number | undefined;
+
+        const updateHighlight = () => {
+          rows.forEach((row, index) => {
+            if (row instanceof HTMLElement) {
+              if (index === activeIndex) {
+                row.classList.add('is-active');
+              } else {
+                row.classList.remove('is-active');
+              }
+            }
+          });
+          activeIndex = (activeIndex + 1) % rows.length;
+        };
+
+        // Start looping after the entrance animation finishes
+        setTimeout(() => {
+          updateHighlight(); // highlight the first one immediately
+          loopInterval = window.setInterval(updateHighlight, 3000);
+        }, 1600);
+
+        // Store cleanup on before-swap to prevent memory leaks/multiple intervals
+        document.addEventListener('astro:before-swap', () => {
+          if (loopInterval) clearInterval(loopInterval);
+        }, { once: true });
+      }
+    }
+
+    if (reduceMotion) return;
     const canvas = scene.querySelector('canvas');
     if (!(canvas instanceof HTMLCanvasElement)) return;
     const context = canvas.getContext('2d');

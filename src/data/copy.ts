@@ -3,8 +3,8 @@ import type { Locale } from '../config';
 export const homeCopy = {
   en: {
     badge: 'Open source · Self-hosted · Observable',
-    heroTitle: 'Conversation is the moat.',
-    heroAccent: 'The native foundation for AI apps.',
+    heroTitle: '1flowbase',
+    heroSubTitle: 'Conversation is the moat. The native foundation for AI apps.',
     heroDescription:
       'Compose models, tools, and workflows into reusable AI capabilities, then publish them through one observable, OpenAI- and Claude-compatible runtime.',
     primaryCta: 'Explore on GitHub',
@@ -91,8 +91,8 @@ export const homeCopy = {
   },
   zh: {
     badge: '开源 · 自托管 · 全链路可观测',
-    heroTitle: '对话即是壁垒，',
-    heroAccent: 'AI 应用原生底座',
+    heroTitle: '1flowbase',
+    heroSubTitle: '对话即是壁垒，AI 应用原生底座',
     heroDescription:
       '把模型、工具与工作流组合成可复用的 AI 能力，通过一个兼容 OpenAI 与 Claude、全链路可观测的运行时持续发布。',
     primaryCta: '前往 GitHub',

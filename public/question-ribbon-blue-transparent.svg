@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="765" height="801" viewBox="0 0 765 801"
+     role="img" aria-labelledby="title description">
+  <title id="title">Blue question-mark ribbon</title>
+  <desc id="description">A blue folded ribbon shaped like a question mark on a transparent background.</desc>
+
+  <defs>
+    <linearGradient id="ribbon-blue" x1="0.4" y1="0.0" x2="0.4" y2="1.0">
+      <stop offset="0" stop-color="#38bdf8"/>
+      <stop offset="0.5" stop-color="#0ea5e9"/>
+      <stop offset="0.7" stop-color="#64e3b1"/>
+      <stop offset="0.88" stop-color="#079667"/>
+      <stop offset="1" stop-color="#043d31"/>
+    </linearGradient>
+
+    <linearGradient id="fold-blue" x1="0.1" y1="0.1" x2="0.9" y2="0.9">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="0.4" stop-color="#e0f2fe" stop-opacity="0.8"/>
+      <stop offset="0.8" stop-color="#7dd3fc" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#0ea5e9" stop-opacity="0.1"/>
+    </linearGradient>
+
+    <filter id="soft-edge" x="-5%" y="-5%" width="110%" height="110%">
+      <feGaussianBlur stdDeviation="0.45"/>
+    </filter>
+
+    <clipPath id="ribbon-clip">
+      <path fill-rule="evenodd" d="
+        M 411 75
+        C 555 74 676 137 716 226
+        C 761 326 701 421 610 460
+        C 573 476 526 481 484 489
+        C 463 493 455 509 463 532
+        C 472 558 493 589 502 616
+        C 528 694 484 755 406 757
+        C 322 759 267 707 269 623
+        C 270 561 292 509 328 470
+        C 244 466 173 432 130 375
+        C 82 312 96 242 137 190
+        C 194 118 296 76 411 75
+        Z
+
+        M 496 164
+        C 437 145 365 151 306 174
+        C 246 197 208 231 208 265
+        C 208 311 253 344 316 359
+        C 364 371 420 373 464 362
+        C 511 345 540 309 543 270
+        C 546 228 529 191 496 164
+        Z"/>
+    </clipPath>
+  </defs>
+
+  <!-- No background element: the canvas remains fully transparent. -->
+  <path fill="url(#ribbon-blue)" fill-rule="evenodd" filter="url(#soft-edge)" d="
+    M 411 75
+    C 555 74 676 137 716 226
+    C 761 326 701 421 610 460
+    C 573 476 526 481 484 489
+    C 463 493 455 509 463 532
+    C 472 558 493 589 502 616
+    C 528 694 484 755 406 757
+    C 322 759 267 707 269 623
+    C 270 561 292 509 328 470
+    C 244 466 173 432 130 375
+    C 82 312 96 242 137 190
+    C 194 118 296 76 411 75
+    Z
+
+    M 496 164
+    C 437 145 365 151 306 174
+    C 246 197 208 231 208 265
+    C 208 311 253 344 316 359
+    C 364 371 420 373 464 362
+    C 511 345 540 309 543 270
+    C 546 228 529 191 496 164
+    Z"/>
+
+  <path clip-path="url(#ribbon-clip)" fill="url(#fold-blue)" d="
+    M 208 265
+    C 209 310 252 344 316 359
+    C 365 371 421 373 464 362
+    C 443 382 399 398 367 420
+    C 348 433 337 444 328 470
+    C 274 464 221 441 191 405
+    C 164 372 165 321 181 287
+    C 190 268 200 263 208 265
+    Z"/>
+</svg>

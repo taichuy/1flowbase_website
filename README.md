@@ -7,7 +7,7 @@ Official website for [1flowbase](https://github.com/taichuy/1flowbase), built wi
 - Astro 7
 - Tailwind CSS 4
 - Markdown / MDX content collections
-- Static output for Cloudflare Pages
+- Static output for Cloudflare Workers Static Assets
 - English at `/` and Simplified Chinese at `/zh/`
 
 ## Local development
@@ -29,19 +29,18 @@ pnpm preview
 
 The production output is written to `dist/`.
 
-## Cloudflare Pages
+## Cloudflare Workers
 
-Use these project settings:
+The site deploys to the `1flowbase-website` Worker as static assets. Wrangler
+reads the deployment settings from `wrangler.jsonc`.
 
-| Setting | Value |
-| --- | --- |
-| Build command | `pnpm build` |
-| Build output directory | `dist` |
-| Node.js version | `24` |
+```bash
+pnpm deploy
+```
 
-Set `SITE_URL` to the production origin, for example `https://www.example.com`. It is used for canonical URLs, the sitemap, RSS, and structured data. Until configured, builds use `https://1flowbase-website.pages.dev`.
+Set `SITE_URL` to the production origin, for example `https://www.example.com`. It is used for canonical URLs, the sitemap, RSS, and structured data. Until configured, builds use `https://1flowbase-website.taichu2021.workers.dev`.
 
-No Astro server adapter, Worker, or runtime database is required for the current site.
+No Astro server adapter, Worker runtime code, or runtime database is required for the current site.
 
 ## Content
 

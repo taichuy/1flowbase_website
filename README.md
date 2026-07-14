@@ -40,8 +40,19 @@ pnpm deploy
 
 Every push to `main` is built and deployed automatically by GitHub Actions.
 The workflow reads the build and Worker settings from this repository and uses
-the `CLOUDFLARE_API_TOKEN` Actions Secret plus the
-`CLOUDFLARE_ACCOUNT_ID` Actions Variable for authentication.
+the `CLOUDFLARE_API_TOKEN` Actions Secret for authentication. The non-sensitive
+Cloudflare Account ID is written directly in `.github/workflows/deploy.yml`.
+
+To replace the Cloudflare token without using the CLI:
+
+1. Open the repository's **Settings → Secrets and variables → Actions** page.
+2. Edit `CLOUDFLARE_API_TOKEN`, paste the new token, and save it.
+3. Open **Actions → Deploy Website**, select **Run workflow**, and run `main`.
+
+The API token must remain an Actions Secret because this is a public
+repository. Deployment behavior, account ID, Wrangler version, Worker name,
+and static asset settings are all versioned in the workflow and
+`wrangler.jsonc`.
 
 To merge the remote `taichuy/dev` branch into `main` and push `main` in one
 command, which triggers the deployment workflow:

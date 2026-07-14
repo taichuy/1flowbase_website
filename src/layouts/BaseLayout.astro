@@ -24,7 +24,7 @@ const {
   structuredData,
 } = Astro.props;
 
-const pageTitle = title ? `${title} · ${SITE.name}` : `${SITE.name} · The native foundation for AI apps`;
+const pageTitle = title ? `${SITE.name} · ${title}` : `${SITE.name} · The native foundation for AI apps`;
 const site = Astro.site ?? new URL('https://1flowbase-website.taichu2021.workers.dev');
 const canonical = new URL(Astro.url.pathname, site);
 const englishPath = Astro.url.pathname.replace(/^\/zh(?=\/|$)/, '') || '/';

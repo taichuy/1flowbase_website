@@ -82,15 +82,17 @@ No Astro server adapter, Worker runtime code, or runtime database is required fo
 
 Blog posts live in `src/content/blog/`. Each post declares its language in frontmatter.
 
-The homepage showcase is sourced from the `1flowbase_website` Wiki repository. Pages are flat so they can be opened and edited in the GitHub Wiki UI:
+The `1flowbase_website` Wiki is the editable website directory and homepage showcase source. Its `Home` page manages blog and documentation links, including links to content hosted in the main `1flowbase` Wiki.
+
+The homepage carousel uses one readable Wiki page per language:
 
 ```text
-Website-Home-<Scene>.md       # English
-Website-Home-<Scene>-CN.md    # Chinese
-assets/home/<scene>/*         # repository-hosted screenshots
+Website-Home-Showcase.md       # English slides
+Website-Home-Showcase-CN.md    # Chinese slides
+assets/home/**/*               # repository-hosted screenshots
 ```
 
-`pnpm content:sync`, `pnpm dev`, `pnpm check`, and `pnpm build` clone the Wiki content into the ignored `.cache/1flowbase-website-wiki/` directory. A sibling clone at `../1flowbase_website.wiki` is preferred for local development; otherwise the public Wiki Git repository is used. The sync step parses each readable Wiki page into static homepage data, copies repository-hosted images into the deployment, and fails when a scene does not provide both English and Chinese pages.
+Each `## Slide title` must be followed by exactly one Markdown image. The website renders that image above its title and advances once per second. `pnpm content:sync`, `pnpm dev`, `pnpm check`, and `pnpm build` clone the Wiki content into the ignored `.cache/1flowbase-website-wiki/` directory. A sibling clone at `../1flowbase_website.wiki` is preferred for local development; otherwise the public Wiki Git repository is used. The sync step parses both language pages into static carousel data and copies repository-hosted images into the deployment.
 
 Wiki content updates are picked up by the scheduled deployment workflow within 30 minutes. The **Deploy Website** workflow can also be run manually for an immediate refresh.
 

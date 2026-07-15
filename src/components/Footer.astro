@@ -45,13 +45,13 @@ const copy = lang === 'zh'
       <ul class="mt-4 grid gap-3 text-sm text-muted">
         <li><a class="hover:text-emerald" href={localePath(lang, '/features/')}>{copy.features}</a></li>
         <li><a class="hover:text-emerald" href={localePath(lang, '/use-cases/')}>{copy.useCases}</a></li>
-        <li><a class="hover:text-emerald" href={localePath(lang, '/blog/')}>{copy.blog}</a></li>
+        <li><a class="hover:text-emerald" href={SITE.blogDirectory}>{copy.blog}</a></li>
       </ul>
     </div>
     <div>
       <h2 class="text-sm font-black text-ink">{copy.resources}</h2>
       <ul class="mt-4 grid gap-3 text-sm text-muted">
-        <li><a class="hover:text-emerald" href={SITE.wiki}>{copy.docs}</a></li>
+        <li><a class="hover:text-emerald" href={SITE.docsDirectory}>{copy.docs}</a></li>
         <li><a class="hover:text-emerald" href={SITE.issues}>{copy.issues}</a></li>
         <li><a class="hover:text-emerald" href={SITE.websiteRepository}>{copy.source}</a></li>
       </ul>

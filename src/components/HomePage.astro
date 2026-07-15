@@ -14,8 +14,7 @@ interface Props {
 
 const { lang } = Astro.props;
 const copy = homeCopy[lang];
-const showcases = (await getCollection('homeShowcases', ({ data }) => data.lang === lang && data.enabled))
-  .sort((left, right) => left.data.order - right.data.order || left.data.scene.localeCompare(right.data.scene));
+const showcase = (await getCollection('homeShowcases', ({ data }) => data.lang === lang))[0];
 const installCommand = 'curl -fsSL https://raw.githubusercontent.com/taichuy/1flowbase/main/scripts/shell/docker-deploy.sh | sh';
 ---
 
@@ -34,7 +33,7 @@ const installCommand = 'curl -fsSL https://raw.githubusercontent.com/taichuy/1fl
   </div>
 </section>
 
-<HomeShowcase lang={lang} entries={showcases} />
+<HomeShowcase lang={lang} slides={showcase?.data.slides ?? []} />
 
 <section id="use-cases" class="section-shell">
   <div class="site-container">

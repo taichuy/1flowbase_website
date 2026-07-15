@@ -1,5 +1,5 @@
 import { execFile } from 'node:child_process';
-import { access, cp, mkdir, mkdtemp, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises';
+import { access, cp, mkdir, mkdtemp, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
@@ -11,7 +11,10 @@ const cachedWiki = path.join(cacheRoot, '1flowbase-website-wiki');
 const generatedAssets = path.join(repositoryRoot, 'public', '.wiki-content');
 const siblingWiki = path.resolve(repositoryRoot, '../1flowbase_website.wiki');
 const remoteWiki = 'https://github.com/taichuy/1flowbase_website.wiki.git';
-const homepagePattern = /^Website-Home-.+\.md$/;
+const showcasePages = [
+  { fileName: 'Website-Home-Showcase.md', lang: 'en' },
+  { fileName: 'Website-Home-Showcase-CN.md', lang: 'zh' },
+];
 
 const exists = async (target) => {
   try {
@@ -22,127 +25,53 @@ const exists = async (target) => {
   }
 };
 
-const parseScalar = (value) => {
-  const trimmed = value.trim();
-  if (trimmed === 'true') return true;
-  if (trimmed === 'false') return false;
-  if (/^\d+$/.test(trimmed)) return Number(trimmed);
-  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
-    return trimmed.slice(1, -1);
+const readShowcaseSections = (source, fileName) => {
+  if (!/^#\s+.+$/m.test(source)) throw new Error(`${fileName} must contain one level-one page title`);
+
+  const headings = Array.from(source.matchAll(/^##\s+(.+?)\s*$/gm));
+  if (headings.length === 0) throw new Error(`${fileName} must contain at least one level-two slide title`);
+
+  return headings.map((heading, index) => {
+    const sectionStart = (heading.index ?? 0) + heading[0].length;
+    const sectionEnd = headings[index + 1]?.index ?? source.length;
+    const section = source.slice(sectionStart, sectionEnd);
+    const images = Array.from(section.matchAll(/!\[([^\]]+)\]\((\S+?)(?:\s+"[^"]*")?\)/g));
+    if (images.length !== 1) {
+      throw new Error(`${fileName} slide "${heading[1].trim()}" must contain exactly one image`);
+    }
+    return {
+      title: heading[1].trim(),
+      alt: images[0][1].trim(),
+      source: images[0][2].trim(),
+    };
+  });
+};
+
+const toPublishedImage = async (slide, wikiRoot) => {
+  if (/^https:\/\//.test(slide.source)) {
+    return { title: slide.title, src: slide.source, alt: slide.alt };
   }
-  return trimmed;
-};
+  if (/^http:\/\//.test(slide.source)) throw new Error(`Showcase images must use HTTPS: ${slide.source}`);
 
-const parseFrontmatter = (source, fileName) => {
-  const match = source.match(/^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/);
-  if (!match) throw new Error(`${fileName} must start with a YAML frontmatter block`);
-
-  const data = {};
-  for (const line of match[1].split('\n')) {
-    const separator = line.indexOf(':');
-    if (separator < 1) continue;
-    const key = line.slice(0, separator).trim();
-    const value = line.slice(separator + 1);
-    data[key] = parseScalar(value);
-  }
-  return { data, body: match[2].trim() };
-};
-
-const readSection = (body, heading) => {
-  const escapedHeading = heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const headingMatch = body.match(new RegExp(`^##\\s+${escapedHeading}\\s*$`, 'm'));
-  if (!headingMatch || headingMatch.index === undefined) return '';
-
-  const sectionStart = headingMatch.index + headingMatch[0].length;
-  const remainingBody = body.slice(sectionStart);
-  const nextHeading = remainingBody.search(/^##\\s+/m);
-  return (nextHeading >= 0 ? remainingBody.slice(0, nextHeading) : remainingBody).trim();
-};
-
-const parseHomepageBody = (body, fileName) => {
-  const titleMatch = body.match(/^#\s+(.+)$/m);
-  if (!titleMatch) throw new Error(`${fileName} must contain one level-one title`);
-
-  const titleEnd = titleMatch.index + titleMatch[0].length;
-  const firstSection = body.slice(titleEnd).search(/^##\s+/m);
-  const descriptionSource = firstSection >= 0
-    ? body.slice(titleEnd, titleEnd + firstSection)
-    : body.slice(titleEnd);
-  const description = descriptionSource
-    .split(/\n\s*\n/)
-    .map((paragraph) => paragraph.replace(/\s+/g, ' ').trim())
-    .filter(Boolean)
-    .join(' ');
-  if (!description) throw new Error(`${fileName} must contain a description below its title`);
-
-  const highlights = Array.from(readSection(body, 'Highlights').matchAll(/^-\s+(.+)$/gm))
-    .map((match) => match[1].trim());
-  if (highlights.length === 0) throw new Error(`${fileName} must contain a Highlights list`);
-
-  const images = Array.from(readSection(body, 'Gallery').matchAll(/!\[([^\]]+)\]\((\S+?)(?:\s+"([^"]+)")?\)/g))
-    .map((match) => ({ alt: match[1].trim(), source: match[2].trim(), caption: match[3]?.trim() ?? match[1].trim() }));
-  if (images.length === 0) throw new Error(`${fileName} must contain at least one Gallery image`);
-
-  return { title: titleMatch[1].trim(), description, highlights, images };
-};
-
-const toPublishedImage = async (image, wikiRoot) => {
-  if (/^https?:\/\//.test(image.source)) {
-    return { src: image.source, alt: image.alt, caption: image.caption };
-  }
-
-  const normalized = path.posix.normalize(image.source.replace(/^\.\//, '').replace(/^\//, ''));
+  const normalized = path.posix.normalize(slide.source.replace(/^\.\//, '').replace(/^\//, ''));
   if (normalized.startsWith('../') || !normalized.startsWith('assets/')) {
-    throw new Error(`Local Wiki images must stay under assets/: ${image.source}`);
+    throw new Error(`Local Wiki images must stay under assets/: ${slide.source}`);
   }
   if (!await exists(path.join(wikiRoot, normalized))) {
     throw new Error(`Wiki image does not exist: ${normalized}`);
   }
-  return { src: `/.wiki-content/${normalized}`, alt: image.alt, caption: image.caption };
+  return { title: slide.title, src: `/.wiki-content/${normalized}`, alt: slide.alt };
 };
 
-const parseHomepagePage = async (wikiRoot, fileName) => {
-  const source = await readFile(path.join(wikiRoot, fileName), 'utf8');
-  const { data, body } = parseFrontmatter(source, fileName);
-  const parsedBody = parseHomepageBody(body, fileName);
-  const requiredFields = ['scene', 'lang', 'order', 'eyebrow'];
-  for (const field of requiredFields) {
-    if (data[field] === undefined || data[field] === '') throw new Error(`${fileName} is missing frontmatter field: ${field}`);
-  }
-  if (data.lang !== 'en' && data.lang !== 'zh') throw new Error(`${fileName} lang must be en or zh`);
-  const shouldBeChinese = fileName.endsWith('-CN.md');
-  if ((data.lang === 'zh') !== shouldBeChinese) throw new Error(`${fileName} suffix and lang do not match`);
+const parseShowcasePage = async (wikiRoot, { fileName, lang }) => {
+  const filePath = path.join(wikiRoot, fileName);
+  if (!await exists(filePath)) throw new Error(`Website Wiki is missing required page: ${fileName}`);
 
-  const images = [];
-  for (const image of parsedBody.images) images.push(await toPublishedImage(image, wikiRoot));
-
-  return {
-    scene: data.scene,
-    lang: data.lang,
-    order: data.order,
-    eyebrow: data.eyebrow,
-    enabled: data.enabled ?? true,
-    detailUrl: data.detailUrl || undefined,
-    detailLabel: data.detailLabel || undefined,
-    ...parsedBody,
-    images,
-  };
-};
-
-const validateLocalePairs = (pages) => {
-  const scenes = new Map();
-  for (const page of pages) {
-    const languages = scenes.get(page.scene) ?? new Set();
-    if (languages.has(page.lang)) throw new Error(`Duplicate ${page.lang} homepage page for scene: ${page.scene}`);
-    languages.add(page.lang);
-    scenes.set(page.scene, languages);
-  }
-  const incompleteScenes = Array.from(scenes.entries())
-    .filter(([, languages]) => !languages.has('en') || !languages.has('zh'))
-    .map(([scene]) => scene);
-  if (incompleteScenes.length > 0) {
-    throw new Error(`Wiki homepage scenes must provide English and Chinese pages: ${incompleteScenes.join(', ')}`);
-  }
+  const source = await readFile(filePath, 'utf8');
+  const parsedSlides = readShowcaseSections(source, fileName);
+  const slides = [];
+  for (const slide of parsedSlides) slides.push(await toPublishedImage(slide, wikiRoot));
+  return { lang, slides };
 };
 
 await mkdir(cacheRoot, { recursive: true });
@@ -158,17 +87,13 @@ try {
     maxBuffer: 10 * 1024 * 1024,
   });
 
-  const fileNames = (await readdir(temporaryWiki)).filter((name) => homepagePattern.test(name)).sort();
-  if (fileNames.length === 0) throw new Error('Website Wiki contains no Website-Home-*.md pages');
-
-  const pages = [];
-  for (const fileName of fileNames) pages.push(await parseHomepagePage(temporaryWiki, fileName));
-  validateLocalePairs(pages);
+  const showcases = [];
+  for (const page of showcasePages) showcases.push(await parseShowcasePage(temporaryWiki, page));
 
   const generatedHome = path.join(temporaryWiki, '.website-generated', 'home');
   await mkdir(generatedHome, { recursive: true });
-  for (const page of pages) {
-    await writeFile(path.join(generatedHome, `${page.scene}-${page.lang}.json`), `${JSON.stringify(page, null, 2)}\n`);
+  for (const showcase of showcases) {
+    await writeFile(path.join(generatedHome, `showcase-${showcase.lang}.json`), `${JSON.stringify(showcase, null, 2)}\n`);
   }
 
   const wikiAssets = path.join(temporaryWiki, 'assets');
@@ -181,7 +106,7 @@ try {
   await rename(temporaryAssets, generatedAssets);
 
   const sourceLabel = source === remoteWiki ? remoteWiki : path.relative(repositoryRoot, source);
-  console.log(`[website-content] synced ${pages.length} homepage pages from ${sourceLabel}`);
+  console.log(`[website-content] synced ${showcases.reduce((count, item) => count + item.slides.length, 0)} showcase slides from ${sourceLabel}`);
 } finally {
   await rm(temporaryRoot, { recursive: true, force: true });
 }

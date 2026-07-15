@@ -26,26 +26,17 @@ const homeShowcases = defineCollection({
     pattern: '*.json',
   }),
   schema: z.object({
-      scene: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
-      lang: z.enum(['en', 'zh']),
-      order: z.number().int().nonnegative(),
-      eyebrow: z.string(),
-      title: z.string(),
-      description: z.string(),
-      highlights: z.array(z.string()).max(4).default([]),
-      detailUrl: z.url().optional(),
-      detailLabel: z.string().optional(),
-      enabled: z.boolean().default(true),
-      images: z
-        .array(
-          z.object({
-            src: z.string().min(1),
-            alt: z.string(),
-            caption: z.string().optional(),
-          }),
-        )
-        .min(1),
-    }),
+    lang: z.enum(['en', 'zh']),
+    slides: z
+      .array(
+        z.object({
+          title: z.string().min(1),
+          src: z.string().min(1),
+          alt: z.string().min(1),
+        }),
+      )
+      .min(1),
+  }),
 });
 
 export const collections = { blog, homeShowcases };

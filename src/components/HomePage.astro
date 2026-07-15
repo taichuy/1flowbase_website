@@ -1,10 +1,12 @@
 ---
 import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
 import executionLogs from '../assets/product/execution-logs.jpeg';
 import workflowEditor from '../assets/product/workflow-editor.png';
 import { SITE, type Locale, localePath } from '../config';
 import { homeCopy } from '../data/copy';
 import HeroScene from './HeroScene.astro';
+import HomeShowcase from './HomeShowcase.astro';
 
 interface Props {
   lang: Locale;
@@ -12,6 +14,8 @@ interface Props {
 
 const { lang } = Astro.props;
 const copy = homeCopy[lang];
+const showcases = (await getCollection('homeShowcases', ({ data }) => data.lang === lang && data.enabled))
+  .sort((left, right) => left.data.order - right.data.order || left.data.scene.localeCompare(right.data.scene));
 const installCommand = 'curl -fsSL https://raw.githubusercontent.com/taichuy/1flowbase/main/scripts/shell/docker-deploy.sh | sh';
 ---
 
@@ -30,35 +34,7 @@ const installCommand = 'curl -fsSL https://raw.githubusercontent.com/taichuy/1fl
   </div>
 </section>
 
-<section id="composition" class="border-b border-line bg-paper py-16 sm:py-20">
-  <div class="site-container">
-    <div class="mx-auto max-w-3xl text-center">
-      <span class="eyebrow">{copy.compositionEyebrow}</span>
-      <h2 class="mt-4 text-[clamp(2rem,4.5vw,4rem)] font-[780] leading-[1.02] tracking-[-0.055em] text-ink">{copy.compositionTitle}</h2>
-      <p class="mx-auto mt-5 max-w-2xl text-base leading-7 text-muted sm:text-lg">{copy.compositionDescription}</p>
-    </div>
-
-    <ol class="mx-auto mt-10 grid max-w-5xl overflow-hidden rounded-[1.75rem] border border-line bg-white shadow-[0_28px_90px_rgba(4,61,49,.08)] md:grid-cols-4">
-      {copy.compositionSteps.map((step, index) => (
-        <li class:list={['relative min-h-48 p-6 sm:p-7', index > 0 && 'border-t border-line md:border-l md:border-t-0']}>
-          <div class="flex items-center justify-between gap-4">
-            <span class="grid size-8 place-items-center rounded-xl bg-mint/18 font-mono text-xs font-black text-emerald">0{index + 1}</span>
-            <span class="size-1.5 rounded-full bg-emerald shadow-[0_0_12px_rgba(7,150,103,.4)]"></span>
-          </div>
-          <p class="mt-10 font-mono text-[.65rem] font-black uppercase tracking-[.16em] text-emerald">{step.label}</p>
-          <h3 class="mt-2 text-lg font-[760] tracking-[-.025em] text-ink">{step.title}</h3>
-          <p class="mt-2 text-sm leading-6 text-muted">{step.body}</p>
-          {index < copy.compositionSteps.length - 1 && <span class="absolute -right-3 top-1/2 z-10 hidden size-6 -translate-y-1/2 place-items-center rounded-full border border-line bg-white text-xs text-emerald md:grid">→</span>}
-        </li>
-      ))}
-    </ol>
-
-    <div class="mx-auto mt-4 flex max-w-5xl items-center justify-between rounded-2xl border border-emerald/18 bg-mint/10 px-5 py-4 text-sm">
-      <span class="font-mono font-black text-emerald">{copy.compositionOutputLabel}</span>
-      <span class="font-bold text-ink">{copy.compositionOutput}</span>
-    </div>
-  </div>
-</section>
+<HomeShowcase lang={lang} entries={showcases} />
 
 <section id="use-cases" class="section-shell">
   <div class="site-container">

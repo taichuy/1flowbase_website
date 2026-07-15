@@ -1,0 +1,602 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import type { Locale } from '../config';
+
+interface Props {
+  lang: Locale;
+  entries: CollectionEntry<'homeShowcases'>[];
+}
+
+const { lang, entries } = Astro.props;
+const labels = lang === 'zh'
+  ? { previous: '上一个场景', next: '下一个场景', scenes: '场景选择', images: '图片选择' }
+  : { previous: 'Previous scene', next: 'Next scene', scenes: 'Choose a scene', images: 'Choose an image' };
+---
+
+{entries.length > 0 && (
+  <section id="showcase" class="home-showcase-section border-b border-line" data-home-showcase>
+    <div class="site-container">
+      <div class="home-showcase-shell">
+        <div class="home-showcase-copy">
+          <div class="home-showcase-copy-stack">
+            {entries.map((entry, index) => (
+              <article
+                class="home-showcase-copy-item"
+                data-showcase-copy
+                data-active={index === 0 ? 'true' : 'false'}
+                aria-hidden={index === 0 ? 'false' : 'true'}
+                inert={index !== 0}
+              >
+                <span class="eyebrow">{entry.data.eyebrow}</span>
+                <h2>{entry.data.title}</h2>
+                <p class="home-showcase-description">{entry.data.description}</p>
+                {entry.data.highlights.length > 0 && (
+                  <ul>
+                    {entry.data.highlights.map((highlight) => (
+                      <li><span aria-hidden="true">✓</span>{highlight}</li>
+                    ))}
+                  </ul>
+                )}
+                {entry.data.detailUrl && entry.data.detailLabel && (
+                  <a href={entry.data.detailUrl} target="_blank" rel="noreferrer">
+                    {entry.data.detailLabel}<span aria-hidden="true">↗</span>
+                  </a>
+                )}
+              </article>
+            ))}
+          </div>
+
+          <div class="home-showcase-scene-nav" role="group" aria-label={labels.scenes}>
+            <button type="button" data-showcase-previous aria-label={labels.previous}>←</button>
+            <div class="home-showcase-scene-dots">
+              {entries.map((entry, index) => (
+                <button
+                  type="button"
+                  data-showcase-scene-target={index}
+                  data-active={index === 0 ? 'true' : 'false'}
+                  aria-label={entry.data.title}
+                  aria-current={index === 0 ? 'true' : 'false'}
+                >
+                  {String(index + 1).padStart(2, '0')}
+                </button>
+              ))}
+            </div>
+            <button type="button" data-showcase-next aria-label={labels.next}>→</button>
+          </div>
+        </div>
+
+        <div class="home-showcase-media">
+          <div class="home-showcase-media-stage">
+            {entries.map((entry, sceneIndex) => (
+              <div
+                class="home-showcase-gallery"
+                data-showcase-gallery
+                data-active={sceneIndex === 0 ? 'true' : 'false'}
+                aria-hidden={sceneIndex === 0 ? 'false' : 'true'}
+                inert={sceneIndex !== 0}
+              >
+                <div class="home-showcase-image-stack">
+                  {entry.data.images.map((image, imageIndex) => (
+                    <figure
+                      data-showcase-image
+                      data-active={imageIndex === 0 ? 'true' : 'false'}
+                      aria-hidden={imageIndex === 0 ? 'false' : 'true'}
+                    >
+                      <Image
+                        src={image.src}
+                        alt={image.alt}
+                        widths={[640, 960, 1280]}
+                        sizes="(max-width: 960px) calc(100vw - 2rem), 58vw"
+                        loading={sceneIndex === 0 && imageIndex === 0 ? 'eager' : 'lazy'}
+                        decoding="async"
+                      />
+                      {image.caption && <figcaption>{image.caption}</figcaption>}
+                    </figure>
+                  ))}
+                </div>
+                {entry.data.images.length > 1 && (
+                  <div class="home-showcase-image-nav" role="group" aria-label={labels.images}>
+                    {entry.data.images.map((image, imageIndex) => (
+                      <button
+                        type="button"
+                        data-showcase-image-target={imageIndex}
+                        data-active={imageIndex === 0 ? 'true' : 'false'}
+                        aria-label={image.caption ?? image.alt}
+                        aria-current={imageIndex === 0 ? 'true' : 'false'}
+                      ></button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+)}
+
+<script>
+  const setupHomeShowcase = (root: Element) => {
+    if (!(root instanceof HTMLElement) || root.dataset.ready === 'true') return;
+    root.dataset.ready = 'true';
+
+    const copies = Array.from(root.querySelectorAll('[data-showcase-copy]'));
+    const galleries = Array.from(root.querySelectorAll('[data-showcase-gallery]'));
+    const sceneButtons = Array.from(root.querySelectorAll('[data-showcase-scene-target]'));
+    const previousButton = root.querySelector('[data-showcase-previous]');
+    const nextButton = root.querySelector('[data-showcase-next]');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let sceneIndex = 0;
+    let imageIndex = 0;
+    let timer: number | undefined;
+    let paused = false;
+
+    const setActiveState = (element: Element, active: boolean) => {
+      if (!(element instanceof HTMLElement)) return;
+      element.dataset.active = active ? 'true' : 'false';
+      element.setAttribute('aria-hidden', active ? 'false' : 'true');
+      element.inert = !active;
+    };
+
+    const render = () => {
+      copies.forEach((copy, index) => setActiveState(copy, index === sceneIndex));
+      galleries.forEach((gallery, index) => setActiveState(gallery, index === sceneIndex));
+      sceneButtons.forEach((button, index) => {
+        if (!(button instanceof HTMLButtonElement)) return;
+        const active = index === sceneIndex;
+        button.dataset.active = active ? 'true' : 'false';
+        button.setAttribute('aria-current', active ? 'true' : 'false');
+      });
+
+      const activeGallery = galleries[sceneIndex];
+      if (!(activeGallery instanceof HTMLElement)) return;
+      const images = Array.from(activeGallery.querySelectorAll('[data-showcase-image]'));
+      const imageButtons = Array.from(activeGallery.querySelectorAll('[data-showcase-image-target]'));
+      images.forEach((image, index) => setActiveState(image, index === imageIndex));
+      imageButtons.forEach((button, index) => {
+        if (!(button instanceof HTMLButtonElement)) return;
+        const active = index === imageIndex;
+        button.dataset.active = active ? 'true' : 'false';
+        button.setAttribute('aria-current', active ? 'true' : 'false');
+      });
+    };
+
+    const clearTimer = () => {
+      if (timer !== undefined) window.clearTimeout(timer);
+      timer = undefined;
+    };
+
+    const schedule = () => {
+      clearTimer();
+      if (reducedMotion || paused || document.hidden || galleries.length === 0) return;
+      timer = window.setTimeout(() => {
+        const activeGallery = galleries[sceneIndex];
+        const imageCount = activeGallery?.querySelectorAll('[data-showcase-image]').length ?? 0;
+        if (imageIndex + 1 < imageCount) {
+          imageIndex += 1;
+        } else {
+          sceneIndex = (sceneIndex + 1) % galleries.length;
+          imageIndex = 0;
+        }
+        render();
+        schedule();
+      }, 4200);
+    };
+
+    const selectScene = (nextScene: number) => {
+      sceneIndex = (nextScene + galleries.length) % galleries.length;
+      imageIndex = 0;
+      render();
+      schedule();
+    };
+
+    sceneButtons.forEach((button, index) => {
+      button.addEventListener('click', () => selectScene(index));
+    });
+    previousButton?.addEventListener('click', () => selectScene(sceneIndex - 1));
+    nextButton?.addEventListener('click', () => selectScene(sceneIndex + 1));
+
+    galleries.forEach((gallery, galleryIndex) => {
+      gallery.querySelectorAll('[data-showcase-image-target]').forEach((button, nextImageIndex) => {
+        button.addEventListener('click', () => {
+          sceneIndex = galleryIndex;
+          imageIndex = nextImageIndex;
+          render();
+          schedule();
+        });
+      });
+    });
+
+    root.addEventListener('pointerenter', () => {
+      paused = true;
+      clearTimer();
+    });
+    root.addEventListener('pointerleave', () => {
+      paused = false;
+      schedule();
+    });
+    root.addEventListener('focusin', () => {
+      paused = true;
+      clearTimer();
+    });
+    root.addEventListener('focusout', (event) => {
+      if (event.relatedTarget instanceof Node && root.contains(event.relatedTarget)) return;
+      paused = false;
+      schedule();
+    });
+
+    const handleVisibility = () => document.hidden ? clearTimer() : schedule();
+    document.addEventListener('visibilitychange', handleVisibility);
+    document.addEventListener('astro:before-swap', () => {
+      clearTimer();
+      document.removeEventListener('visibilitychange', handleVisibility);
+    }, { once: true });
+
+    render();
+    schedule();
+  };
+
+  document.querySelectorAll('[data-home-showcase]').forEach(setupHomeShowcase);
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll('[data-home-showcase]').forEach(setupHomeShowcase);
+  });
+</script>
+
+<style>
+  .home-showcase-section {
+    padding-block: clamp(4rem, 8vw, 7rem);
+    background:
+      radial-gradient(circle at 90% 10%, rgb(104 200 255 / 14%), transparent 28rem),
+      radial-gradient(circle at 5% 92%, rgb(100 227 177 / 13%), transparent 28rem),
+      #f7fbf9;
+  }
+
+  .home-showcase-shell {
+    display: grid;
+    overflow: hidden;
+    border: 1px solid #dce9e4;
+    border-radius: 2rem;
+    background: rgb(255 255 255 / 88%);
+    box-shadow: 0 32px 100px rgb(4 61 49 / 10%);
+  }
+
+  .home-showcase-copy {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: clamp(1.75rem, 4vw, 3.5rem);
+  }
+
+  .home-showcase-copy-stack {
+    display: grid;
+  }
+
+  .home-showcase-copy-item {
+    grid-area: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(0.75rem);
+    transition: opacity 320ms ease, transform 320ms ease, visibility 320ms;
+  }
+
+  .home-showcase-copy-item[data-active='true'] {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .home-showcase-copy-item h2 {
+    max-width: 11ch;
+    margin: 1.25rem 0 0;
+    color: #08231c;
+    font-size: clamp(2.2rem, 4.8vw, 4.7rem);
+    font-weight: 770;
+    letter-spacing: -0.06em;
+    line-height: 0.98;
+  }
+
+  .home-showcase-description {
+    max-width: 35rem;
+    margin: 1.5rem 0 0;
+    color: #526a63;
+    font-size: clamp(1rem, 1.5vw, 1.18rem);
+    line-height: 1.8;
+  }
+
+  .home-showcase-copy-item ul {
+    display: grid;
+    gap: 0.7rem;
+    margin: 1.6rem 0 0;
+    padding: 0;
+    color: #314a43;
+    font-size: 0.9rem;
+    list-style: none;
+  }
+
+  .home-showcase-copy-item li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+
+  .home-showcase-copy-item li span {
+    display: grid;
+    width: 1.35rem;
+    height: 1.35rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 999px;
+    background: rgb(100 227 177 / 22%);
+    color: #087b58;
+    font-size: 0.68rem;
+    font-weight: 900;
+  }
+
+  .home-showcase-copy-item > a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: 1.75rem;
+    color: #087b58;
+    font-size: 0.9rem;
+    font-weight: 850;
+    text-decoration: none;
+  }
+
+  .home-showcase-copy-item > a:hover {
+    color: #043d31;
+  }
+
+  .home-showcase-scene-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-top: 2.5rem;
+  }
+
+  .home-showcase-scene-nav > button {
+    display: grid;
+    width: 2.55rem;
+    height: 2.55rem;
+    place-items: center;
+    border: 1px solid #dce9e4;
+    border-radius: 999px;
+    background: #fff;
+    color: #087b58;
+    cursor: pointer;
+    font-weight: 900;
+  }
+
+  .home-showcase-scene-nav > button:hover {
+    border-color: rgb(7 150 103 / 35%);
+  }
+
+  .home-showcase-scene-dots {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .home-showcase-scene-dots button {
+    width: 2.45rem;
+    height: 2.45rem;
+    border: 0;
+    border-radius: 0.8rem;
+    background: transparent;
+    color: #7a918a;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 850;
+    transition: background 180ms ease, color 180ms ease;
+  }
+
+  .home-showcase-scene-dots button[data-active='true'] {
+    background: rgb(100 227 177 / 22%);
+    color: #087b58;
+  }
+
+  .home-showcase-media {
+    min-width: 0;
+    padding: 0.75rem;
+  }
+
+  .home-showcase-media-stage {
+    position: relative;
+    overflow: hidden;
+    min-height: 34rem;
+    height: 100%;
+    border: 1px solid rgb(220 233 228 / 85%);
+    border-radius: 1.45rem;
+    background:
+      linear-gradient(rgb(4 61 49 / 4%) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(4 61 49 / 4%) 1px, transparent 1px),
+      #edf6f2;
+    background-size: 28px 28px;
+  }
+
+  .home-showcase-gallery {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 360ms ease, visibility 360ms;
+  }
+
+  .home-showcase-gallery[data-active='true'] {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .home-showcase-image-stack {
+    position: absolute;
+    inset: 0;
+  }
+
+  .home-showcase-image-stack figure {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    margin: 0;
+    padding: clamp(0.75rem, 2vw, 1.35rem);
+    place-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.985);
+    transition: opacity 360ms ease, transform 360ms ease, visibility 360ms;
+  }
+
+  .home-showcase-image-stack figure[data-active='true'] {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+  }
+
+  .home-showcase-image-stack figure :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: 31rem;
+    border: 1px solid rgb(220 233 228 / 92%);
+    border-radius: 1rem;
+    background: #fff;
+    object-fit: contain;
+    box-shadow: 0 22px 65px rgb(4 61 49 / 14%);
+  }
+
+  .home-showcase-image-stack figcaption {
+    position: absolute;
+    right: 2rem;
+    bottom: 1.7rem;
+    left: 2rem;
+    width: fit-content;
+    max-width: calc(100% - 4rem);
+    border: 1px solid rgb(255 255 255 / 60%);
+    border-radius: 999px;
+    background: rgb(4 23 19 / 76%);
+    padding: 0.55rem 0.8rem;
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    backdrop-filter: blur(12px);
+  }
+
+  .home-showcase-image-nav {
+    position: absolute;
+    top: 1.7rem;
+    right: 1.7rem;
+    z-index: 2;
+    display: flex;
+    gap: 0.4rem;
+    border: 1px solid rgb(220 233 228 / 75%);
+    border-radius: 999px;
+    background: rgb(255 255 255 / 88%);
+    padding: 0.55rem;
+    box-shadow: 0 8px 24px rgb(4 61 49 / 10%);
+    backdrop-filter: blur(12px);
+  }
+
+  .home-showcase-image-nav button {
+    width: 0.48rem;
+    height: 0.48rem;
+    border: 0;
+    border-radius: 999px;
+    background: #a9beb7;
+    padding: 0;
+    cursor: pointer;
+    transition: width 180ms ease, background 180ms ease;
+  }
+
+  .home-showcase-image-nav button[data-active='true'] {
+    width: 1.35rem;
+    background: #079667;
+  }
+
+  @media (min-width: 960px) {
+    .home-showcase-shell {
+      grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+      min-height: 38rem;
+    }
+
+    .home-showcase-media {
+      border-left: 1px solid #dce9e4;
+    }
+  }
+
+  @media (max-width: 959px) {
+    .home-showcase-copy-item h2 {
+      max-width: 14ch;
+    }
+
+    .home-showcase-media {
+      border-top: 1px solid #dce9e4;
+    }
+
+    .home-showcase-media-stage {
+      min-height: min(70vw, 31rem);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .home-showcase-section {
+      padding-block: 3.2rem;
+    }
+
+    .home-showcase-shell {
+      border-radius: 1.45rem;
+    }
+
+    .home-showcase-copy {
+      padding: 1.4rem;
+    }
+
+    .home-showcase-copy-item h2 {
+      font-size: clamp(2.15rem, 11vw, 3.25rem);
+    }
+
+    .home-showcase-scene-nav {
+      justify-content: space-between;
+    }
+
+    .home-showcase-media {
+      padding: 0.45rem;
+    }
+
+    .home-showcase-media-stage {
+      min-height: 22rem;
+      border-radius: 1.1rem;
+    }
+
+    .home-showcase-image-stack figure {
+      padding: 0.55rem;
+    }
+
+    .home-showcase-image-stack figcaption {
+      right: 1rem;
+      bottom: 1rem;
+      left: 1rem;
+      max-width: calc(100% - 2rem);
+      border-radius: 0.7rem;
+    }
+
+    .home-showcase-image-nav {
+      top: 1rem;
+      right: 1rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-showcase-copy-item,
+    .home-showcase-gallery,
+    .home-showcase-image-stack figure,
+    .home-showcase-image-nav button {
+      transition: none;
+    }
+  }
+</style>

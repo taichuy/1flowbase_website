@@ -18,18 +18,6 @@ export const homeCopy = {
     capabilities: ['AI Gateway', 'Virtual Model', 'MCP Gateway', 'Protocol Translation'],
     visualLabel: 'workflow / fusion-reviewer',
     visualStatus: 'published',
-    compositionEyebrow: 'A concrete composition',
-    compositionTitle: 'Turn text models into one multimodal virtual model.',
-    compositionDescription:
-      'Keep each model focused on what it does best. 1flowbase connects perception, reasoning, and synthesis behind one endpoint while preserving the full execution trace.',
-    compositionSteps: [
-      { label: 'Input', title: 'Text · image · files', body: 'Accept a multimodal request through one compatible endpoint.' },
-      { label: 'Reasoning', title: 'DeepSeek V4', body: 'Plan the task, reason over evidence, and decide which capability to call.' },
-      { label: 'Synthesis', title: 'GLM 5.2', body: 'Review intermediate results and assemble the final response.' },
-      { label: 'Perception', title: 'Vision + OCR tools', body: 'Convert visual and document context into evidence text models can use.' },
-    ],
-    compositionOutputLabel: 'PUBLISHED AS',
-    compositionOutput: 'One observable multimodal model endpoint',
     useCasesEyebrow: 'Compose, publish, observe',
     useCasesTitle: 'Build a better virtual model from the models you already trust.',
     useCasesDescription:
@@ -111,18 +99,6 @@ export const homeCopy = {
     capabilities: ['AI 网关', '虚拟模型', 'MCP 网关', '协议转换'],
     visualLabel: '工作流 / fusion-reviewer',
     visualStatus: '已发布',
-    compositionEyebrow: '一个可落地的组合样例',
-    compositionTitle: '让文本模型组合成一个多模态虚拟模型。',
-    compositionDescription:
-      '让每个模型只负责最擅长的部分。1flowbase 在一个端点背后连接感知、推理与综合，同时保留完整执行轨迹。',
-    compositionSteps: [
-      { label: '输入', title: '文本 · 图片 · 文件', body: '通过一个兼容端点接收多模态请求。' },
-      { label: '推理', title: 'DeepSeek V4', body: '规划任务、推理证据，并决定调用哪一种能力。' },
-      { label: '综合', title: 'GLM 5.2', body: '复核中间结果，综合生成最终回答。' },
-      { label: '感知', title: '视觉 + OCR 工具', body: '把图片与文档转换成文本模型可使用的证据。' },
-    ],
-    compositionOutputLabel: '发布结果',
-    compositionOutput: '一个可观测的多模态模型端点',
     useCasesEyebrow: '编排、发布、观测',
     useCasesTitle: '用你信任的模型，组合出更强的虚拟模型。',
     useCasesDescription:

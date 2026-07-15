@@ -26,7 +26,7 @@ const labels = lang === 'zh'
               aria-hidden={index === 0 ? 'false' : 'true'}
               inert={index !== 0}
             >
-              <figcaption>{slide.title}</figcaption>
+              <figcaption data-showcase-title><span>{slide.title}</span></figcaption>
               <div class="home-showcase-image-frame">
                 <img
                   src={slide.src}
@@ -39,8 +39,12 @@ const labels = lang === 'zh'
               </div>
             </figure>
           ))}
-          <button class="home-showcase-arrow home-showcase-arrow-previous" type="button" data-showcase-previous aria-label={labels.previous}>←</button>
-          <button class="home-showcase-arrow home-showcase-arrow-next" type="button" data-showcase-next aria-label={labels.next}>→</button>
+          <button class="home-showcase-arrow home-showcase-arrow-previous" type="button" data-showcase-previous aria-label={labels.previous}>
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6" /></svg>
+          </button>
+          <button class="home-showcase-arrow home-showcase-arrow-next" type="button" data-showcase-next aria-label={labels.next}>
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg>
+          </button>
           <div class="home-showcase-progress" role="group" aria-label={labels.progress}>
             {slides.map((slide, index) => (
               <button
@@ -64,12 +68,38 @@ const labels = lang === 'zh'
     root.dataset.ready = 'true';
 
     const slides = Array.from(root.querySelectorAll('[data-showcase-slide]'));
+    const titles = Array.from(root.querySelectorAll('[data-showcase-title]'));
     const progressButtons = Array.from(root.querySelectorAll('[data-showcase-target]'));
     const previousButton = root.querySelector('[data-showcase-previous]');
     const nextButton = root.querySelector('[data-showcase-next]');
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let activeIndex = 0;
     let timer: number | undefined;
+
+    const fitTitle = (title: Element) => {
+      if (!(title instanceof HTMLElement)) return;
+      const text = title.querySelector('span');
+      if (!(text instanceof HTMLElement)) return;
+
+      text.style.fontSize = '';
+      const maximum = Number.parseFloat(window.getComputedStyle(text).fontSize);
+      const minimum = 14;
+      let low = minimum;
+      let high = maximum;
+
+      const fits = () => title.scrollHeight <= title.clientHeight && title.scrollWidth <= title.clientWidth;
+      if (fits()) return;
+
+      while (high - low > 0.5) {
+        const next = (low + high) / 2;
+        text.style.fontSize = `${next}px`;
+        if (fits()) low = next;
+        else high = next;
+      }
+      text.style.fontSize = `${low}px`;
+    };
+
+    const fitTitles = () => titles.forEach(fitTitle);
 
     const render = () => {
       slides.forEach((slide, index) => {
@@ -118,10 +148,15 @@ const labels = lang === 'zh'
     document.addEventListener('visibilitychange', handleVisibility);
     document.addEventListener('astro:before-swap', () => {
       clearTimer();
+      resizeObserver.disconnect();
       document.removeEventListener('visibilitychange', handleVisibility);
     }, { once: true });
 
+    const resizeObserver = new ResizeObserver(fitTitles);
+    resizeObserver.observe(root);
+    document.fonts.ready.then(fitTitles);
     render();
+    fitTitles();
     schedule();
   };
 
@@ -195,8 +230,18 @@ const labels = lang === 'zh'
   }
 
   .home-showcase-slide figcaption {
-    min-height: 6.75rem;
+    display: flex;
+    width: 100%;
+    height: 7.5rem;
+    box-sizing: border-box;
+    align-items: center;
+    overflow: hidden;
     padding: clamp(1.35rem, 3vw, 2.1rem) clamp(1.25rem, 4vw, 3rem);
+  }
+
+  .home-showcase-slide figcaption span {
+    display: block;
+    max-width: 100%;
     color: #08231c;
     font-size: clamp(1.45rem, 3vw, 2.65rem);
     font-weight: 780;
@@ -212,21 +257,28 @@ const labels = lang === 'zh'
     width: 3rem;
     height: 3rem;
     place-items: center;
-    border: 1px solid rgb(220 233 228 / 90%);
-    border-radius: 999px;
-    background: rgb(255 255 255 / 88%);
-    color: #087b58;
+    border: 0;
+    background: transparent;
+    color: rgb(4 61 49 / 72%);
     cursor: pointer;
-    font-weight: 900;
-    box-shadow: 0 12px 35px rgb(4 61 49 / 15%);
-    backdrop-filter: blur(12px);
+    filter: drop-shadow(0 2px 4px rgb(255 255 255 / 95%));
     transform: translateY(-50%);
-    transition: background 160ms ease, transform 160ms ease;
+    transition: color 160ms ease, transform 160ms ease;
   }
 
   .home-showcase-arrow:hover {
-    background: #fff;
+    color: #079667;
     transform: translateY(-50%) scale(1.05);
+  }
+
+  .home-showcase-arrow svg {
+    width: 2rem;
+    height: 2rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
   }
 
   .home-showcase-arrow-previous {
@@ -293,7 +345,11 @@ const labels = lang === 'zh'
     }
 
     .home-showcase-slide figcaption {
-      min-height: 6rem;
+      height: 6.5rem;
+      padding-block: 1.2rem;
+    }
+
+    .home-showcase-slide figcaption span {
       font-size: 1.5rem;
     }
 

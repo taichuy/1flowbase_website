@@ -144,3 +144,6 @@ vite.config.ts.timestamp-*
 
 # Astro generated files
 .astro/
+
+# Static assets generated from the editable website Wiki
+public/.wiki-content/

@@ -1,5 +1,4 @@
 ---
-import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import type { Locale } from '../config';
 
@@ -83,10 +82,9 @@ const labels = lang === 'zh'
                       data-active={imageIndex === 0 ? 'true' : 'false'}
                       aria-hidden={imageIndex === 0 ? 'false' : 'true'}
                     >
-                      <Image
+                      <img
                         src={image.src}
                         alt={image.alt}
-                        widths={[640, 960, 1280]}
                         sizes="(max-width: 960px) calc(100vw - 2rem), 58vw"
                         loading={sceneIndex === 0 && imageIndex === 0 ? 'eager' : 'lazy'}
                         decoding="async"

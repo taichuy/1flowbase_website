@@ -22,11 +22,10 @@ const blog = defineCollection({
 
 const homeShowcases = defineCollection({
   loader: glob({
-    base: './.cache/1flowbase-wiki/1flowbase_website/home',
-    pattern: '**/{en,zh}.md',
+    base: './.cache/1flowbase-website-wiki/.website-generated/home',
+    pattern: '*.json',
   }),
-  schema: ({ image }) =>
-    z.object({
+  schema: z.object({
       scene: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
       lang: z.enum(['en', 'zh']),
       order: z.number().int().nonnegative(),
@@ -40,7 +39,7 @@ const homeShowcases = defineCollection({
       images: z
         .array(
           z.object({
-            src: image(),
+            src: z.string().min(1),
             alt: z.string(),
             caption: z.string().optional(),
           }),

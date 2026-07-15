@@ -9,8 +9,8 @@ interface Props {
 
 const { lang, slides } = Astro.props;
 const labels = lang === 'zh'
-  ? { region: '首页产品图片轮播', previous: '上一张', next: '下一张' }
-  : { region: 'Homepage product image carousel', previous: 'Previous slide', next: 'Next slide' };
+  ? { region: '首页产品图片轮播', previous: '上一张', next: '下一张', progress: '选择轮播图片' }
+  : { region: 'Homepage product image carousel', previous: 'Previous slide', next: 'Next slide', progress: 'Choose a slide' };
 ---
 
 {slides.length > 0 && (
@@ -26,6 +26,7 @@ const labels = lang === 'zh'
               aria-hidden={index === 0 ? 'false' : 'true'}
               inert={index !== 0}
             >
+              <figcaption>{slide.title}</figcaption>
               <div class="home-showcase-image-frame">
                 <img
                   src={slide.src}
@@ -36,22 +37,21 @@ const labels = lang === 'zh'
                   fetchpriority={index === 0 ? 'high' : 'low'}
                 />
               </div>
-              <figcaption>{slide.title}</figcaption>
             </figure>
           ))}
-        </div>
-
-        <div class="home-showcase-controls">
-          <button type="button" data-showcase-previous aria-label={labels.previous}>←</button>
-          <div class="home-showcase-progress" aria-hidden="true">
-            <span data-showcase-progress></span>
+          <button class="home-showcase-arrow home-showcase-arrow-previous" type="button" data-showcase-previous aria-label={labels.previous}>←</button>
+          <button class="home-showcase-arrow home-showcase-arrow-next" type="button" data-showcase-next aria-label={labels.next}>→</button>
+          <div class="home-showcase-progress" role="group" aria-label={labels.progress}>
+            {slides.map((slide, index) => (
+              <button
+                type="button"
+                data-showcase-target={index}
+                data-active={index === 0 ? 'true' : 'false'}
+                aria-label={slide.title}
+                aria-current={index === 0 ? 'true' : 'false'}
+              ><span></span></button>
+            ))}
           </div>
-          <span class="home-showcase-counter" aria-live="polite">
-            <span data-showcase-current>01</span>
-            <span>/</span>
-            <span>{String(slides.length).padStart(2, '0')}</span>
-          </span>
-          <button type="button" data-showcase-next aria-label={labels.next}>→</button>
         </div>
       </div>
     </div>
@@ -64,10 +64,9 @@ const labels = lang === 'zh'
     root.dataset.ready = 'true';
 
     const slides = Array.from(root.querySelectorAll('[data-showcase-slide]'));
+    const progressButtons = Array.from(root.querySelectorAll('[data-showcase-target]'));
     const previousButton = root.querySelector('[data-showcase-previous]');
     const nextButton = root.querySelector('[data-showcase-next]');
-    const currentLabel = root.querySelector('[data-showcase-current]');
-    const progress = root.querySelector('[data-showcase-progress]');
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let activeIndex = 0;
     let timer: number | undefined;
@@ -80,10 +79,12 @@ const labels = lang === 'zh'
         slide.setAttribute('aria-hidden', active ? 'false' : 'true');
         slide.inert = !active;
       });
-      if (currentLabel) currentLabel.textContent = String(activeIndex + 1).padStart(2, '0');
-      if (progress instanceof HTMLElement) {
-        progress.style.transform = `scaleX(${(activeIndex + 1) / slides.length})`;
-      }
+      progressButtons.forEach((button, index) => {
+        if (!(button instanceof HTMLButtonElement)) return;
+        const active = index === activeIndex;
+        button.dataset.active = active ? 'true' : 'false';
+        button.setAttribute('aria-current', active ? 'true' : 'false');
+      });
     };
 
     const clearTimer = () => {
@@ -98,7 +99,7 @@ const labels = lang === 'zh'
         activeIndex = (activeIndex + 1) % slides.length;
         render();
         schedule();
-      }, 1000);
+      }, 2000);
     };
 
     const select = (nextIndex: number) => {
@@ -109,6 +110,9 @@ const labels = lang === 'zh'
 
     previousButton?.addEventListener('click', () => select(activeIndex - 1));
     nextButton?.addEventListener('click', () => select(activeIndex + 1));
+    progressButtons.forEach((button, index) => {
+      button.addEventListener('click', () => select(index));
+    });
 
     const handleVisibility = () => document.hidden ? clearTimer() : schedule();
     document.addEventListener('visibilitychange', handleVisibility);
@@ -145,13 +149,14 @@ const labels = lang === 'zh'
   }
 
   .home-showcase-stage {
+    position: relative;
     display: grid;
   }
 
   .home-showcase-slide {
     grid-area: 1 / 1;
     display: grid;
-    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-rows: auto minmax(0, 1fr);
     margin: 0;
     opacity: 0;
     visibility: hidden;
@@ -199,55 +204,82 @@ const labels = lang === 'zh'
     line-height: 1.12;
   }
 
-  .home-showcase-controls {
+  .home-showcase-arrow {
+    position: absolute;
+    top: calc(50% + 3.3rem);
+    z-index: 3;
     display: grid;
-    grid-template-columns: auto minmax(5rem, 1fr) auto auto;
-    align-items: center;
-    gap: 0.8rem;
-    border-top: 1px solid #dce9e4;
-    padding: 0.9rem clamp(1rem, 3vw, 2rem);
-  }
-
-  .home-showcase-controls button {
-    display: grid;
-    width: 2.55rem;
-    height: 2.55rem;
+    width: 3rem;
+    height: 3rem;
     place-items: center;
-    border: 1px solid #dce9e4;
+    border: 1px solid rgb(220 233 228 / 90%);
     border-radius: 999px;
-    background: #fff;
+    background: rgb(255 255 255 / 88%);
     color: #087b58;
     cursor: pointer;
     font-weight: 900;
+    box-shadow: 0 12px 35px rgb(4 61 49 / 15%);
+    backdrop-filter: blur(12px);
+    transform: translateY(-50%);
+    transition: background 160ms ease, transform 160ms ease;
+  }
+
+  .home-showcase-arrow:hover {
+    background: #fff;
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  .home-showcase-arrow-previous {
+    left: clamp(1rem, 3vw, 2.4rem);
+  }
+
+  .home-showcase-arrow-next {
+    right: clamp(1rem, 3vw, 2.4rem);
   }
 
   .home-showcase-progress {
-    overflow: hidden;
-    height: 0.28rem;
+    position: absolute;
+    right: 50%;
+    bottom: 1.8rem;
+    z-index: 3;
+    display: flex;
+    gap: 0.4rem;
+    border: 1px solid rgb(220 233 228 / 80%);
     border-radius: 999px;
-    background: #dce9e4;
+    background: rgb(255 255 255 / 88%);
+    padding: 0.6rem;
+    box-shadow: 0 10px 30px rgb(4 61 49 / 12%);
+    backdrop-filter: blur(12px);
+    transform: translateX(50%);
   }
 
-  .home-showcase-progress span {
-    display: block;
-    width: 100%;
-    height: 100%;
+  .home-showcase-progress button {
+    position: relative;
+    overflow: hidden;
+    width: 1.5rem;
+    height: 0.28rem;
+    border: 0;
+    border-radius: 999px;
+    background: #b8cbc5;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .home-showcase-progress button span {
+    position: absolute;
+    inset: 0;
     border-radius: inherit;
     background: #079667;
     transform: scaleX(0);
     transform-origin: left;
-    transition: transform 160ms ease;
   }
 
-  .home-showcase-counter {
-    display: flex;
-    gap: 0.35rem;
-    min-width: 4.4rem;
-    justify-content: center;
-    color: #6f8780;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    font-weight: 850;
+  .home-showcase-progress button[data-active='true'] span {
+    animation: showcase-progress 2000ms linear forwards;
+  }
+
+  @keyframes showcase-progress {
+    to { transform: scaleX(1); }
   }
 
   @media (max-width: 560px) {
@@ -265,17 +297,41 @@ const labels = lang === 'zh'
       font-size: 1.5rem;
     }
 
-    .home-showcase-controls {
-      grid-template-columns: auto minmax(3rem, 1fr) auto auto;
-      gap: 0.55rem;
-      padding-inline: 0.75rem;
+    .home-showcase-arrow {
+      top: calc(50% + 3rem);
+      width: 2.6rem;
+      height: 2.6rem;
+    }
+
+    .home-showcase-arrow-previous {
+      left: 0.8rem;
+    }
+
+    .home-showcase-arrow-next {
+      right: 0.8rem;
+    }
+
+    .home-showcase-progress {
+      bottom: 1rem;
+      max-width: calc(100% - 7rem);
+      gap: 0.28rem;
+      padding: 0.48rem;
+    }
+
+    .home-showcase-progress button {
+      width: 0.9rem;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .home-showcase-slide,
-    .home-showcase-progress span {
+    .home-showcase-progress button span {
       transition: none;
+    }
+
+    .home-showcase-progress button[data-active='true'] span {
+      animation: none;
+      transform: scaleX(1);
     }
   }
 </style>

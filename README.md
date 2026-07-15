@@ -92,7 +92,7 @@ Website-Home-Showcase-CN.md    # Chinese slides
 assets/home/**/*               # repository-hosted screenshots
 ```
 
-Each `## Slide title` must be followed by exactly one Markdown image. The website renders that image above its title and advances once per second. `pnpm content:sync`, `pnpm dev`, `pnpm check`, and `pnpm build` clone the Wiki content into the ignored `.cache/1flowbase-website-wiki/` directory. A sibling clone at `../1flowbase_website.wiki` is preferred for local development; otherwise the public Wiki Git repository is used. The sync step parses both language pages into static carousel data and copies repository-hosted images into the deployment.
+Each `## Slide title` must be followed by exactly one Markdown image. The website renders the title above its image and advances every two seconds, with overlay arrows and segmented progress controls. `pnpm content:sync`, `pnpm dev`, `pnpm check`, and `pnpm build` clone the Wiki content into the ignored `.cache/1flowbase-website-wiki/` directory. A sibling clone at `../1flowbase_website.wiki` is preferred for local development; otherwise the public Wiki Git repository is used. The sync step parses both language pages into static carousel data and copies repository-hosted images into the deployment.
 
 Wiki content updates are picked up by the scheduled deployment workflow within 30 minutes. The **Deploy Website** workflow can also be run manually for an immediate refresh.
 

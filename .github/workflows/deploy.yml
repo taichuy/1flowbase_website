@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main
+  schedule:
+    - cron: '17,47 * * * *'
+  repository_dispatch:
+    types:
+      - wiki-content-updated
   workflow_dispatch:
 
 concurrency:

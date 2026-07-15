@@ -22,8 +22,8 @@ const blog = defineCollection({
 
 const homeShowcases = defineCollection({
   loader: glob({
-    base: './home',
-    pattern: '**/index.{md,mdx}',
+    base: './.cache/1flowbase-wiki/1flowbase_website/home',
+    pattern: '**/{en,zh}.md',
   }),
   schema: ({ image }) =>
     z.object({

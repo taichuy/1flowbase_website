@@ -8,10 +8,11 @@
     "node": ">=24.0.0"
   },
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "check": "astro check",
-    "build": "astro check && astro build",
+    "content:sync": "node scripts/sync-wiki-home-content.mjs",
+    "dev": "pnpm content:sync && astro dev",
+    "start": "pnpm content:sync && astro dev",
+    "check": "pnpm content:sync && astro check",
+    "build": "pnpm content:sync && astro check && astro build",
     "preview": "astro preview",
     "deploy": "pnpm build && wrangler deploy",
     "release": "bash scripts/release-cloudflare.sh",

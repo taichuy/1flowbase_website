@@ -82,7 +82,19 @@ No Astro server adapter, Worker runtime code, or runtime database is required fo
 
 ## Content
 
-Blog posts live in `src/content/blog/`. Each post declares its language in frontmatter. Product documentation remains in the [GitHub Wiki](https://github.com/taichuy/1flowbase/wiki), while the website owns product positioning, use cases, comparisons, and release-oriented content.
+Blog posts live in `src/content/blog/`. Each post declares its language in frontmatter.
+
+The homepage showcase is sourced from the `1flowbase` Wiki repository:
+
+```text
+1flowbase_website/home/<scene>/en.md
+1flowbase_website/home/<scene>/zh.md
+1flowbase_website/home/<scene>/assets/*
+```
+
+`pnpm content:sync`, `pnpm dev`, `pnpm check`, and `pnpm build` clone the Wiki content into the ignored `.cache/1flowbase-wiki/` directory. A sibling clone at `../1flowbase.wiki` is preferred for local development; otherwise the public Wiki Git repository is used. The build fails when a scene does not provide both `en.md` and `zh.md`.
+
+Wiki content updates are picked up by the scheduled deployment workflow within 30 minutes. The **Deploy Website** workflow can also be run manually for an immediate refresh.
 
 ## Useful commands
 

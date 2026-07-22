@@ -4,15 +4,16 @@ import { SITE, type Locale, localePath } from '../config';
 
 interface Props {
   lang: Locale;
+  alternatePath?: string;
 }
 
-const { lang } = Astro.props;
+const { lang, alternatePath } = Astro.props;
 const path = Astro.url.pathname;
-const switchHref = path.startsWith('/404')
+const switchHref = alternatePath ?? (path.startsWith('/404')
   ? lang === 'zh' ? '/' : '/zh/'
   : lang === 'zh'
     ? path.replace(/^\/zh/, '') || '/'
-    : `/zh${path === '/' ? '/' : path}`;
+    : `/zh${path === '/' ? '/' : path}`);
 
 const labels = lang === 'zh'
   ? {
@@ -20,7 +21,11 @@ const labels = lang === 'zh'
         ['产品能力', localePath(lang, '/features/')],
         ['使用场景', localePath(lang, '/use-cases/')],
         ['博客', SITE.blogDirectory],
-        ['文档', SITE.docsDirectory],
+      ],
+      docs: '文档',
+      docsMenu: [
+        ['文档', localePath(lang, '/docs/')],
+        ['许可协议', localePath(lang, '/license/')],
       ],
       language: 'EN',
       github: 'GitHub',
@@ -31,7 +36,11 @@ const labels = lang === 'zh'
         ['Features', localePath(lang, '/features/')],
         ['Use cases', localePath(lang, '/use-cases/')],
         ['Blog', SITE.blogDirectory],
-        ['Docs', SITE.docsDirectory],
+      ],
+      docs: 'Docs',
+      docsMenu: [
+        ['Documentation', localePath(lang, '/docs/')],
+        ['License', localePath(lang, '/license/')],
       ],
       language: '中文',
       github: 'GitHub',
@@ -51,6 +60,17 @@ const labels = lang === 'zh'
           {label}
         </a>
       ))}
+      <details class="group relative">
+        <summary class="flex cursor-pointer list-none items-center gap-1.5 py-5 transition hover:text-emerald">
+          {labels.docs}
+          <svg aria-hidden="true" viewBox="0 0 12 12" class="size-3 fill-none stroke-current stroke-[1.5] transition group-open:rotate-180"><path d="m2.5 4.5 3.5 3 3.5-3" /></svg>
+        </summary>
+        <div class="absolute left-1/2 top-full w-48 -translate-x-1/2 rounded-2xl border border-line bg-white p-2 shadow-2xl shadow-forest/10">
+          {labels.docsMenu.map(([label, href]) => (
+            <a class="block rounded-xl px-3 py-2.5 text-sm text-muted transition hover:bg-paper hover:text-emerald" href={href}>{label}</a>
+          ))}
+        </div>
+      </details>
     </nav>
 
     <div class="hidden items-center gap-2 md:flex">
@@ -71,6 +91,10 @@ const labels = lang === 'zh'
       <div class="absolute right-0 mt-3 w-64 rounded-2xl border border-line bg-white p-3 shadow-2xl shadow-forest/10">
         <nav class="grid gap-1 text-sm font-semibold text-muted">
           {labels.nav.map(([label, href]) => <a class="rounded-xl px-3 py-2.5 hover:bg-paper hover:text-emerald" href={href}>{label}</a>)}
+          <div class="mt-1 rounded-xl bg-paper p-1">
+            <p class="px-2 py-1.5 text-xs font-black uppercase tracking-[0.08em] text-muted">{labels.docs}</p>
+            {labels.docsMenu.map(([label, href]) => <a class="block rounded-lg px-2 py-2 hover:bg-white hover:text-emerald" href={href}>{label}</a>)}
+          </div>
           <a class="rounded-xl px-3 py-2.5 hover:bg-paper hover:text-emerald" href={switchHref}>{labels.language}</a>
           <a class="mt-1 rounded-xl bg-night px-3 py-2.5 text-center text-white" href={SITE.repository}>GitHub · ★ <span data-github-stars-value>197</span></a>
         </nav>

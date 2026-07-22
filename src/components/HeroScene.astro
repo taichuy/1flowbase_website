@@ -1,5 +1,5 @@
 ---
-import { SITE, type Locale } from '../config';
+import { SITE, type Locale, localePath } from '../config';
 import HeroUseCases from './HeroUseCases.astro';
 
 interface Props {
@@ -38,7 +38,7 @@ const { lang, title, subTitle, primaryCta, secondaryCta, useCases } = Astro.prop
           <span aria-hidden="true">★</span><span data-github-stars-value>197</span>
         </span>
       </a>
-      <a class="inline-flex min-w-36 items-center justify-center gap-2 rounded-full border border-line bg-white/76 px-6 py-3.5 text-sm font-black text-ink shadow-sm backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-emerald/30 hover:text-emerald" href={SITE.wiki} target="_blank" rel="noreferrer">
+      <a class="inline-flex min-w-36 items-center justify-center gap-2 rounded-full border border-line bg-white/76 px-6 py-3.5 text-sm font-black text-ink shadow-sm backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-emerald/30 hover:text-emerald" href={localePath(lang, '/docs/')}>
         {secondaryCta}<span aria-hidden="true">→</span>
       </a>
     </div>

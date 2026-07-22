@@ -1,0 +1,64 @@
+---
+import { getCollection } from 'astro:content';
+import { SITE, type Locale, localePath } from '../config';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const pages = (await getCollection('wikiPages', ({ data }) => data.kind === 'guide' && data.lang === lang))
+  .sort((a, b) => a.data.categoryOrder - b.data.categoryOrder || a.data.order - b.data.order);
+const categories = Array.from(Map.groupBy(pages, (page) => page.data.category));
+const copy = lang === 'zh'
+  ? {
+      title: '文档',
+      description: '从具体场景开始，搭建、发布并观测你的第一个 1flowbase 工作流。教程正文与产品 Wiki 保持同步。',
+      eyebrow: '1flowbase 指南',
+      read: '阅读教程',
+      source: '查看文档目录源',
+    }
+  : {
+      title: 'Documentation',
+      description: 'Start with a concrete use case, then build, publish, and observe your first 1flowbase workflow. Guides stay in sync with the product Wiki.',
+      eyebrow: '1flowbase guides',
+      read: 'Read guide',
+      source: 'View directory source',
+    };
+---
+
+<BaseLayout lang={lang} title={copy.title} description={copy.description}>
+  <section class="border-b border-line bg-white">
+    <div class="site-container py-16 sm:py-24">
+      <span class="eyebrow">{copy.eyebrow}</span>
+      <h1 class="mt-5 max-w-4xl text-[clamp(3rem,7vw,6rem)] font-[760] leading-[0.95] tracking-[-0.065em] text-ink">{copy.title}</h1>
+      <p class="section-copy">{copy.description}</p>
+      <a class="mt-7 inline-flex items-center gap-2 text-sm font-black text-emerald hover:text-forest" href={SITE.docsSourceDirectory} target="_blank" rel="noreferrer">{copy.source} ↗</a>
+    </div>
+  </section>
+
+  <section class="section-shell">
+    <div class="site-container grid gap-14">
+      {categories.map(([category, entries], categoryIndex) => (
+        <section aria-labelledby={`category-${categoryIndex}`}>
+          <div class="flex items-end justify-between gap-5 border-b border-line pb-5">
+            <h2 id={`category-${categoryIndex}`} class="text-2xl font-[750] tracking-[-0.04em] text-ink sm:text-3xl">{category}</h2>
+            <span class="font-mono text-xs text-muted">{String(categoryIndex + 1).padStart(2, '0')}</span>
+          </div>
+          <div class="mt-5 grid gap-4 md:grid-cols-2">
+            {entries.map((entry) => (
+              <a class="glass-card group flex min-h-44 flex-col justify-between p-6 transition hover:-translate-y-1 hover:border-emerald/30 sm:p-7" href={localePath(lang, `/docs/${entry.data.slug}/`)}>
+                <h3 class="max-w-xl text-xl font-[730] leading-snug tracking-[-0.03em] text-ink">{entry.data.title}</h3>
+                <span class="mt-8 flex items-center justify-between text-sm font-black text-emerald">
+                  {copy.read}
+                  <span class="grid size-8 place-items-center rounded-full bg-emerald/8 transition group-hover:bg-emerald group-hover:text-white">→</span>
+                </span>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

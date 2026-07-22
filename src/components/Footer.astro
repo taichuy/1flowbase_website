@@ -51,7 +51,7 @@ const copy = lang === 'zh'
     <div>
       <h2 class="text-sm font-black text-ink">{copy.resources}</h2>
       <ul class="mt-4 grid gap-3 text-sm text-muted">
-        <li><a class="hover:text-emerald" href={SITE.docsDirectory}>{copy.docs}</a></li>
+        <li><a class="hover:text-emerald" href={localePath(lang, '/docs/')}>{copy.docs}</a></li>
         <li><a class="hover:text-emerald" href={SITE.issues}>{copy.issues}</a></li>
         <li><a class="hover:text-emerald" href={SITE.websiteRepository}>{copy.source}</a></li>
       </ul>

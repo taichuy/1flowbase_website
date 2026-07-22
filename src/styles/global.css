@@ -176,7 +176,8 @@ summary:focus-visible {
 .prose-site ul,
 .prose-site ol,
 .prose-site pre,
-.prose-site blockquote {
+.prose-site blockquote,
+.prose-site table {
   margin-block: 1.2rem;
 }
 
@@ -224,6 +225,39 @@ summary:focus-visible {
   margin-left: 0;
   padding: 0.25rem 0 0.25rem 1.25rem;
   color: #3e5a52;
+}
+
+.prose-site img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-block: 1.75rem;
+  border: 1px solid #dce9e4;
+  border-radius: 1rem;
+  box-shadow: 0 20px 55px rgb(4 61 49 / 8%);
+}
+
+.prose-site table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-spacing: 0;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.prose-site th,
+.prose-site td {
+  border: 1px solid #dce9e4;
+  padding: 0.7rem 0.85rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.prose-site th {
+  background: #edf6f2;
+  color: #08231c;
+  font-weight: 750;
 }
 
 @media (max-width: 640px) {

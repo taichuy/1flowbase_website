@@ -1,0 +1,83 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
+import { type Locale, localePath } from '../config';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  entry: CollectionEntry<'wikiPages'>;
+  headings: Heading[];
+}
+
+const { entry, headings } = Astro.props;
+const lang = entry.data.lang as Locale;
+const isGuide = entry.data.kind === 'guide';
+const guides = isGuide
+  ? (await getCollection('wikiPages', ({ data }) => data.kind === 'guide' && data.lang === lang))
+      .sort((a, b) => a.data.categoryOrder - b.data.categoryOrder || a.data.order - b.data.order)
+  : [];
+const categories = Array.from(Map.groupBy(guides, (guide) => guide.data.category));
+const alternatePath = entry.data.alternatePath ?? (lang === 'zh' ? '/docs/' : '/zh/docs/');
+const copy = lang === 'zh'
+  ? { docs: '文档', license: '许可协议', source: '在 GitHub Wiki 查看原文', contents: '本文目录', all: '全部文档' }
+  : { docs: 'Documentation', license: 'License', source: 'View source on GitHub Wiki', contents: 'On this page', all: 'All documentation' };
+const title = isGuide ? entry.data.title : copy.license;
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': isGuide ? 'TechArticle' : 'WebPage',
+  headline: entry.data.title,
+  inLanguage: lang === 'zh' ? 'zh-CN' : 'en',
+  isBasedOn: entry.data.sourceUrl,
+};
+---
+
+<BaseLayout lang={lang} title={title} description={entry.data.title} type={isGuide ? 'article' : 'website'} alternatePath={alternatePath} structuredData={structuredData}>
+  <section class="border-b border-line bg-white">
+    <div class="site-container py-12 sm:py-16">
+      <a class="text-sm font-black text-emerald hover:text-forest" href={isGuide ? localePath(lang, '/docs/') : localePath(lang, '/')}>← {isGuide ? copy.docs : '1flowbase'}</a>
+      <p class="mt-9 font-mono text-xs font-black uppercase tracking-[0.12em] text-emerald">{isGuide ? entry.data.category : copy.license}</p>
+      <h1 class="mt-4 max-w-5xl text-[clamp(2.35rem,5.5vw,4.8rem)] font-[760] leading-[1.02] tracking-[-0.06em] text-ink">{entry.data.title}</h1>
+      <a class="mt-6 inline-flex items-center gap-2 text-sm font-bold text-muted hover:text-emerald" href={entry.data.sourceUrl} target="_blank" rel="noreferrer">{copy.source} ↗</a>
+    </div>
+  </section>
+
+  <div class:list={['site-container py-12 sm:py-16', isGuide ? 'grid gap-10 lg:grid-cols-[15rem_minmax(0,1fr)_13rem]' : 'max-w-[940px]']}>
+    {isGuide && (
+      <aside class="hidden lg:block">
+        <nav class="sticky top-28 grid gap-6 text-sm" aria-label={copy.all}>
+          {categories.map(([category, entries]) => (
+            <div>
+              <p class="mb-2 font-black text-ink">{category}</p>
+              <div class="grid gap-1 border-l border-line pl-3">
+                {entries.map((guide) => (
+                  <a class:list={['py-1.5 leading-5 hover:text-emerald', guide.data.slug === entry.data.slug ? 'font-bold text-emerald' : 'text-muted']} href={localePath(lang, `/docs/${guide.data.slug}/`)}>{guide.data.title}</a>
+                ))}
+              </div>
+            </div>
+          ))}
+        </nav>
+      </aside>
+    )}
+
+    <article class="prose-site min-w-0">
+      <slot />
+    </article>
+
+    {isGuide && headings.some((heading) => heading.depth === 2) && (
+      <aside class="hidden xl:block">
+        <nav class="sticky top-28 border-l border-line pl-4 text-xs" aria-label={copy.contents}>
+          <p class="mb-3 font-black uppercase tracking-[0.1em] text-ink">{copy.contents}</p>
+          <div class="grid gap-2.5 text-muted">
+            {headings.filter((heading) => heading.depth === 2).map((heading) => <a class="leading-5 hover:text-emerald" href={`#${heading.slug}`}>{heading.text}</a>)}
+          </div>
+        </nav>
+      </aside>
+    )}
+  </div>
+</BaseLayout>

@@ -25,8 +25,8 @@ const guides = isGuide
 const categories = Array.from(Map.groupBy(guides, (guide) => guide.data.category));
 const alternatePath = entry.data.alternatePath ?? (lang === 'zh' ? '/docs/' : '/zh/docs/');
 const copy = lang === 'zh'
-  ? { docs: '文档', license: '许可协议', source: '在 GitHub Wiki 查看原文', contents: '本文目录', all: '全部文档', collapse: '收起文档目录', expand: '展开文档目录' }
-  : { docs: 'Documentation', license: 'License', source: 'View source on GitHub Wiki', contents: 'On this page', all: 'All documentation', collapse: 'Collapse documentation', expand: 'Expand documentation' };
+  ? { docs: '文档', license: '许可协议', source: '查看原文', sourceLabel: '内容来源', sourceName: '1flowbase 主项目 Wiki', sourceHint: '构建时自动同步最新教程正文', contents: '本文目录', all: '全部文档', collapse: '收起文档目录', expand: '展开文档目录' }
+  : { docs: 'Documentation', license: 'License', source: 'View source', sourceLabel: 'Content source', sourceName: '1flowbase project Wiki', sourceHint: 'The latest guide is synced at build time', contents: 'On this page', all: 'All documentation', collapse: 'Collapse documentation', expand: 'Expand documentation' };
 const title = isGuide ? entry.data.title : copy.license;
 const structuredData = {
   '@context': 'https://schema.org',
@@ -39,11 +39,24 @@ const structuredData = {
 
 <BaseLayout lang={lang} title={title} description={entry.data.title} type={isGuide ? 'article' : 'website'} alternatePath={alternatePath} structuredData={structuredData}>
   <section class="border-b border-line bg-white">
-    <div class:list={[isGuide ? 'docs-reader-width' : 'site-container', 'py-12 sm:py-16']}>
+    <div class:list={[isGuide ? 'docs-reader-width' : 'site-container', 'py-10 sm:py-14']}>
       <a class="text-sm font-black text-emerald hover:text-forest" href={isGuide ? localePath(lang, '/docs/') : localePath(lang, '/')}>← {isGuide ? copy.docs : '1flowbase'}</a>
-      <p class="mt-9 font-mono text-xs font-black uppercase tracking-[0.12em] text-emerald">{isGuide ? entry.data.category : copy.license}</p>
-      <h1 class="mt-4 max-w-5xl text-[clamp(2.35rem,5.5vw,4.8rem)] font-[760] leading-[1.02] tracking-[-0.06em] text-ink">{entry.data.title}</h1>
-      <a class="mt-6 inline-flex items-center gap-2 text-sm font-bold text-muted hover:text-emerald" href={entry.data.sourceUrl} target="_blank" rel="noreferrer">{copy.source} ↗</a>
+      <div class:list={['mt-8', isGuide && 'grid gap-8 lg:grid-cols-[minmax(0,1fr)_17rem] lg:items-end lg:gap-12']}>
+        <div class="min-w-0">
+          <p class="font-mono text-xs font-black uppercase tracking-[0.12em] text-emerald">{isGuide ? entry.data.category : copy.license}</p>
+          <h1 class:list={['docs-page-title mt-4 text-ink', isGuide ? 'text-[clamp(2.5rem,4vw,4rem)]' : 'max-w-5xl text-[clamp(2.35rem,5.5vw,4.8rem)]']}>{entry.data.title}</h1>
+        </div>
+        {isGuide ? (
+          <aside class="border-l border-line py-1 pl-5">
+            <p class="font-mono text-[0.65rem] font-black uppercase tracking-[0.12em] text-emerald">{copy.sourceLabel}</p>
+            <p class="mt-3 text-sm font-black text-ink">{copy.sourceName}</p>
+            <p class="mt-1.5 text-xs leading-5 text-muted">{copy.sourceHint}</p>
+            <a class="mt-4 inline-flex items-center gap-2 text-sm font-bold text-emerald hover:text-forest" href={entry.data.sourceUrl} target="_blank" rel="noreferrer">{copy.source} ↗</a>
+          </aside>
+        ) : (
+          <a class="mt-6 inline-flex items-center gap-2 text-sm font-bold text-muted hover:text-emerald" href={entry.data.sourceUrl} target="_blank" rel="noreferrer">{copy.source} ↗</a>
+        )}
+      </div>
     </div>
   </section>
 

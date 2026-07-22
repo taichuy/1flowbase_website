@@ -69,6 +69,13 @@ summary:focus-visible {
   grid-template-columns: minmax(0, 1fr);
 }
 
+.docs-page-title {
+  font-weight: 750;
+  letter-spacing: -0.052em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
 @media (min-width: 1024px) {
   .docs-reader-shell {
     grid-template-columns: 17rem minmax(0, 1fr);

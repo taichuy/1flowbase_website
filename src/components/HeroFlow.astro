@@ -52,8 +52,8 @@ const kinds = ['data','capabilities','apps','interfaces','endpoints'];
   .hero-flow-layers{padding:0;margin:0;list-style:none}
   .hero-flow-layers>li{margin:0;padding:0}
   .flow-layer-panel{position:relative;border-radius:7px;isolation:isolate}
-  .flow-layer-panel :global(.hero-edge-beam){position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:1;fill:none;stroke:#397d55;stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 0 2px #8dc77460)}
-  .flow-layer-panel :global(.hero-edge-beam rect){opacity:0}
+  :global(.hero-explainer-node > .hero-edge-beam){position:absolute;inset:-1px;width:calc(100% + 2px);height:calc(100% + 2px);overflow:visible;pointer-events:none;z-index:1;fill:none;stroke:#397d55;stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 0 2px #8dc77460)}
+  :global(.hero-edge-beam path){opacity:0}
   [data-motion=static] :global(.hero-edge-beam){visibility:hidden}
   .flow-motion-control{display:flex;align-items:center;justify-content:flex-end;gap:7px;min-height:32px;margin-top:5px;color:#65725c;font:11px/1.5 var(--font-sans,sans-serif);cursor:pointer}
   .flow-motion-control[hidden]{display:none}

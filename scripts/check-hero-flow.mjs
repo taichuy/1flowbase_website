@@ -77,6 +77,9 @@ for (const path of ['../dist/index.html', '../dist/zh/index.html']) {
 
   assert.equal((html.match(/<button\b[^>]*\bdata-flow-node/g) ?? []).length, 18, 'All nodes expose explanations');
   assert.ok(!html.includes('从你熟悉的本地 Agent 开始'));
+  const labels=Array.from(html.matchAll(/<button\b[^>]*data-flow-node[^>]*>[\s\S]*?<span[^>]*>([^<]+)<\/span>/g),m=>m[1]);
+  const expected=path.includes('/zh/')?['Codex','Claude Code','DeepSeek harness','1flowbase 网关 · Chat','Agent 对话记录','业务数据','DB','CRUD API','Workflow API','React Block','Token 用量','知识库','业务管理','报表','GUI 图形界面','MCP 工具接口','用户','Agent']:['Codex','Claude Code','DeepSeek harness','1flowbase Gateway · Chat','Agent conversations','Business data','DB','CRUD API','Workflow API','React Block','Token usage','Knowledge base','Business tools','Reports','GUI interface','MCP tools','People','Agents'];
+  assert.deepEqual(labels,expected,'Row-major card order including gateway');
 }
 // Test actual beam setup, timing, pause/resume and resize with deterministic geometry.
 const beamSource = await readFile(new URL('../src/lib/heroBeam.ts', import.meta.url), 'utf8');
@@ -85,29 +88,34 @@ let resize;
 const allAnimations = [];
 const element = () => ({ attrs:{}, classList:{add(){}}, setAttribute(k,v){this.attrs[k]=v;}, appendChild(child){this.child=child;}, remove(){}, animate(frames,options){const a={frames,options,currentTime:0,state:'running',play(){this.state='running';},pause(){this.state='paused';},cancel(){this.state='cancelled';}};allAnimations.push(a);return a;} });
 vm.runInNewContext(ts.transpileModule(beamSource, {compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}}).outputText, {exports:module.exports,document:{createElementNS:element},ResizeObserver:class {constructor(fn){resize=fn;}observe(){}disconnect(){}}});
-const { BEAM_SPEED, roundedPerimeter, beamSchedule, beamFrames, installHeroBeam } = module.exports;
+const { BEAM_SPEED, roundedPerimeter, roundedPath, beamSchedule, beamFrames, installHeroBeam } = module.exports;
 assert.equal(BEAM_SPEED,260);
 assert.ok(Math.abs(roundedPerimeter(100,40,7)-(280-56+14*Math.PI))<1e-9);
-const panels = Array.from({length:6},(_,i)=>Array.from({length:i===0?2:1},()=>({width:475,height:42+i*2,appendChild(svg){this.svg=svg;},getBoundingClientRect(){return {width:this.width,height:this.height};}})));
-const fixture = {dataset:{motion:'playing'},querySelectorAll:()=>panels.map(group=>({querySelectorAll:()=>group}))};
+assert.equal(roundedPath(100,40), 'M 94 1 A 5 5 0 0 1 99 6 V 34 A 5 5 0 0 1 94 39 H 6 A 5 5 0 0 1 1 34 V 6 A 5 5 0 0 1 6 1 H 94 Z', 'Clockwise loop starts and ends at the upper-right tangent');
+const panels = Array.from({length:18},(_,i)=>({width:i===3?475:140+i*2,height:40,appendChild(svg){this.svg=svg;},getBoundingClientRect(){return {width:this.width,height:this.height};}}));
+const fixture = {dataset:{motion:'playing'},querySelectorAll:selector=>{assert.equal(selector,'[data-flow-node]');return panels;}};
 const beam = installHeroBeam(fixture);
 let active = allAnimations.filter(a=>a.state!=='cancelled');
-assert.equal(active.length,7);
+assert.equal(active.length,18,'Exactly one path per actual card');
 const check = () => {
-  const lengths=panels.map(group=>group.map(p=>roundedPerimeter(p.width-2,p.height-2)));
+  const lengths=panels.map(p=>roundedPerimeter(p.width-2,p.height-2));
   const schedule=beamSchedule(lengths);
-  schedule.layers.forEach((layer,i)=>{assert.equal(layer.start,i? schedule.layers[i-1].start+schedule.layers[i-1].duration:0);assert.ok(Math.abs(layer.duration-Math.max(...lengths[i])/260*1000)<1e-9);});
-  assert.equal(schedule.cycle,schedule.layers.at(-1).start+schedule.layers.at(-1).duration+2000);
-  let k=0;
-  lengths.forEach((group,i)=>group.forEach(length=>{
-    const a=active[k++]; assert.equal(a.options.duration,schedule.cycle);assert.equal(a.options.easing,'linear');assert.equal(a.options.iterations,Infinity);
-    const f=beamFrames(length,schedule.layers[i].start,schedule.cycle);
+  schedule.cards.forEach((card,i)=>{assert.equal(card.start,i? schedule.cards[i-1].start+schedule.cards[i-1].duration:0);assert.ok(Math.abs(card.duration-lengths[i]/260*1000)<1e-9);});
+  assert.equal(schedule.cycle,schedule.cards.at(-1).start+schedule.cards.at(-1).duration+2000);
+  lengths.forEach((length,i)=>{
+    const a=active[i]; assert.equal(a.options.duration,schedule.cycle);assert.equal(a.options.easing,'linear');assert.equal(a.options.iterations,Infinity);
+    const dash=Math.min(54,length*.12); const f=beamFrames(length,schedule.cards[i].start,schedule.cycle,dash);
+    assert.deepEqual(a.frames,f);
+    assert.equal(Number(f[1].strokeDashoffset),dash,'Head begins at path origin');
+    assert.ok(Math.abs(dash-Number(f[4].strokeDashoffset)-length)<1e-9,'Head completes exactly one perimeter before next card');
+    assert.equal(panels[i].svg.child.attrs.d,roundedPath(panels[i].width,panels[i].height));
     for(let j=2;j<=4;j++){const distance=Number(f[j].strokeDashoffset)-Number(f[j-1].strokeDashoffset);const seconds=(f[j].offset-f[j-1].offset)*schedule.cycle/1000;assert.ok(Math.abs(-distance/seconds-260)<1e-8,'Equal speed during fade, straight edges and turns');}
-  }));
+  });
+  for(let time=0;time<schedule.cycle;time+=17){assert.ok(schedule.cards.filter(c=>time>c.start&&time<c.start+c.duration).length<=1,'Never two active cards');}
   return schedule;
 };
-const before=check();active.forEach(a=>a.currentTime=before.layers[2].start+before.layers[2].duration*.4);
-fixture.dataset.motion='paused';beam.sync();const paused=active[0].currentTime;assert.ok(active.every(a=>a.state==='paused'));fixture.dataset.motion='playing';beam.sync();assert.equal(active[0].currentTime,paused,'Resume keeps arc position');
-panels.flat().forEach(p=>{p.width=326;p.height=70;});resize();active=allAnimations.filter(a=>a.state!=='cancelled');const after=check();assert.ok(Math.abs(active[0].currentTime-(after.layers[2].start+after.layers[2].duration*.4))<1e-8,'Resize preserves layer and proportional perimeter position');
+const before=check();active.forEach(a=>a.currentTime=before.cards[7].start+before.cards[7].duration*.4);
+fixture.dataset.motion='paused';beam.sync();const paused=active[0].currentTime;assert.ok(active.every(a=>a.state==='paused'));fixture.dataset.motion='playing';beam.sync();assert.equal(active[0].currentTime,paused,'Resume keeps card and arc position');
+panels.forEach((p,i)=>{p.width=i===3?326:155;p.height=70;});resize();active=allAnimations.filter(a=>a.state!=='cancelled');const after=check();assert.ok(Math.abs(active[0].currentTime-(after.cards[7].start+after.cards[7].duration*.4))<1e-8,'Resize preserves card and proportional perimeter position');
 fixture.dataset.motion='static';beam.sync();assert.ok(active.every(a=>a.state==='paused'));beam.destroy();assert.ok(allAnimations.every(a=>a.state==='cancelled'));
-console.log('PASS: constant 260px/s SVG arc speed, sequential geometry-based timing, resize continuity, pause/resume, switch/session, hover/focus/tooltip/offscreen/hidden/reduced-motion, preserved layout and copy');
+console.log('PASS: constant 260px/s SVG arc speed, 18 clockwise card loops from upper-right, single-card order, resize continuity, pause/resume, switch/session, hover/focus/tooltip/offscreen/hidden/reduced-motion, preserved layout and copy');

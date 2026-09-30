@@ -43,3 +43,6 @@
 .site-header[data-navigation-ready] .navigation-fallback { display: none; }
 .site-header:not([data-navigation-ready]) .navigation-toggle,
 .site-header:not([data-navigation-ready]) .mobile-menu-toggle { visibility: hidden; }
+
+.navigation-arrow { width: .9rem; height: .9rem; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.5; }
+.docs-navigation-link .navigation-arrow { color: var(--color-emerald); }

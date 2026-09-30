@@ -22,7 +22,7 @@ const commands = [
 ---
 <div class="runtime-home" data-locale={lang}>
   <section class="runtime-hero">
-    <div class="site-container hero-grid">
+    <div class="site-container hero-grid hero-stack">
       <div class="hero-message">
         <span class="micro-label"><span class="status-dot"></span>{c.badge}</span>
         <h1>{c.headline.map((line, i) => <span class:list={[i === 2 && 'accent-line']}>{line}</span>)}</h1>
@@ -105,6 +105,14 @@ const commands = [
 </script>
 
 <style>
+  .hero-stack{display:flex;flex-direction:column;gap:43px;padding-top:55px;padding-bottom:48px}
+  .hero-stack .hero-message{width:100%;max-width:980px;text-align:center}
+  .hero-stack .hero-message h1{font-size:clamp(43px,4.7vw,64px);line-height:1.15;margin:19px 0 22px;letter-spacing:-.055em}
+  .hero-stack .hero-message h1 span{display:inline;margin-right:.14em}.hero-stack .hero-message h1 .accent-line{display:block;margin-right:0}
+  .hero-stack .hero-lead{max-width:690px;margin:0 auto 24px}.hero-stack .hero-actions,.hero-stack .trust-list{justify-content:center}.hero-stack .trust-list{margin-top:22px}
+  @media(max-width:780px){.hero-stack{gap:33px;padding-top:36px;padding-bottom:35px}.hero-stack .hero-message{max-width:620px}.hero-stack .hero-message h1{font-size:clamp(37px,6.8vw,52px)}.hero-stack .hero-lead{max-width:540px}}
+  @media(max-width:480px){.hero-stack .hero-message h1{font-size:38px}.hero-stack .hero-message h1 span{display:block;margin:0}.hero-stack .hero-actions{flex-wrap:wrap}.hero-stack .hero-lead{font-size:14px}}
+
   .architecture-section{padding:66px 0;background:#fff;border-bottom:1px solid #e2e8dd}
   .architecture-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:27px}
   .architecture-heading h2{font-size:clamp(28px,3vw,38px);font-weight:540;letter-spacing:-.045em;line-height:1.2;margin:12px 0 0}

@@ -128,3 +128,7 @@ assert.ok(value.includes('概念示意')&&value.includes('Concept'));
 assert.ok(value.includes('通过兼容接口接入')&&value.includes('Connect through compatible APIs'));
 assert.ok(value.includes('value-feedback')&&value.includes('value-charts'));
 console.log('PASS: native value-cycle visual, explicit concept boundary, architecture relocated below hero');
+
+assert.ok(home.includes('hero-stack'));
+assert.ok(value.includes('value-stages')&&value.includes('grid-template-columns:minmax(0,1fr) 58px minmax(0,1.35fr) 58px minmax(0,1fr)'));
+console.log('PASS: stacked page hero with wide left-to-right concept stages and mobile vertical reflow');

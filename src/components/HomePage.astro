@@ -8,6 +8,7 @@ import { homeCopy } from '../data/home';
 import Icon from './RuntimeIcon.astro';
 import HomeGuides from './HomeGuides.astro';
 import HeroFlow from './HeroFlow.astro';
+import HeroValue from './HeroValue.astro';
 import '../styles/home.css';
 interface Props { lang: Locale; }
 const { lang } = Astro.props;
@@ -29,9 +30,16 @@ const commands = [
         <div class="hero-actions"><a class="button-primary" href="#get-started">{c.primary}<Icon name="arrow" /></a><a class="button-secondary" href={SITE.repository}>{c.secondary}<span class="external-arrow" aria-hidden="true"><Icon name="arrowUpRight" /></span></a></div>
         <ul class="trust-list">{c.trust.map(item => <li><span aria-hidden="true">✓</span>{item}</li>)}</ul>
       </div>
-      <HeroFlow lang={lang} />
+      <HeroValue lang={lang} />
     </div>
     <div class="site-container protocol-strip"><span>{c.protocolLabel}</span><div><span>Anthropic <b>Messages</b></span><i></i><span>OpenAI <b>Chat Completions</b></span><i></i><span>OpenAI <b>Responses</b></span></div></div>
+  </section>
+
+  <section class="home-section architecture-section" aria-labelledby="architecture-title">
+    <div class="site-container">
+      <div class="architecture-heading"><div><span class="micro-label">{lang === 'zh' ? '从对话到应用' : 'FROM CONVERSATIONS TO APPLICATIONS'}</span><h2 id="architecture-title">{lang === 'zh' ? '每一步，都连接在一起。' : 'Every step, connected.'}</h2></div><p>{lang === 'zh' ? '点选方块，了解每一层如何工作。' : 'Select a card to explore how each layer works.'}</p></div>
+      <HeroFlow lang={lang} />
+    </div>
   </section>
 
   <section class="home-section capabilities-section" id="capabilities">
@@ -95,3 +103,14 @@ const commands = [
     });
   });
 </script>
+
+<style>
+  .architecture-section{padding:66px 0;background:#fff;border-bottom:1px solid #e2e8dd}
+  .architecture-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:27px}
+  .architecture-heading h2{font-size:clamp(28px,3vw,38px);font-weight:540;letter-spacing:-.045em;line-height:1.2;margin:12px 0 0}
+  .architecture-heading p{font-size:12px;line-height:1.7;color:#71816c;max-width:280px;margin:0}
+  .architecture-section :global(.hero-flow-widget){max-width:none;width:100%}
+  .architecture-section :global(.hero-flow){padding:26px}
+  @media(max-width:780px){.architecture-heading{display:block}.architecture-heading p{margin-top:14px}.architecture-section{padding:46px 0}.architecture-section :global(.hero-flow){padding:20px 16px}}
+  @media(max-width:480px){.architecture-section :global(.hero-flow){padding:16px 12px}}
+</style>

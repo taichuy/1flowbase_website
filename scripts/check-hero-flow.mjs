@@ -119,3 +119,12 @@ fixture.dataset.motion='paused';beam.sync();const paused=active[0].currentTime;a
 panels.forEach((p,i)=>{p.width=i===3?326:155;p.height=70;});resize();active=allAnimations.filter(a=>a.state!=='cancelled');const after=check();assert.ok(Math.abs(active[0].currentTime-(after.cards[7].start+after.cards[7].duration*.4))<1e-8,'Resize preserves card and proportional perimeter position');
 fixture.dataset.motion='static';beam.sync();assert.ok(active.every(a=>a.state==='paused'));beam.destroy();assert.ok(allAnimations.every(a=>a.state==='cancelled'));
 console.log('PASS: constant 260px/s SVG arc speed, 18 clockwise card loops from upper-right, single-card order, resize continuity, pause/resume, switch/session, hover/focus/tooltip/offscreen/hidden/reduced-motion, preserved layout and copy');
+
+const home = await readFile(new URL('../src/components/HomePage.astro',import.meta.url),'utf8');
+const value = await readFile(new URL('../src/components/HeroValue.astro',import.meta.url),'utf8');
+assert.ok(home.indexOf('<HeroValue')<home.indexOf('architecture-section')&&home.indexOf('architecture-section')<home.indexOf('<HeroFlow'),'Native value visual in hero; architecture follows in its own section');
+assert.ok(!value.includes('<img')&&!value.includes('.png'),'Reference is recreated as native markup');
+assert.ok(value.includes('概念示意')&&value.includes('Concept'));
+assert.ok(value.includes('通过兼容接口接入')&&value.includes('Connect through compatible APIs'));
+assert.ok(value.includes('value-feedback')&&value.includes('value-charts'));
+console.log('PASS: native value-cycle visual, explicit concept boundary, architecture relocated below hero');

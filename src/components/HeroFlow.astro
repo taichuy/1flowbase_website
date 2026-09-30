@@ -1,0 +1,131 @@
+---
+import type { Locale } from '../config';
+import Icon from './RuntimeIcon.astro';
+interface Props { lang: Locale; }
+const { lang } = Astro.props;
+const zh = lang === 'zh';
+const t = zh ? {
+  title: '从一次对话，到一个可用的应用',
+  local: '从你熟悉的本地 Agent 开始',
+  gateway: '通过 1flowbase 网关发送对话',
+  data: '保留对话，连接业务数据',
+  records: 'Agent 对话记录', recordNote: '按配置保存，方便回看',
+  database: '业务数据库', databaseNote: '管理你定义的业务数据',
+  apps: '按需要构建应用', example: '场景示例 · 需配置与开发',
+  appNames: ['Token 用量', '知识库', '业务管理', '报表'],
+  interfaces: '查看管理，或开放工具调用',
+  gui: 'GUI 图形界面', guiNote: '查看、编辑与管理',
+  mcp: 'MCP 工具接口', mcpNote: '发现并调用已开放的能力',
+  users: '人和 Agent，都能用起来', person: '用户直接操作', agent: 'Agent 按权限调用',
+  note: '接入示例：需兼容接口。记录范围、业务数据与权限由你配置。',
+  pause: '暂停动画', resume: '播放动画',
+} : {
+  title: 'From a conversation to a useful app',
+  local: 'Start with your local agent',
+  gateway: 'Send chats through the 1flowbase gateway',
+  data: 'Keep conversations. Connect business data.',
+  records: 'Agent conversations', recordNote: 'Retain what you configure',
+  database: 'Business database', databaseNote: 'Manage the data you define',
+  apps: 'Build the apps you need', example: 'Example uses · setup and development required',
+  appNames: ['Token usage', 'Knowledge base', 'Business tools', 'Reports'],
+  interfaces: 'Manage it directly or expose tools',
+  gui: 'GUI interface', guiNote: 'View, edit and manage',
+  mcp: 'MCP tools', mcpNote: 'Discover and call exposed capabilities',
+  users: 'For people and agents', person: 'People operate the app', agent: 'Agents call permitted tools',
+  note: 'Example clients need compatible endpoints. You configure retention, business data and permissions.',
+  pause: 'Pause animation', resume: 'Play animation',
+};
+---
+<figure class="hero-flow" data-hero-flow aria-labelledby="hero-flow-title">
+  <div class="hero-flow-heading"><h2 id="hero-flow-title">{t.title}</h2><button type="button" data-flow-toggle data-pause={t.pause} data-resume={t.resume} hidden>{t.pause}</button></div>
+  <ol class="hero-flow-layers" role="list">
+    <li>
+      <h3><span aria-hidden="true">01</span>{t.local}</h3>
+      <div class="hero-flow-clients"><span>Codex</span><span>Claude Code</span><span>DeepSeek harness</span></div>
+      <div class="hero-flow-gateway"><Icon name="route"/><strong>{t.gateway}</strong></div>
+      <div class="hero-flow-arrow" aria-hidden="true"><svg viewBox="0 0 20 24"><path d="M10 1v20m-5-5 5 5 5-5"/></svg><i></i></div>
+    </li>
+    <li>
+      <h3><span aria-hidden="true">02</span>{t.data}</h3>
+      <div class="hero-flow-pair"><div><Icon name="flow"/><strong>{t.records}</strong></div><div><Icon name="database"/><strong>{t.database}</strong></div></div>
+      <div class="hero-flow-arrow" aria-hidden="true"><svg viewBox="0 0 20 24"><path d="M10 1v20m-5-5 5 5 5-5"/></svg><i></i></div>
+    </li>
+    <li>
+      <h3><span aria-hidden="true">03</span>{t.apps}</h3>
+      <div class="hero-flow-apps">{t.appNames.map(name => <span>{name}</span>)}</div><p class="hero-flow-example">{t.example}</p>
+      <div class="hero-flow-arrow" aria-hidden="true"><svg viewBox="0 0 20 24"><path d="M10 1v20m-5-5 5 5 5-5"/></svg><i></i></div>
+    </li>
+    <li>
+      <h3><span aria-hidden="true">04</span>{t.interfaces}</h3>
+      <div class="hero-flow-pair"><div><Icon name="layout"/><strong>{t.gui}</strong></div><div><Icon name="code"/><strong>{t.mcp}</strong></div></div>
+      <div class="hero-flow-arrow hero-flow-arrow-pair" aria-hidden="true">{[0,1].map(() => <span><svg viewBox="0 0 20 24"><path d="M10 1v20m-5-5 5 5 5-5"/></svg><i></i></span>)}</div>
+    </li>
+    <li>
+      <div class="hero-flow-final"><span class="hero-flow-final-number" aria-hidden="true">05</span><div class="hero-flow-endpoints" aria-label={t.users}><strong>{t.person}</strong><strong><Icon name="spark"/>{t.agent}</strong></div></div>
+    </li>
+  </ol>
+  <figcaption>{t.note}</figcaption>
+</figure>
+<style>
+  .hero-flow{margin:0;min-width:0;padding:18px;background:linear-gradient(145deg,#f2f5e9,#f8faf3);border:1px solid #d4dfd1;border-radius:14px;box-shadow:0 13px 50px #52634008;color:#183a30}
+  .hero-flow-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+  .hero-flow h2{font-size:15px;font-weight:650;line-height:1.5;margin:0;letter-spacing:-.02em}
+  .hero-flow-heading button{flex-shrink:0;min-height:40px;background:#fff;border:1px solid #bdcdb7;border-radius:5px;padding:5px 8px;font-size:11px;color:#365442}
+  .hero-flow-heading button:focus-visible{outline:3px solid #176e55;outline-offset:3px}
+  .hero-flow-layers{padding:0;margin:0;list-style:none}
+  .hero-flow-layers>li{margin:0;padding:0}
+  .hero-flow h3{display:flex;align-items:baseline;gap:8px;margin:0 0 6px;font-size:13px;line-height:1.5;font-weight:600}
+  .hero-flow h3>span{font:11px var(--font-mono);color:#64765c}
+  .hero-flow-clients{display:flex;flex-wrap:wrap;gap:6px}
+  .hero-flow-clients>span{border:1px solid #d9e2d1;background:#fff;border-radius:5px;padding:5px 8px;font:12px/1.4 var(--font-mono)}
+  .hero-flow-gateway{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;padding:7px 9px;background:#1d4b3b;color:white;border-radius:6px;position:relative}
+  .hero-flow-gateway:before{position:absolute;content:'';width:1px;height:8px;top:-9px;left:50%;background:#78996e}
+  .hero-flow-gateway strong{font-size:12px;line-height:1.5;font-weight:550}
+  .hero-flow-gateway :global(svg){width:17px;height:17px}
+  .hero-flow-arrow{height:19px;position:relative;text-align:center;color:#8a9e7a}
+  .hero-flow-arrow svg{height:18px;width:20px;fill:none;stroke:currentColor;stroke-width:1.3;display:inline-block}
+  .hero-flow-arrow i{position:absolute;top:1px;left:calc(50% - 2px);height:4px;width:4px;border-radius:50%;background:#2b825d;opacity:0}
+  .hero-flow-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .hero-flow-pair>div{display:grid;grid-template-columns:18px 1fr;align-items:center;gap:4px 7px;padding:8px;background:#fff;border:1px solid #d7e1d0;border-radius:6px;min-width:0}
+  .hero-flow-pair :global(svg){height:17px;width:17px;color:#517149}
+  .hero-flow-pair strong{font-size:13px;font-weight:600;line-height:1.45}
+  .hero-flow-apps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .hero-flow-apps>span{background:#e6eedb;border:1px solid #ccdabc;border-radius:5px;padding:7px 5px;text-align:center;font-size:12px;line-height:1.4}
+  .hero-flow-example{font-size:11px;line-height:1.6;color:#5b6c53;margin:5px 0 0}
+  .hero-flow-arrow-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .hero-flow-arrow-pair>span{position:relative}
+  .hero-flow-final{display:flex;align-items:center;gap:8px}
+  .hero-flow-final-number{font:11px var(--font-mono);color:#64765c}
+  .hero-flow-endpoints{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .hero-flow-endpoints strong{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 7px;border:1px solid #afc6a3;border-radius:6px;background:#eef3e6;font-size:12px;font-weight:600;line-height:1.5;text-align:center}
+  .hero-flow-endpoints :global(svg){width:16px;height:16px}
+  .hero-flow figcaption{font-size:11px;line-height:1.7;color:#65725c;margin-top:10px}
+  [data-motion=running] .hero-flow-arrow i{animation:flow-travel 8s ease-in-out infinite}
+  [data-motion=running] li:nth-child(2) .hero-flow-arrow i{animation-delay:1.5s}
+  [data-motion=running] li:nth-child(3) .hero-flow-arrow i{animation-delay:3s}
+  [data-motion=running] li:nth-child(4) .hero-flow-arrow i{animation-delay:4.5s}
+  @keyframes flow-travel{0%,4%{opacity:0;transform:translateY(0)}8%{opacity:1}20%{opacity:1;transform:translateY(12px)}25%,100%{opacity:0;transform:translateY(12px)}}
+  @media(max-width:1100px){.hero-flow{padding:18px}}
+  @media(max-width:780px){.hero-flow{max-width:560px;width:100%;justify-self:center;box-sizing:border-box}}
+  @media(max-width:480px){.hero-flow-apps{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:400px){.hero-flow{padding:15px 12px}.hero-flow-heading{align-items:flex-start;gap:6px}.hero-flow h2{font-size:14px}.hero-flow-pair>div{padding:9px 7px;grid-template-columns:1fr}.hero-flow-pair :global(svg){display:none}.hero-flow-endpoints :global(svg){display:none}.hero-flow-clients>span{font-size:11px;padding:6px 7px}}
+  @media(prefers-reduced-motion:reduce){.hero-flow-arrow i{animation:none!important}.hero-flow-heading button{display:none}}
+</style>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-hero-flow]').forEach(flow => {
+    const button = flow.querySelector<HTMLButtonElement>('[data-flow-toggle]');
+    if (!button) return;
+    const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let paused = false;
+    const update = () => {
+      const running = !preference.matches && !paused;
+      flow.dataset.motion = running ? 'running' : 'static';
+      button.hidden = preference.matches;
+      button.textContent = (running ? button.dataset.pause : button.dataset.resume) ?? '';
+    };
+    button.addEventListener('click', () => { paused = !paused; update(); });
+    preference.addEventListener('change', update);
+    document.addEventListener('astro:before-swap', () => preference.removeEventListener('change', update), { once: true });
+    update();
+  });
+</script>

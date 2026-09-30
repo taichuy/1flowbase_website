@@ -7,6 +7,7 @@ import { SITE, type Locale, localePath } from '../config';
 import { homeCopy } from '../data/home';
 import Icon from './RuntimeIcon.astro';
 import HomeGuides from './HomeGuides.astro';
+import HeroFlow from './HeroFlow.astro';
 import '../styles/home.css';
 interface Props { lang: Locale; }
 const { lang } = Astro.props;
@@ -28,15 +29,7 @@ const commands = [
         <div class="hero-actions"><a class="button-primary" href="#get-started">{c.primary}<Icon name="arrow" /></a><a class="button-secondary" href={SITE.repository}>{c.secondary}<span class="external-arrow" aria-hidden="true"><Icon name="arrowUpRight" /></span></a></div>
         <ul class="trust-list">{c.trust.map(item => <li><span aria-hidden="true">✓</span>{item}</li>)}</ul>
       </div>
-      <figure class="runtime-diagram" aria-label={c.diagramLabel}>
-        <div class="diagram-top"><span class="diagram-eyebrow">{c.diagramLabel}</span><span class="diagram-indicator"><span></span>1flowbase</span></div>
-        <div class="diagram-actors"><div><span class="actor-icon">⌘</span>{c.people}<small>GUI</small></div><div><Icon name="spark" />{c.agents}<small>MCP</small></div></div>
-        <div class="diagram-connector" aria-hidden="true"><i></i><i></i></div>
-        <div class="runtime-core"><div class="core-title"><img src="/favicon.svg" alt="" width="28" height="28"/><strong>1flowbase</strong><span>RUNTIME</span></div><div class="core-grid">{[['route','AI Gateway'],['flow','Workflow'],['database','Data'],['code','API'],['spark','MCP'],['layout','React UI']].map(([icon,label]) => <div><Icon name={icon}/><span>{label}</span></div>)}</div><div class="core-foundation"><span></span> API-FIRST · SELF-HOSTED · EXTENSIBLE</div></div>
-        <div class="application-connector" aria-hidden="true"></div>
-        <div class="diagram-output"><Icon name="layout"/><span>{c.runtime}</span><span class="external-arrow" aria-hidden="true"><Icon name="arrowUpRight" /></span></div>
-        <figcaption>{c.diagramCaption}</figcaption>
-      </figure>
+      <HeroFlow lang={lang} />
     </div>
     <div class="site-container protocol-strip"><span>{c.protocolLabel}</span><div><span>Anthropic <b>Messages</b></span><i></i><span>OpenAI <b>Chat Completions</b></span><i></i><span>OpenAI <b>Responses</b></span></div></div>
   </section>

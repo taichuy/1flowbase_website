@@ -1,142 +1,141 @@
 ---
 import type { Locale } from '../config';
-import Icon from './RuntimeIcon.astro';
+import Node from './HeroFlowNode.astro';
 interface Props { lang: Locale; }
 const { lang } = Astro.props;
 const zh = lang === 'zh';
-const t = zh ? {
-  title: '从一次对话，到一个可用的应用',
-  local: '从你熟悉的本地 Agent 开始',
-  gateway: '通过 1flowbase 网关发送对话',
-  data: '保留对话，连接业务数据',
-  records: 'Agent 对话记录', recordNote: '按配置保存，方便回看',
-  database: '业务数据', databaseNote: '管理你定义的业务数据',
-  capabilities: '用这些能力构建',
-  apps: '按需要构建应用', example: '场景示例 · 需配置与开发',
-  appNames: ['Token 用量', '知识库', '业务管理', '报表'],
-  interfaces: '查看管理，或开放工具调用',
-  gui: 'GUI 图形界面', guiNote: '查看、编辑与管理',
-  mcp: 'MCP 工具接口', mcpNote: '发现并调用已开放的能力',
-  users: '人和 Agent，都能用起来', person: '用户直接操作', agent: 'Agent 按权限调用',
-  note: '接入示例：需兼容接口。记录范围、业务数据与权限由你配置。',
-  pause: '暂停动画', resume: '播放动画',
-} : {
-  title: 'From a conversation to a useful app',
-  local: 'Start with your local agent',
-  gateway: 'Send chats through the 1flowbase gateway',
-  data: 'Keep conversations. Connect business data.',
-  records: 'Agent conversations', recordNote: 'Retain what you configure',
-  database: 'Business data', databaseNote: 'Manage the data you define',
-  capabilities: 'Build with these capabilities',
-  apps: 'Build the apps you need', example: 'Example uses · setup and development required',
-  appNames: ['Token usage', 'Knowledge base', 'Business tools', 'Reports'],
-  interfaces: 'Manage it directly or expose tools',
-  gui: 'GUI interface', guiNote: 'View, edit and manage',
-  mcp: 'MCP tools', mcpNote: 'Discover and call exposed capabilities',
-  users: 'For people and agents', person: 'People operate the app', agent: 'Agents call permitted tools',
-  note: 'Example clients need compatible endpoints. You configure retention, business data and permissions.',
-  pause: 'Pause animation', resume: 'Play animation',
-};
+const title = zh ? '从 AI 对话到知识库与业务系统' : 'From AI conversations to knowledge and business systems';
+const clientNote = zh ? '本地 Agent 接入示例，需配置兼容的模型接口。' : 'An example local agent. A compatible model endpoint must be configured.';
+const gateway = zh ? '1flowbase 网关 · Chat' : '1flowbase Gateway · Chat';
+const gatewayNote = zh ? '通过网关发送 AI 对话；记录范围、保留策略和访问权限由你配置。' : 'Route AI conversations through the gateway. You configure what is recorded, retention and access permissions.';
+const layers = zh ? [
+  [['Agent 对话记录','按配置保留对话记录，供有权限的用户回看与使用。','flow'],['业务数据','你定义和管理的业务内容，与下层的 DB 存储能力分开。','database']],
+  [['DB','定义数据模型，存储和读取自己的业务数据。',''],['CRUD API','为业务数据提供创建、读取、更新和删除接口。',''],['Workflow API','编排模型、工具与逻辑，通过 API 调用工作流。',''],['React Block','通过 React / TSX 代码区块构建应用界面。','']],
+  [['Token 用量','应用场景示例：分析模型使用情况。需按业务需求配置与开发。',''],['知识库','应用场景示例：整理可复用的知识。需配置数据来源、权限与应用逻辑，并非自动生成的现成应用。',''],['业务管理','应用场景示例：基于自己的数据构建业务工具。需配置与开发。',''],['报表','应用场景示例：汇总数据并展示结果。需配置与开发。','']],
+  [['GUI 图形界面','用户通过图形界面查看、编辑和管理已配置的应用。','layout'],['MCP 工具接口','Agent 发现并调用你已开放的能力；具体工具和权限需配置。','code']],
+  [['用户','在权限范围内直接操作应用。',''],['Agent','通过已开放的 MCP 工具，在授权范围内调用应用能力。','spark']],
+] : [
+  [['Agent conversations','Retain configured conversation records for authorized users to review and reuse.','flow'],['Business data','Business content you define and manage, separate from the DB storage capability below.','database']],
+  [['DB','Define data models to store and read your business data.',''],['CRUD API','Create, read, update and delete business data through APIs.',''],['Workflow API','Compose models, tools and logic, then call workflows through an API.',''],['React Block','Build application interfaces with React / TSX code blocks.','']],
+  [['Token usage','Example application: analyze model usage. Configuration and development are required.',''],['Knowledge base','Example application: organize reusable knowledge. Data sources, permissions and logic require setup; this is not an automatically generated ready-made app.',''],['Business tools','Example application: build tools on your own data. Configuration and development are required.',''],['Reports','Example application: summarize data and present results. Configuration and development are required.','']],
+  [['GUI interface','People view, edit and manage configured applications through a graphical interface.','layout'],['MCP tools','Agents discover and call capabilities you expose. Tools and permissions require configuration.','code']],
+  [['People','Operate the application within their access permissions.',''],['Agents','Call application capabilities through exposed MCP tools and authorized permissions.','spark']],
+];
+const kinds = ['data','capabilities','apps','interfaces','endpoints'];
 ---
-<figure class="hero-flow" data-hero-flow aria-labelledby="hero-flow-title">
-  <div class="hero-flow-heading"><h2 id="hero-flow-title">{t.title}</h2><button type="button" data-flow-toggle data-pause={t.pause} data-resume={t.resume} hidden>{t.pause}</button></div>
+<figure class="hero-flow" data-hero-flow aria-label={title}>
   <ol class="hero-flow-layers" role="list">
-    <li>
-      <h3><span aria-hidden="true">01</span>{t.local}</h3>
-      <div class="hero-flow-clients">{['Codex', 'Claude Code', 'DeepSeek harness'].map(client => <div class="hero-flow-client"><span>{client}</span><div class="hero-flow-arrow hero-flow-client-arrow" aria-hidden="true"><svg viewBox="0 0 20 24"><path d="M10 1v20m-5-5 5 5 5-5"/></svg><i></i></div></div>)}</div>
-      <div class="hero-flow-gateway"><Icon name="route"/><strong>{t.gateway}</strong></div>
-      <div class="hero-flow-arrow" aria-hidden="true"><svg viewBox="0 0 20 24"><path d="M10 1v20m-5-5 5 5 5-5"/></svg><i></i></div>
+    <li style="--beam-delay:0s">
+      <div class="flow-layer-panel hero-flow-clients">{['Codex','Claude Code','DeepSeek harness'].map((client,i) => <div class="hero-flow-client"><Node label={client} description={clientNote} id={`flow-client-${i}`}/></div>)}</div>
+      <div class="hero-flow-client-lines" aria-hidden="true">{[0,1,2].map(() => <svg viewBox="0 0 20 24"><path d="M10 1v20m-5-5 5 5 5-5"/></svg>)}</div>
+      <div class="flow-layer-panel hero-flow-gateway"><Node label={gateway} description={gatewayNote} id="flow-gateway" icon="route"/></div>
+      <div class="hero-flow-arrow" aria-hidden="true"><svg viewBox="0 0 20 24"><path d="M10 1v20m-5-5 5 5 5-5"/></svg></div>
     </li>
-    <li>
-      <h3><span aria-hidden="true">02</span>{t.data}</h3>
-      <div class="hero-flow-pair"><div><Icon name="flow"/><strong>{t.records}</strong></div><div><Icon name="database"/><strong>{t.database}</strong></div></div>
-      <div class="hero-flow-arrow" aria-hidden="true"><svg viewBox="0 0 20 24"><path d="M10 1v20m-5-5 5 5 5-5"/></svg><i></i></div>
-    </li>
-    <li>
-      <h3><span aria-hidden="true">03</span>{t.capabilities}</h3>
-      <div class="hero-flow-capabilities">{['DB', 'CRUD API', 'Workflow API', 'React Block'].map(capability => <span>{capability}</span>)}</div>
-      <div class="hero-flow-arrow" aria-hidden="true"><svg viewBox="0 0 20 24"><path d="M10 1v20m-5-5 5 5 5-5"/></svg><i></i></div>
-    </li>
-    <li>
-      <h3><span aria-hidden="true">04</span>{t.apps}</h3>
-      <div class="hero-flow-apps">{t.appNames.map(name => <span>{name}</span>)}</div><p class="hero-flow-example">{t.example}</p>
-      <div class="hero-flow-arrow" aria-hidden="true"><svg viewBox="0 0 20 24"><path d="M10 1v20m-5-5 5 5 5-5"/></svg><i></i></div>
-    </li>
-    <li>
-      <h3><span aria-hidden="true">05</span>{t.interfaces}</h3>
-      <div class="hero-flow-pair"><div><Icon name="layout"/><strong>{t.gui}</strong></div><div><Icon name="code"/><strong>{t.mcp}</strong></div></div>
-      <div class="hero-flow-arrow hero-flow-arrow-pair" aria-hidden="true">{[0,1].map(() => <span><svg viewBox="0 0 20 24"><path d="M10 1v20m-5-5 5 5 5-5"/></svg><i></i></span>)}</div>
-    </li>
-    <li>
-      <h3><span aria-hidden="true">06</span>{t.users}</h3>
-      <div class="hero-flow-endpoints"><strong>{t.person}</strong><strong><Icon name="spark"/>{t.agent}</strong></div>
-    </li>
+    {layers.map((nodes,i) => <li style={`--beam-delay:${(i+1)*.75}s`}>
+      <div class:list={['flow-layer-panel','hero-flow-row',`hero-flow-${kinds[i]}`]}>{nodes.map(([label,description,icon],j) => <Node label={label} description={description} icon={icon} id={`flow-node-${i}-${j}`}/>)}</div>
+      {i < 3 && <div class="hero-flow-arrow" aria-hidden="true"><svg viewBox="0 0 20 24"><path d="M10 1v20m-5-5 5 5 5-5"/></svg></div>}
+      {i === 3 && <div class="hero-flow-arrow-pair" aria-hidden="true">{[0,1].map(() => <svg viewBox="0 0 20 24"><path d="M10 1v20m-5-5 5 5 5-5"/></svg>)}</div>}
+    </li>)}
   </ol>
-  <figcaption>{t.note}</figcaption>
+  <div class="flow-tooltip" data-flow-tooltip role="tooltip" aria-hidden="true" hidden></div>
 </figure>
 <style>
-  .hero-flow{margin:0;min-width:0;padding:16px;background:linear-gradient(145deg,#f2f5e9,#f8faf3);border:1px solid #d4dfd1;border-radius:14px;box-shadow:0 13px 50px #52634008;color:#183a30}
-  .hero-flow-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
-  .hero-flow h2{font-size:15px;font-weight:650;line-height:1.5;margin:0;letter-spacing:-.02em}
-  .hero-flow-heading button{flex-shrink:0;min-height:40px;background:#fff;border:1px solid #bdcdb7;border-radius:5px;padding:5px 8px;font-size:11px;color:#365442}
-  .hero-flow-heading button:focus-visible{outline:3px solid #176e55;outline-offset:3px}
+  @property --flow-beam-angle{syntax:'<angle>';initial-value:0deg;inherits:false}
+  .hero-flow{margin:0;min-width:0;padding:22px;background:linear-gradient(145deg,#f2f5e9,#f8faf3);border:1px solid #d4dfd1;border-radius:14px;box-shadow:0 13px 50px #52634008;color:#183a30}
   .hero-flow-layers{padding:0;margin:0;list-style:none}
   .hero-flow-layers>li{margin:0;padding:0}
-  .hero-flow h3{display:flex;align-items:baseline;gap:8px;margin:0 0 4px;font-size:13px;line-height:1.5;font-weight:600}
-  .hero-flow h3>span{font:11px var(--font-mono);color:#64765c}
-  .hero-flow-clients{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-  .hero-flow-client{display:grid;grid-template-rows:1fr 14px;min-width:0}
-  .hero-flow-client>span{display:flex;align-items:center;justify-content:center;border:1px solid #d9e2d1;background:#fff;border-radius:5px;padding:5px 6px;font:12px/1.4 var(--font-mono);text-align:center;overflow-wrap:normal}
-  .hero-flow-gateway{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:0;padding:6px 9px;background:#1d4b3b;color:white;border-radius:6px;position:relative}
-  .hero-flow-gateway strong{font-size:12px;line-height:1.5;font-weight:550}
-  .hero-flow-gateway :global(svg){width:17px;height:17px}
-  .hero-flow-arrow{height:14px;position:relative;text-align:center;color:#8a9e7a}
-  .hero-flow-arrow svg{height:14px;width:20px;fill:none;stroke:currentColor;stroke-width:1.3;display:block;margin:0 auto}
-  .hero-flow-arrow i{position:absolute;top:1px;left:calc(50% - 2px);height:4px;width:4px;border-radius:50%;background:#2b825d;opacity:0}
-  .hero-flow-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .hero-flow-pair>div{display:grid;grid-template-columns:18px 1fr;align-items:center;gap:4px 7px;padding:6px 8px;background:#fff;border:1px solid #d7e1d0;border-radius:6px;min-width:0}
-  .hero-flow-pair :global(svg){height:17px;width:17px;color:#517149}
-  .hero-flow-pair strong{font-size:13px;font-weight:600;line-height:1.45}
-  .hero-flow-capabilities{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
-  .hero-flow-capabilities>span{padding:6px 3px;border:1px dashed #a8bca0;border-radius:5px;color:#365c42;background:#f5f8ef;text-align:center;font:12px/1.4 var(--font-mono)}
-  .hero-flow-apps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-  .hero-flow-apps>span{background:#e6eedb;border:1px solid #ccdabc;border-radius:5px;padding:7px 5px;text-align:center;font-size:12px;line-height:1.4}
-  .hero-flow-example{font-size:11px;line-height:1.6;color:#5b6c53;margin:5px 0 0}
-  .hero-flow-arrow-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .hero-flow-arrow-pair>span{position:relative}
-  .hero-flow-endpoints{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .hero-flow-endpoints strong{display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 7px;border:1px solid #afc6a3;border-radius:6px;background:#eef3e6;font-size:12px;font-weight:600;line-height:1.5;text-align:center}
-  .hero-flow-endpoints :global(svg){width:16px;height:16px}
-  .hero-flow figcaption{font-size:11px;line-height:1.7;color:#65725c;margin-top:10px}
-  [data-motion=running] .hero-flow-arrow i{animation:flow-travel 8s ease-in-out infinite}
-  [data-motion=running] li:nth-child(2) .hero-flow-arrow i{animation-delay:1.5s}
-  [data-motion=running] li:nth-child(3) .hero-flow-arrow i{animation-delay:3s}
-  [data-motion=running] li:nth-child(4) .hero-flow-arrow i{animation-delay:4.5s}
-  [data-motion=running] li:nth-child(5) .hero-flow-arrow i{animation-delay:6s}
-  [data-motion=running] .hero-flow-client:nth-child(2) .hero-flow-arrow i{animation-delay:.2s}
-  [data-motion=running] .hero-flow-client:nth-child(3) .hero-flow-arrow i{animation-delay:.4s}
-  @keyframes flow-travel{0%,4%{opacity:0;transform:translateY(0)}8%{opacity:1}20%{opacity:1;transform:translateY(9px)}25%,100%{opacity:0;transform:translateY(9px)}}
-  @media(max-width:1100px){.hero-flow{padding:16px}}
+  .flow-layer-panel{position:relative;border-radius:7px;isolation:isolate}
+  .flow-layer-panel:after{content:'';position:absolute;inset:-1px;border:2px solid transparent;border-radius:8px;background:conic-gradient(from var(--flow-beam-angle),transparent 0deg,transparent 260deg,#a8d987 310deg,#297e5b 350deg,transparent 360deg) border-box;mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);mask-composite:exclude;pointer-events:none;opacity:0;z-index:1}
+  [data-motion=playing] .flow-layer-panel:after{animation:flow-border-beam .65s linear var(--beam-delay) 1 both}
+  @keyframes flow-border-beam{0%{--flow-beam-angle:0deg;opacity:0}12%{opacity:.85}88%{opacity:.85}100%{--flow-beam-angle:360deg;opacity:0}}
+  .hero-flow-clients,.hero-flow-client-lines{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .hero-flow-client{display:grid;min-width:0}
+  .hero-flow-client :global(.flow-node){font-family:var(--font-mono)}
+  .hero-flow-gateway :global(.flow-node){background:#1d4b3b;border-color:#1d4b3b;color:#fff}
+  .hero-flow-gateway :global(svg){color:#d4e6cc}
+  .hero-flow-gateway :global(.flow-node:hover){background:#285b47}
+  .hero-flow-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .hero-flow-capabilities,.hero-flow-apps{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .hero-flow-capabilities :global(.flow-node){border-style:dashed;background:#f5f8ef;font-family:var(--font-mono)}
+  .hero-flow-apps :global(.flow-node){background:#e6eedb;border-color:#ccdabc}
+  .hero-flow-endpoints :global(.flow-node){background:#eef3e6;border-color:#afc6a3}
+  .hero-flow-arrow,.hero-flow-client-lines,.hero-flow-arrow-pair{height:22px;color:#8a9e7a}
+  .hero-flow-arrow svg,.hero-flow-client-lines svg,.hero-flow-arrow-pair svg{height:22px;width:20px;fill:none;stroke:currentColor;stroke-width:1.3;display:block;margin:0 auto}
+  .hero-flow-arrow-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .flow-tooltip{position:fixed;z-index:1000;box-sizing:border-box;width:max-content;max-width:min(280px,calc(100vw - 24px));margin:0;padding:11px 13px;border:1px solid #c9d8c1;border-radius:8px;background:#173e31;color:#fff;box-shadow:0 8px 24px #16352625;font:12px/1.65 var(--font-sans,sans-serif);text-align:left;overflow-wrap:anywhere}
+  .flow-tooltip[hidden]{display:none}
   @media(max-width:780px){.hero-flow{max-width:560px;width:100%;justify-self:center;box-sizing:border-box}}
-  @media(max-width:480px){.hero-flow-apps{grid-template-columns:repeat(2,1fr)}}
-  @media(max-width:400px){.hero-flow{padding:15px 12px}.hero-flow-heading{align-items:flex-start;gap:6px}.hero-flow h2{font-size:14px}.hero-flow-pair>div{padding:9px 7px;grid-template-columns:1fr}.hero-flow-pair :global(svg){display:none}.hero-flow-endpoints :global(svg){display:none}.hero-flow-clients{gap:5px}.hero-flow-client>span{padding:5px 3px}.hero-flow-capabilities{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  @media(prefers-reduced-motion:reduce){.hero-flow-arrow i{animation:none!important}.hero-flow-heading button{display:none}}
+  @media(max-width:480px){.hero-flow{padding:16px 12px}.hero-flow-capabilities,.hero-flow-apps{grid-template-columns:repeat(2,minmax(0,1fr))}.hero-flow-clients,.hero-flow-client-lines{gap:5px}}
+  @media(prefers-reduced-motion:reduce){.flow-layer-panel:after{animation:none!important;opacity:0!important}}
 </style>
 <script>
   document.querySelectorAll<HTMLElement>('[data-hero-flow]').forEach(flow => {
-    const button = flow.querySelector<HTMLButtonElement>('[data-flow-toggle]');
-    if (!button) return;
     const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let paused = false;
-    const update = () => {
-      const running = !preference.matches && !paused;
-      flow.dataset.motion = running ? 'running' : 'static';
-      button.hidden = preference.matches;
-      button.textContent = (running ? button.dataset.pause : button.dataset.resume) ?? '';
+    let played = false;
+    let animationTimer: ReturnType<typeof setTimeout> | undefined;
+    const finish = () => { flow.dataset.motion = 'complete'; clearTimeout(animationTimer); };
+    const observer = new IntersectionObserver(entries => {
+      if (played || !entries.some(entry => entry.isIntersecting)) return;
+      played = true;
+      observer.disconnect();
+      if (preference.matches) { finish(); return; }
+      flow.dataset.motion = 'playing';
+      animationTimer = setTimeout(finish, 4800);
+    }, { threshold: .2 });
+    flow.dataset.motion = 'ready';
+    if (preference.matches) { played = true; finish(); } else observer.observe(flow);
+    const onPreference = () => { if (preference.matches) { played = true; observer.disconnect(); finish(); } };
+    preference.addEventListener('change', onPreference);
+
+    const tooltip = flow.querySelector<HTMLElement>('[data-flow-tooltip]');
+    if (!tooltip) return;
+    // Portal to the body so the hero's overflow cannot clip explanations.
+    document.body.appendChild(tooltip);
+    let active: HTMLButtonElement | null = null;
+    let pinned: HTMLButtonElement | null = null;
+    let hideTimer: ReturnType<typeof setTimeout> | undefined;
+    const position = () => {
+      if (!active || tooltip.hidden) return;
+      const anchor = active.getBoundingClientRect();
+      const box = tooltip.getBoundingClientRect();
+      const left = Math.max(12, Math.min(anchor.left + (anchor.width - box.width) / 2, window.innerWidth - box.width - 12));
+      const top = anchor.top >= box.height + 20 ? anchor.top - box.height - 8 : anchor.bottom + 8;
+      tooltip.style.left = `${left}px`;
+      tooltip.style.top = `${Math.max(12, Math.min(top, window.innerHeight - box.height - 12))}px`;
     };
-    button.addEventListener('click', () => { paused = !paused; update(); });
-    preference.addEventListener('change', update);
-    document.addEventListener('astro:before-swap', () => preference.removeEventListener('change', update), { once: true });
-    update();
+    const close = () => { clearTimeout(hideTimer); active = null; pinned = null; tooltip.hidden = true; };
+    const show = (button: HTMLButtonElement) => {
+      clearTimeout(hideTimer);
+      active = button;
+      tooltip.textContent = button.dataset.description ?? '';
+      tooltip.hidden = false;
+      position();
+    };
+    const leave = () => { if (!pinned && document.activeElement !== active) hideTimer = setTimeout(close, 140); };
+    const buttons = Array.from(flow.querySelectorAll<HTMLButtonElement>('[data-flow-node]'));
+    buttons.forEach(button => {
+      button.addEventListener('pointerenter', event => { if (event.pointerType === 'mouse' && !pinned) show(button); });
+      button.addEventListener('pointerleave', leave);
+      button.addEventListener('focus', () => show(button));
+      button.addEventListener('blur', close);
+      button.addEventListener('click', () => { if (pinned === button) close(); else { pinned = button; show(button); } });
+      button.addEventListener('keydown', event => { if (event.key === 'Escape') { event.preventDefault(); close(); } });
+    });
+    tooltip.addEventListener('pointerenter', () => clearTimeout(hideTimer));
+    tooltip.addEventListener('pointerleave', leave);
+    const outside = (event: PointerEvent) => { if (event.target instanceof Node && !tooltip.contains(event.target) && !buttons.some(button => button.contains(event.target as Node))) close(); };
+    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') close(); };
+    document.addEventListener('pointerdown', outside);
+    document.addEventListener('keydown', escape);
+    window.addEventListener('resize', position);
+    window.addEventListener('scroll', close, { passive: true });
+    document.addEventListener('astro:before-swap', () => {
+      observer.disconnect(); finish(); close(); tooltip.remove();
+      preference.removeEventListener('change', onPreference);
+      document.removeEventListener('pointerdown', outside);
+      document.removeEventListener('keydown', escape);
+      window.removeEventListener('resize', position);
+      window.removeEventListener('scroll', close);
+    }, { once: true });
   });
 </script>

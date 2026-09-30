@@ -3,15 +3,15 @@ import Icon from './RuntimeIcon.astro';
 interface Props { label: string; description: string; id: string; icon?: string; }
 const { label, description, id, icon } = Astro.props;
 ---
-<button class="flow-node" type="button" data-flow-node data-description={description} aria-describedby={id}>
+<button class="hero-explainer-node" type="button" data-flow-node data-description={description} aria-describedby={id}>
   {icon && <Icon name={icon}/>}<span>{label}</span>
 </button>
 <span class="flow-description" id={id}>{description}</span>
 <style>
-  .flow-node{position:relative;min-width:0;min-height:40px;display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:8px 6px;border:1px solid #d4dfce;border-radius:6px;background:#fff;color:#244236;font:500 12px/1.45 var(--font-sans, sans-serif);text-align:center;cursor:pointer;touch-action:manipulation}
-  .flow-node:hover{border-color:#82a979;background:#f9fcf5}
-  .flow-node:focus-visible{outline:2px solid #176e55;outline-offset:3px;z-index:2}
-  .flow-node :global(svg){width:17px;height:17px;flex-shrink:0;color:#517149}
+  .hero-explainer-node{position:relative;min-width:0;min-height:40px;display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:8px 6px;border:1px solid #d4dfce;border-radius:6px;background:#fff;color:#244236;font:500 12px/1.45 var(--font-sans, sans-serif);text-align:center;cursor:pointer;touch-action:manipulation}
+  .hero-explainer-node:hover{border-color:#82a979;background:#f9fcf5}
+  .hero-explainer-node:focus-visible{outline:2px solid #176e55;outline-offset:3px;z-index:2}
+  .hero-explainer-node :global(svg){width:17px;height:17px;flex-shrink:0;color:#517149}
   .flow-description{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-  @media(max-width:400px){.flow-node{padding:8px 4px;gap:4px}.flow-node :global(svg){display:none}}
+  @media(max-width:400px){.hero-explainer-node{padding:8px 4px;gap:4px}.hero-explainer-node :global(svg){display:none}}
 </style>

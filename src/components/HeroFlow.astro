@@ -50,15 +50,15 @@ const kinds = ['data','capabilities','apps','interfaces','endpoints'];
   @keyframes flow-border-beam{0%{--flow-beam-angle:0deg;opacity:0}12%{opacity:.85}88%{opacity:.85}100%{--flow-beam-angle:360deg;opacity:0}}
   .hero-flow-clients,.hero-flow-client-lines{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
   .hero-flow-client{display:grid;min-width:0}
-  .hero-flow-client :global(.flow-node){font-family:var(--font-mono)}
-  .hero-flow-gateway :global(.flow-node){background:#1d4b3b;border-color:#1d4b3b;color:#fff}
+  .hero-flow-client :global(.hero-explainer-node){font-family:var(--font-mono)}
+  .hero-flow-gateway :global(.hero-explainer-node){background:#1d4b3b;border-color:#1d4b3b;color:#fff}
   .hero-flow-gateway :global(svg){color:#d4e6cc}
-  .hero-flow-gateway :global(.flow-node:hover){background:#285b47}
+  .hero-flow-gateway :global(.hero-explainer-node:hover){background:#285b47}
   .hero-flow-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
   .hero-flow-capabilities,.hero-flow-apps{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
-  .hero-flow-capabilities :global(.flow-node){border-style:dashed;background:#f5f8ef;font-family:var(--font-mono)}
-  .hero-flow-apps :global(.flow-node){background:#e6eedb;border-color:#ccdabc}
-  .hero-flow-endpoints :global(.flow-node){background:#eef3e6;border-color:#afc6a3}
+  .hero-flow-capabilities :global(.hero-explainer-node){border-style:dashed;background:#f5f8ef;font-family:var(--font-mono)}
+  .hero-flow-apps :global(.hero-explainer-node){background:#e6eedb;border-color:#ccdabc}
+  .hero-flow-endpoints :global(.hero-explainer-node){background:#eef3e6;border-color:#afc6a3}
   .hero-flow-arrow,.hero-flow-client-lines,.hero-flow-arrow-pair{height:22px;color:#8a9e7a}
   .hero-flow-arrow svg,.hero-flow-client-lines svg,.hero-flow-arrow-pair svg{height:22px;width:20px;fill:none;stroke:currentColor;stroke-width:1.3;display:block;margin:0 auto}
   .hero-flow-arrow-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}

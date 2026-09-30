@@ -10,7 +10,7 @@ interface Props {
 
 const { post, lang } = Astro.props;
 const base = lang === 'zh' ? '/zh/blog/' : '/blog/';
-const site = Astro.site ?? new URL('https://1flowbase-website.pages.dev');
+const site = Astro.site ?? new URL('https://1flowbase.taichuy.com');
 const structuredData = {
   '@context': 'https://schema.org',
   '@type': 'TechArticle',

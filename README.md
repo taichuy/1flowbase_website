@@ -74,7 +74,7 @@ branch, pass it after `--`:
 pnpm release -- feature/my-branch
 ```
 
-Set `SITE_URL` to the production origin, for example `https://www.example.com`. It is used for canonical URLs, the sitemap, RSS, and structured data. Until configured, builds use `https://1flowbase-website.taichu2021.workers.dev`.
+Set `SITE_URL` to the production origin, for example `https://www.example.com`. It is used for canonical URLs, the sitemap, RSS, and structured data. The production default is `https://1flowbase.taichuy.com`.
 
 No Astro server adapter, Worker runtime code, or runtime database is required for the current site.
 
@@ -84,7 +84,7 @@ Blog posts live in `src/content/blog/`. Each post declares its language in front
 
 The `1flowbase_website` Wiki is the editable website directory and homepage showcase source. Its `Home` page manages blog and documentation links, including links to content hosted in the main `1flowbase` Wiki.
 
-The homepage carousel uses one readable Wiki page per language:
+Legacy showcase content remains synchronized from one readable Wiki page per language:
 
 ```text
 Website-Home-Showcase.md       # English slides
@@ -92,7 +92,7 @@ Website-Home-Showcase-CN.md    # Chinese slides
 assets/home/**/*               # repository-hosted screenshots
 ```
 
-Each `## Slide title` must be followed by exactly one Markdown image. The website renders the title above its image and advances every two seconds, with overlay arrows and segmented progress controls. `pnpm content:sync`, `pnpm dev`, `pnpm check`, and `pnpm build` clone the Wiki content into the ignored `.cache/1flowbase-website-wiki/` directory. A sibling clone at `../1flowbase_website.wiki` is preferred for local development; otherwise the public Wiki Git repository is used. The sync step parses both language pages into static carousel data and copies repository-hosted images into the deployment.
+Each `## Slide title` must be followed by exactly one Markdown image. The redesigned homepage uses an explicit three-tab product viewer with the repository screenshots in `src/assets/product/`; it does not auto-advance. The legacy Wiki showcase remains available to the content collection for future use. `pnpm content:sync`, `pnpm dev`, `pnpm check`, and `pnpm build` clone the Wiki content into the ignored `.cache/1flowbase-website-wiki/` directory. A sibling clone at `../1flowbase_website.wiki` is preferred for local development; otherwise the public Wiki Git repository is used. The sync step parses both language pages into static carousel data and copies repository-hosted images into the deployment.
 
 Wiki content updates are picked up by the scheduled deployment workflow within 30 minutes. The **Deploy Website** workflow can also be run manually for an immediate refresh.
 
@@ -106,3 +106,15 @@ Wiki content updates are picked up by the scheduled deployment workflow within 3
 | `pnpm preview` | Preview `dist/` locally |
 | `pnpm release` | Merge `origin/taichuy/dev` into `main` and push; GitHub Actions deploys production |
 | `pnpm release:check` | Validate branch and build prerequisites without changing remote state |
+
+## Homepage redesign
+
+- Bilingual positioning and copy: `src/data/home.ts`
+- Homepage sections and progressive-enhancement interactions: `src/components/HomePage.astro`
+- Responsive visual system: `src/styles/home.css`
+- Primary CTA: local installation section; secondary CTA: project repository
+- Three operating-system tabs offer the official deployment commands; copying never executes them.
+- Templates and reduced-source-context Agent building remain explicitly labeled as in progress.
+- No tracking provider or analytics account is installed by this change. Traffic growth requires ongoing distribution and measurement, not only a visual redesign.
+
+Publication is consequential: pushing or merging to `main` triggers production deployment. Scheduled, `repository_dispatch`, and manual workflow runs also deploy the `main` content. Review on a separate branch before merging.

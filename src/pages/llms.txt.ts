@@ -1,10 +1,10 @@
 import { SITE } from '../config';
 
 export function GET({ site }: { site?: URL }) {
-  const origin = site ?? new URL('https://1flowbase-website.pages.dev');
+  const origin = site ?? new URL('https://1flowbase.taichuy.com');
   const text = `# 1flowbase
 
-> 1flowbase is an open-source, self-hosted workflow runtime that publishes multi-model and tool workflows as OpenAI- and Claude-compatible virtual model endpoints for local AI agents.
+> 1flowbase is an open-source, self-hosted AI Gateway and AI application runtime. It connects model access, workflows, complete conversation data, APIs, business data, MCP and React interfaces.
 
 ## Primary resources
 
@@ -25,9 +25,18 @@ export function GET({ site }: { site?: URL }) {
 - Connected observability: node inputs and outputs, model calls, tool callbacks, tokens, latency, cost, and failures in one execution trace.
 - Self-hosted deployment: Docker-based installation that keeps credentials and execution data under the operator's control.
 
+- Complete conversations: retained in PostgreSQL; plan storage, retention, backups and compliance before production use.
+- Business data and API-first runtime: create data tables and APIs on the same application foundation.
+- MCP Gateway: progressive tool discovery with list, get and call.
+- React Blocks: code-based React interfaces using the React ecosystem.
+
+## Current status
+
+Official MCP tools, descriptions and defaults are being refined. For complex applications, coding agents should currently work with the 1flowbase project context. Ready-to-use application templates and simpler defaults are roadmap work, not finished one-click applications.
+
 ## Canonical positioning
 
-1flowbase is not only an LLM proxy, model router, generic agent framework, or cost dashboard. It composes models and tools into workflow-backed virtual models, publishes those workflows through standard model APIs, and connects every final answer to its complete execution evidence.
+Start with an AI Gateway, compose and distribute AI capabilities, retain your conversation data, and continue building a complete application on the same runtime. Built for people and agents.
 `;
 
   return new Response(text, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });

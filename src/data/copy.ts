@@ -169,25 +169,150 @@ export const pageCopy = {
   en: {
     features: {
       eyebrow: 'Product capabilities',
-      title: 'Everything between one agent request and a trustworthy answer.',
-      description: 'Build the workflow visually, publish it through standard model protocols, and keep every execution step inspectable.',
+      title: 'From AI Gateway to a complete application runtime.',
+      description: 'Distribute AI capabilities, retain complete conversations, and build with workflows, APIs, business data, and React. Self-host the foundation on infrastructure you control.',
     },
     useCases: {
       eyebrow: 'Use cases',
-      title: 'Practical model workflows for local AI agents.',
-      description: 'Start from a concrete limitation in your current agent setup, then publish the improved behavior as one reusable virtual model.',
+      title: 'Connect your models. Build on what they create.',
+      description: 'Start with a unified AI endpoint, compose models around your tasks, and turn conversation data into the foundation for your next application.',
     },
   },
   zh: {
     features: {
       eyebrow: '产品能力',
-      title: '覆盖从一次 Agent 请求到可信回答之间的完整链路。',
-      description: '可视化构建工作流，通过标准模型协议发布，并让每一个执行步骤都可以检查和追溯。',
+      title: '从 AI Gateway 到完整的应用运行时。',
+      description: '分发 AI 能力，完整沉淀会话，再通过工作流、API、业务数据与 React 构建应用。把这一切自托管在你掌控的基础设施中。',
     },
     useCases: {
       eyebrow: '使用场景',
-      title: '面向本地 AI Agent 的实用多模型工作流。',
-      description: '从现有 Agent 的具体限制出发，把增强后的能力发布成一个可以持续复用的虚拟模型。',
+      title: '统一接入模型，让每次调用成为应用的起点。',
+      description: '从统一的 AI 入口开始，围绕任务组合模型，把持续积累的会话数据用于分析、优化与业务应用。',
     },
   },
 } as const;
+
+type FeaturePageCopy = {
+  sections: [title: string, body: string, bullets: string[]][];
+  galleryTitle: string;
+  galleryDescription: string;
+  images: string[];
+  ctaTitle: string;
+  ctaBody: string;
+  cta: string;
+};
+
+export const featuresCopy = {
+  en: {
+    sections: [
+      ['AI Gateway', 'Access models and published workflows through one gateway, with conversion between three supported AI API protocols.', ['OpenAI Chat Completions', 'OpenAI Responses', 'Anthropic Messages']],
+      ['Workflow & virtual models', 'Combine models, tools, APIs, and business logic, then publish the workflow as a virtual model. A worker model can also become a tool for your primary model.', ['Visual workflow composition', 'Workflow published as a model', 'Model-as-tool delegation']],
+      ['Complete conversation data', 'Store the complete AI conversations that pass through your gateway in PostgreSQL. Use that history to analyze usage and improve prompts, routing, and model composition.', ['Complete AI sessions', 'Model and tool execution logs', 'Token and duration metrics']],
+      ['API-first backend', 'Runtime operations are built on APIs. Create business tables in PostgreSQL and manage application data alongside the AI conversations that inform it.', ['API-based runtime operations', 'Dynamic business tables', 'AI data and business data together']],
+      ['MCP Gateway', 'Expose APIs and MCP tools to Agents through progressive discovery. Find available tools, load the definition you need, then call the tool for the task.', ['list: discover available tools', 'get: retrieve a tool definition', 'call: execute the selected tool']],
+      ['React Blocks', 'Build application interfaces with React code blocks. Use the React ecosystem to connect your UI with the APIs, workflows, and data behind it.', ['Editable React code', 'React ecosystem components', 'Business application interfaces']],
+    ],
+    galleryTitle: 'Compose capabilities. Inspect how they run.',
+    galleryDescription: 'The workflow editor, API publishing, execution logs, and token dashboard provide a view into your AI runtime.',
+    images: ['Workflow editor', 'API publishing', 'Detailed execution logs', 'Token dashboard'],
+    ctaTitle: 'Self-host the runtime. Build from there.',
+    ctaBody: 'Open source under Apache 2.0. Application templates and improved Agent building without source-code context are in progress. For complex applications today, keep your coding Agent in the 1flowbase project context.',
+    cta: 'View source',
+  },
+  zh: {
+    sections: [
+      ['AI Gateway', '通过统一网关接入模型与已发布的工作流，支持三种主流 AI API 协议之间的转换。', ['OpenAI Chat Completions', 'OpenAI Responses', 'Anthropic Messages']],
+      ['工作流与虚拟模型', '把模型、工具、API 与业务逻辑组合成工作流，再将它发布为虚拟模型。也可以把工作模型作为工具，交给主模型按需调用。', ['可视化组合工作流', '将工作流发布为模型', '模型作为工具调用']],
+      ['完整会话数据', '将经过 Gateway 的完整 AI 会话保存在 PostgreSQL 中，用于分析使用情况，并持续优化 Prompt、路由与模型组合。', ['完整 AI 会话记录', '模型与工具执行日志', 'Token 与耗时统计']],
+      ['API-first 后端', '运行时操作以 API 为基础。在 PostgreSQL 中动态创建业务表，让应用数据与 AI 会话数据进入同一个系统。', ['基于 API 的运行时操作', '动态创建业务数据表', 'AI 数据与业务数据协同']],
+      ['MCP Gateway', '通过渐进式工具发现，把 API 与 MCP Tool 暴露给 Agent。先发现可用工具，再读取所需定义，最后执行当前任务需要的能力。', ['list：发现可用工具', 'get：获取工具定义', 'call：执行所选工具']],
+      ['React Blocks', '使用 React 代码区块构建应用界面，继续使用 React 生态，将 UI 连接到背后的 API、工作流与业务数据。', ['直接编写 React 代码', '使用 React 生态组件', '构建业务应用界面']],
+    ],
+    galleryTitle: '组合 AI 能力，查看真实运行过程。',
+    galleryDescription: '通过工作流编辑器、API 发布、执行日志与 Token 面板，了解 AI 运行时中的配置与执行情况。',
+    images: ['工作流编辑器', 'API 发布配置', '详细执行日志', 'Token 消耗面板'],
+    ctaTitle: '自托管运行时，继续构建你的应用。',
+    ctaBody: '基于 Apache 2.0 开源。应用模板与降低 Agent 构建应用对源码上下文依赖的能力仍在持续完善。当前构建复杂应用时，建议让 Coding Agent 在 1flowbase 项目上下文中工作。',
+    cta: '查看源码',
+  },
+} satisfies Record<Locale, FeaturePageCopy>;
+
+type UseCase = {
+  index: string;
+  title: string;
+  problem: string;
+  solution: string;
+  flow: string[];
+  guide: string;
+};
+
+export const useCasesCopy = {
+  en: [
+    {
+      index: '01',
+      title: 'Give your team a shared AI entry point',
+      problem: 'Different applications may use different model providers and API protocols. Your team needs a common way to access and distribute those capabilities.',
+      solution: 'Use the AI Gateway to publish models and workflows through OpenAI Chat Completions, OpenAI Responses, and Anthropic Messages, while retaining complete conversations in PostgreSQL.',
+      flow: ['Applications and Agents', 'AI Gateway', 'Models and published workflows', 'Conversation data in PostgreSQL'],
+      guide: '',
+    },
+    {
+      index: '02',
+      title: 'Let models work together on a task',
+      problem: 'Planning, execution, and review can have different capability and cost requirements. One model does not have to perform every step.',
+      solution: 'Compose a workflow in which one model plans, a worker model executes, and another step reviews the result. Publish it as one virtual model, or make a worker model a callable tool.',
+      flow: ['Primary model: plan', 'Worker model: execute', 'Review the result', 'Virtual model response'],
+      guide: 'Fusion-Style-Workflow',
+    },
+    {
+      index: '03',
+      title: 'Build an AI improvement loop from conversation data',
+      problem: 'To improve an AI application, you need to understand what people ask, how Agents respond, where tasks fail, and which calls consume resources.',
+      solution: 'Use complete sessions stored in PostgreSQL as a foundation for your own usage, quality, and cost analysis. Apply the findings to prompts, harnesses, routing, and model composition.',
+      flow: ['AI usage', 'Complete conversation data', 'Analysis', 'Prompt, routing, and workflow improvements'],
+      guide: '',
+    },
+    {
+      index: '04',
+      title: 'Build an Agent-ready business application',
+      problem: 'A working AI application also needs business data, APIs, and a usable interface. Those pieces need to connect with its models and workflows.',
+      solution: 'Combine dynamic PostgreSQL tables, an API-first backend, workflows, and React Blocks. Use MCP list / get / call to discover and invoke exposed capabilities. Templates and improved building without source-code context are in progress; complex apps currently benefit from an Agent working in the project context.',
+      flow: ['Business data model', 'APIs and AI workflows', 'React application interface', 'Agent access through MCP'],
+      guide: '',
+    },
+  ],
+  zh: [
+    {
+      index: '01',
+      title: '为团队建立统一的 AI 入口',
+      problem: '不同应用可能使用不同模型供应商与 API 协议，团队需要统一接入与分发这些能力。',
+      solution: '通过 AI Gateway，以 OpenAI Chat Completions、OpenAI Responses 和 Anthropic Messages 发布模型与工作流，同时把完整会话沉淀到 PostgreSQL。',
+      flow: ['应用与 Agent', 'AI Gateway', '模型与已发布的工作流', 'PostgreSQL 中的会话数据'],
+      guide: '',
+    },
+    {
+      index: '02',
+      title: '让不同模型协作完成一个任务',
+      problem: '规划、执行与审查，对模型能力和成本的要求各不相同。一个任务的所有步骤不必都由同一个模型完成。',
+      solution: '通过工作流让主模型负责规划、工作模型负责执行，再审查最终结果。将它发布成一个虚拟模型，也可以把工作模型作为主模型按需调用的工具。',
+      flow: ['主模型：规划任务', '工作模型：执行任务', '审查执行结果', '返回虚拟模型响应'],
+      guide: 'Fusion-Style-Workflow',
+    },
+    {
+      index: '03',
+      title: '用会话数据构建 AI 优化闭环',
+      problem: '改进 AI 应用，需要了解用户提出了什么问题、Agent 如何回答、哪些任务失败，以及资源消耗发生在哪里。',
+      solution: '以 PostgreSQL 中的完整会话为基础，构建自己的使用、质量与成本分析，并将发现用于优化 Prompt、Harness、路由策略与模型组合。',
+      flow: ['AI 使用', '完整会话数据', '分析问题与机会', '优化 Prompt、路由与工作流'],
+      guide: '',
+    },
+    {
+      index: '04',
+      title: '构建能被 Agent 使用的业务应用',
+      problem: '完整的 AI 应用还需要业务数据、API 和可用的界面，这些能力需要与模型和工作流连接起来。',
+      solution: '组合动态 PostgreSQL 业务表、API-first 后端、工作流与 React Blocks，通过 MCP 的 list / get / call 发现和调用已暴露的能力。应用模板与降低源码上下文依赖仍在完善；当前构建复杂应用时，建议让 Agent 在项目上下文中工作。',
+      flow: ['业务数据模型', 'API 与 AI 工作流', 'React 应用界面', '通过 MCP 接入 Agent'],
+      guide: '',
+    },
+  ],
+} satisfies Record<Locale, UseCase[]>;

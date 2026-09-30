@@ -6,7 +6,7 @@ export async function GET(context: { site?: URL }) {
   return rss({
     title: '1flowbase Blog',
     description: 'Workflow-backed virtual models, multi-model orchestration, local agents, and observability.',
-    site: context.site ?? 'https://1flowbase-website.pages.dev',
+    site: context.site ?? 'https://1flowbase.taichuy.com',
     items: posts.map((post) => ({
       title: post.data.title,
       description: post.data.description,

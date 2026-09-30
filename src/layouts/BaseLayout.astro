@@ -12,6 +12,7 @@ interface Props {
   type?: 'website' | 'article';
   noindex?: boolean;
   alternatePath?: string;
+  hasTranslation?: boolean;
   structuredData?: Record<string, unknown> | Record<string, unknown>[];
 }
 
@@ -23,11 +24,12 @@ const {
   type = 'website',
   noindex = false,
   alternatePath,
+  hasTranslation = true,
   structuredData,
 } = Astro.props;
 
-const pageTitle = title ? `${SITE.name} · ${title}` : `${SITE.name} · The native foundation for AI apps`;
-const site = Astro.site ?? new URL('https://1flowbase-website.taichu2021.workers.dev');
+const pageTitle = title ? `${SITE.name} · ${title}` : `${SITE.name} · Self-hosted AI Gateway & application runtime`;
+const site = Astro.site ?? new URL('https://1flowbase.taichuy.com');
 const canonical = new URL(Astro.url.pathname, site);
 const englishPath = Astro.url.pathname.replace(/^\/zh(?=\/|$)/, '') || '/';
 const chinesePath = `/zh${englishPath === '/' ? '/' : englishPath}`;
@@ -44,9 +46,9 @@ const imageUrl = new URL(image, site);
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="en" href={new URL(englishPath, site)} />
-    <link rel="alternate" hreflang="zh-CN" href={new URL(chinesePath, site)} />
-    <link rel="alternate" hreflang="x-default" href={new URL(englishPath, site)} />
+    {(lang === 'en' || hasTranslation) && <link rel="alternate" hreflang="en" href={new URL(englishPath, site)} />}
+    {(lang === 'zh' || hasTranslation) && <link rel="alternate" hreflang="zh-CN" href={new URL(chinesePath, site)} />}
+    <link rel="alternate" hreflang="x-default" href={hasTranslation ? new URL(englishPath, site) : canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate" type="application/rss+xml" title="1flowbase Blog" href={new URL('/rss.xml', site)} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
@@ -63,8 +65,9 @@ const imageUrl = new URL(image, site);
     {structuredData && <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
   </head>
   <body>
+    <a class="skip-link" href="#main-content">{lang === 'zh' ? '跳转到内容' : 'Skip to content'}</a>
     <Header lang={lang} alternatePath={alternatePath} />
-    <main>
+    <main id="main-content">
       <slot />
     </main>
     <Footer lang={lang} />

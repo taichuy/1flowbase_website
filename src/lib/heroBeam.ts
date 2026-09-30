@@ -1,5 +1,5 @@
 // CSS pixels per second, independent of a panel's aspect ratio or screen width.
-export const BEAM_SPEED = 520;
+export const BEAM_SPEED = 260;
 export const BEAM_GAP = 2000;
 export const roundedPerimeter = (width: number, height: number, radius = 7) => {
   const r = Math.min(radius, width / 2, height / 2);

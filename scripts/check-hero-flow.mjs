@@ -37,6 +37,8 @@ assert.ok(copy.includes("headline: ['从 AI Gateway，', '到完整的', 'AI 应
 assert.ok(copy.includes("headline: ['Start with a gateway.', 'Build an entire', 'AI application.']"));
 assert.ok(copy.includes('让 AI 对话长出可复用、可管理、持续沉淀的知识库与业务系统。'));
 assert.ok(copy.includes('Grow reusable, manageable knowledge bases and business systems from your AI conversations.'));
+assert.ok(copy.includes('让 AI 对话长出可复用、可管理、持续沉淀的知识库与业务系统。'));
+assert.ok(copy.includes('Grow reusable, manageable knowledge bases and business systems from your AI conversations.'));
 for (const path of ['../dist/index.html', '../dist/zh/index.html']) {
   const html = await readFile(new URL(path, import.meta.url), 'utf8');
   assert.ok(html.includes('data-hero-flow'), `Flow rendered at ${path}`);

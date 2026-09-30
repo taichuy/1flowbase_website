@@ -102,7 +102,8 @@ const kinds = ['data','capabilities','apps','interfaces','endpoints'];
       flow.dataset.motion = !allowed ? 'static' : visible && !document.hidden && !hovered && !focused && !tooltipOpen ? 'playing' : 'paused';
       control.checked = allowed;
       control.disabled = preference.matches;
-      status.textContent = (preference.matches ? status.dataset.system : enabled ? status.dataset.on : status.dataset.off) ?? '';
+      const nextStatus = (preference.matches ? status.dataset.system : enabled ? status.dataset.on : status.dataset.off) ?? '';
+      if (status.textContent !== nextStatus) status.textContent = nextStatus;
     };
     const observer = new IntersectionObserver(entries => {
       visible = entries.some(entry => entry.isIntersecting);

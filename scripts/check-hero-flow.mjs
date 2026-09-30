@@ -124,11 +124,17 @@ const home = await readFile(new URL('../src/components/HomePage.astro',import.me
 const value = await readFile(new URL('../src/components/HeroValue.astro',import.meta.url),'utf8');
 assert.ok(home.indexOf('<HeroValue')<home.indexOf('architecture-section')&&home.indexOf('architecture-section')<home.indexOf('<HeroFlow'),'Native value visual in hero; architecture follows in its own section');
 assert.ok(!value.includes('<img')&&!value.includes('.png'),'Reference is recreated as native markup');
-assert.ok(value.includes('概念示意')&&value.includes('Concept'));
-assert.ok(value.includes('通过兼容接口接入')&&value.includes('Connect through compatible APIs'));
+assert.ok(value.includes('概念说明')&&value.includes('Concept note'));
+assert.ok(value.includes('需配置兼容的模型接口')&&value.includes('Configure a compatible model endpoint'));
 assert.ok(value.includes('value-feedback')&&value.includes('value-charts'));
 console.log('PASS: native value-cycle visual, explicit concept boundary, architecture relocated below hero');
 
 assert.ok(home.includes('hero-stack'));
 assert.ok(value.includes('value-stages')&&value.includes('grid-template-columns:minmax(0,1fr) 58px minmax(0,1.35fr) 58px minmax(0,1fr)'));
 console.log('PASS: stacked page hero with wide left-to-right concept stages and mobile vertical reflow');
+
+for (const label of ['Claude Code','Codex','OpenClaw','DeepSeek harness','AionUi','更多 Agent']) assert.ok(value.includes(label));
+assert.ok(value.includes('从聊天记录中长出 AI 应用')&&value.includes('Grow AI applications from chat history'));
+assert.ok(value.includes('聊天 · 沉淀 · 记忆 · Agent 自进化')&&value.includes('Chat · Capture · Memory · Agent evolution'));
+assert.ok(value.includes('不代表自动训练模型')&&value.includes('automatic model training'));
+console.log('PASS: familiar client examples, revised bilingual copy and accessible configuration/concept notes');

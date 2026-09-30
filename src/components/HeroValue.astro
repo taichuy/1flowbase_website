@@ -4,15 +4,17 @@ import Icon from './RuntimeIcon.astro';
 interface Props { lang: Locale; }
 const { lang } = Astro.props;
 const zh = lang === 'zh';
-const sources = zh ? ['AI 工具', 'Coding Agent', '自建 Agent'] : ['AI tools', 'Coding agents', 'Your agents'];
+const sources = ['Claude Code', 'Codex', 'OpenClaw', 'DeepSeek harness', 'AionUi', zh ? '更多 Agent' : 'More agents'];
+const connectionNote = zh ? '接入工具示例；需配置兼容的模型接口，具体功能取决于工具、版本与配置。' : 'Example clients. Configure a compatible model endpoint; available capabilities depend on the client, version and setup.';
+const evolutionNote = zh ? '这里的自进化指利用记录、记忆与反馈，持续改进应用和 Agent 的行为；需要配置流程与权限，不代表自动训练模型或无需配置的自主学习。' : 'Agent evolution means using records, memory and feedback to improve applications and agent behavior. Workflows and permissions require setup; this does not mean automatic model training or learning without configuration.';
 const outcomes = zh ? ['更好的决策', '更深入的洞察', '更好的体验'] : ['Better decisions', 'Deeper insights', 'Better experiences'];
 ---
 <figure class="hero-value" aria-labelledby="hero-value-caption">
-  <figcaption id="hero-value-caption">{zh ? 'AI 会话的价值循环' : 'The conversation value loop'}<span>{zh ? '概念示意' : 'Concept'}</span></figcaption>
+  <figcaption id="hero-value-caption"><span class="value-caption-text">{zh ? '聊天 · 沉淀 · 记忆 · Agent 自进化' : 'Chat · Capture · Memory · Agent evolution'}</span><details class="value-note value-note-right" data-value-note><summary title={evolutionNote}>{zh ? '概念说明' : 'Concept note'}</summary><p>{evolutionNote}</p></details></figcaption>
   <div class="value-stages">
   <div class="value-input">
-    <div class="value-input-title"><strong>{zh ? '多种 AI 与 Agent' : 'Many AIs and agents'}</strong><small>{zh ? '通过兼容接口接入' : 'Connect through compatible APIs'}</small></div>
-    <ul class="value-sources">{sources.map((label,i) => <li><Icon name={['spark','code','flow'][i]}/><span>{label}</span></li>)}</ul>
+    <div class="value-input-title"><details class="value-note" data-value-note><summary title={connectionNote}>{zh ? '接入示例' : 'Example clients'}</summary><p>{connectionNote}</p></details></div>
+    <ul class="value-sources">{sources.map(label => <li><span>{label}</span></li>)}</ul>
   </div>
   <div class="value-connector" aria-hidden="true"><svg viewBox="0 0 64 24"><path d="M2 12h57m-7-6 7 6-7 6"/></svg></div>
   <div class="value-hub">
@@ -22,7 +24,7 @@ const outcomes = zh ? ['更好的决策', '更深入的洞察', '更好的体验
   </div>
   <div class="value-connector single" aria-hidden="true"><svg viewBox="0 0 64 24"><path d="M2 12h57m-7-6 7 6-7 6"/></svg></div>
   <div class="value-insights">
-    <div class="value-insight-title"><strong>{zh ? '自由组合你的洞察' : 'Compose your own insights'}</strong><small>{zh ? '从不同角度，理解自己的数据' : 'See your data from different angles'}</small></div>
+    <div class="value-insight-title"><strong>{zh ? '从聊天记录中长出 AI 应用' : 'Grow AI applications from chat history'}</strong><small>{zh ? '从不同角度，理解自己的数据' : 'See your data from different angles'}</small></div>
     <div class="value-charts" aria-hidden="true">
       <div class="value-chart line"><svg viewBox="0 0 150 55"><path class="chart-axis" d="M8 5v43h135"/><path d="m8 36 22-12 22 7 22-16 22 8 23-5 24-10"/><circle cx="30" cy="24" r="2.5"/><circle cx="74" cy="15" r="2.5"/><circle cx="119" cy="18" r="2.5"/></svg></div>
       <div class="value-chart"><svg viewBox="0 0 80 55"><path class="chart-axis" d="M7 48h68"/><path class="chart-bars" d="M16 48V29m16 19V12m16 36V22m16 26V8"/></svg></div>
@@ -38,7 +40,7 @@ const outcomes = zh ? ['更好的决策', '更深入的洞察', '更好的体验
 <style>
   .hero-value{margin:0;min-width:0;width:100%;box-sizing:border-box;color:#214e3d;background:#f8fbf5;border:1px solid #d5dfcf;border-radius:14px;padding:22px;box-shadow:0 15px 50px #354f2807}
   figcaption{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:20px;color:#244936;font-size:15px;font-weight:600;line-height:1.5}
-  figcaption>span{font-size:10px;letter-spacing:.04em;color:#778473;font-weight:400;white-space:nowrap}
+  .value-caption-text{font-size:15px;font-weight:600;line-height:1.6;color:#244936}
   .value-input-title,.value-insight-title{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:11px}
   strong{font-size:14px;font-weight:600}small{font-size:11px;line-height:1.5;color:#74836c}
   .value-sources{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
@@ -58,12 +60,22 @@ const outcomes = zh ? ['更好的决策', '更深入的洞察', '更好的体验
   .value-stages{display:grid;grid-template-columns:minmax(0,1fr) 58px minmax(0,1.35fr) 58px minmax(0,1fr);align-items:stretch}
   .value-input{padding:20px;border:1px solid #d4e0d1;border-radius:10px;background:#fff}
   .value-input-title,.value-insight-title{display:block;margin-bottom:17px}.value-input-title strong,.value-insight-title strong{font-size:16px}.value-input-title small,.value-insight-title small{display:block;margin-top:6px;font-size:12px}
-  .value-sources{grid-template-columns:1fr;gap:9px}.value-sources li{min-height:43px;font-size:13px;justify-content:flex-start;padding:0 14px}
+  .value-sources{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.value-sources li{min-height:48px;font-size:12px;justify-content:center;text-align:center;padding:7px;overflow-wrap:anywhere}
   .value-connector{align-self:center;height:24px}.value-connector svg,.value-connector.single svg{width:100%;height:24px}
   .value-hub{display:flex;flex-direction:column;justify-content:center;padding:24px 18px}.value-brand strong{font-size:32px}.value-brand :global(svg){width:31px;height:31px}.value-hub p{font-size:14px;line-height:1.75;margin:16px auto 25px;max-width:280px}.value-hub-flow{gap:12px}.value-hub-flow>span{font-size:13px}
   .value-insights{padding:20px}.value-charts{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.value-chart.line{grid-column:1/-1}.value-chart.line svg{height:70px}.value-chart svg{height:55px}
   .value-feedback{margin:0 7%;padding-top:27px}.value-return{height:44px}.value-feedback ol{direction:rtl;max-width:830px;margin:0 auto;gap:30px}.value-feedback li{direction:ltr;min-height:38px;font-size:12px;padding:5px 10px;gap:7px}.feedback-arrow{right:auto;left:-24px;font-size:17px}
   @media(max-width:1000px) and (min-width:781px){.hero-value{padding:23px 20px}.value-stages{grid-template-columns:minmax(0,1fr) 32px minmax(0,1.25fr) 32px minmax(0,1fr)}.value-input,.value-insights{padding:15px}.value-hub{padding:20px 12px}.value-brand strong{font-size:29px}.value-hub-flow{gap:7px}.value-hub-flow>span{font-size:11px}.value-hub-flow>:global(svg){width:11px}}
-  @media(max-width:780px){.hero-value{padding:22px 18px;max-width:620px;justify-self:center}.value-stages{grid-template-columns:1fr}.value-input,.value-insights{padding:18px}.value-sources{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.value-sources li{padding:8px 5px;justify-content:center;flex-direction:column;text-align:center;font-size:12px}.value-connector{height:32px}.value-connector svg,.value-connector.single svg{width:32px;height:24px;transform:rotate(90deg);margin:4px auto}.value-hub{padding:24px 15px}.value-hub p{margin:12px auto 18px}.value-charts{grid-template-columns:1.5fr 1fr 1fr}.value-chart.line{grid-column:auto}.value-chart.line svg{height:55px}.value-feedback{margin:0;padding-top:23px}.value-feedback ol{gap:12px}.value-feedback li{font-size:11px;padding:7px 4px;gap:4px}.feedback-arrow{left:-11px;font-size:13px}}
-  @media(max-width:420px){.hero-value{padding:19px 12px}.value-input,.value-insights{padding:15px 12px}.value-sources li{font-size:11px}.value-feedback li{flex-direction:column;min-height:50px}.value-hub-flow{gap:10px}.value-hub-flow>span{font-size:12px}}
+  @media(max-width:780px){.hero-value{padding:22px 18px;max-width:620px;justify-self:center}.value-stages{grid-template-columns:1fr}.value-input,.value-insights{padding:18px}.value-sources{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.value-sources li{padding:8px 5px;justify-content:center;flex-direction:column;text-align:center;font-size:12px}.value-connector{height:32px}.value-connector svg,.value-connector.single svg{width:32px;height:24px;transform:rotate(90deg);margin:4px auto}.value-hub{padding:24px 15px}.value-hub p{margin:12px auto 18px}.value-charts{grid-template-columns:1.5fr 1fr 1fr}.value-chart.line{grid-column:auto}.value-chart.line svg{height:55px}.value-feedback{margin:0;padding-top:23px}.value-feedback ol{gap:12px}.value-feedback li{font-size:11px;padding:7px 4px;gap:4px}.feedback-arrow{left:-11px;font-size:13px}}
+  @media(max-width:420px){.hero-value{padding:19px 12px}.value-input,.value-insights{padding:15px 12px}.value-sources li{font-size:12px}.value-feedback li{flex-direction:column;min-height:50px}.value-hub-flow{gap:10px}.value-hub-flow>span{font-size:12px}}
+  .value-note{position:relative;width:max-content;max-width:100%;font-size:12px;color:#617a68;font-weight:400}.value-note summary{cursor:pointer;list-style:none;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:4px;line-height:1.6}.value-note summary::-webkit-details-marker{display:none}.value-note summary:focus-visible{outline:2px solid #176e55;outline-offset:4px;border-radius:2px}.value-note p{position:absolute;z-index:20;top:100%;left:0;width:280px;max-width:calc(100vw - 70px);box-sizing:border-box;margin:8px 0 0;padding:13px 15px;border-radius:8px;border:1px solid #bfd1bb;background:#173e31;color:#fff;font-size:12px;line-height:1.7;box-shadow:0 8px 24px #16352625}.value-note-right{flex-shrink:0}.value-note-right p{left:auto;right:0}.value-input-title .value-note{font-size:14px;font-weight:600}
+  @media(max-width:480px){figcaption{align-items:flex-start;gap:12px}.value-caption-text{font-size:14px}.value-note-right{font-size:10px;margin-top:3px}.value-sources li{font-size:12px;min-height:47px}}
 </style>
+<script>
+  document.querySelectorAll<HTMLDetailsElement>('[data-value-note]').forEach(note => {
+    note.addEventListener('keydown', event => { if(event.key === 'Escape') { note.open = false; note.querySelector('summary')?.focus(); } });
+    const outside = (event: PointerEvent) => { if(event.target instanceof Node && !note.contains(event.target)) note.open = false; };
+    document.addEventListener('pointerdown', outside);
+    document.addEventListener('astro:before-swap', () => document.removeEventListener('pointerdown',outside), {once:true});
+  });
+</script>

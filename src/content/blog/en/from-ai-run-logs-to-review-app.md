@@ -4,6 +4,7 @@ description: "A practical 1flowbase pattern for teams that need to investigate A
 publishedAt: 2026-09-30
 lang: en
 slug: from-ai-run-logs-to-review-app
+topic: observability
 tags:
   - AI observability
   - application runtime

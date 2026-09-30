@@ -118,3 +118,19 @@ Wiki content updates are picked up by the scheduled deployment workflow within 3
 - No tracking provider or analytics account is installed by this change. Traffic growth requires ongoing distribution and measurement, not only a visual redesign.
 
 Publication is consequential: pushing or merging to `main` triggers production deployment. Scheduled, `repository_dispatch`, and manual workflow runs also deploy the `main` content. Review on a separate branch before merging.
+
+## Blog publishing and reading paths
+
+The header and footer link to the native blog at `/blog/` or `/zh/blog/`.
+`src/data/blog.ts` defines the task-based reading paths and their documentation
+next steps. Published posts declare a `topic` in frontmatter (`gateway`,
+`workflows`, `observability`, or `field-notes`). The homepage guide cards are
+shown only when their featured article exists in the current language.
+
+The article layout builds its table of contents from real Markdown headings,
+estimates reading time from the article body, and suggests other published
+articles in the same language. It exposes the existing RSS feed without an
+email signup or new visitor tracking. Keep `publishedAt` as the original
+publication date; add `updatedAt` only when the article content is materially
+revised. Template or navigation changes alone should not make an old article
+look newly published.

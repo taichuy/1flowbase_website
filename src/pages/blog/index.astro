@@ -5,6 +5,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
 const posts = (await getCollection('blog', ({ data }) => data.lang === 'en' && !data.draft)).sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
 ---
-<BaseLayout title="Blog" description="Technical writing about workflow-backed virtual models, multi-model orchestration, local agents, and observability.">
+<BaseLayout title="Blog" description="Practical guides for AI application teams: evaluate a self-hosted gateway, compose model workflows, and investigate AI runs.">
   <BlogIndex lang="en" posts={posts} />
 </BaseLayout>

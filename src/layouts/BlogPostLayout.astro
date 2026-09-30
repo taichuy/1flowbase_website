@@ -1,47 +1,60 @@
 ---
-import type { CollectionEntry } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import type { MarkdownHeading } from 'astro';
 import BaseLayout from './BaseLayout.astro';
-import type { Locale } from '../config';
+import { localePath, type Locale } from '../config';
+import { blogTopics } from '../data/blog';
+import { formatPostDate, readingMinutes } from '../lib/blog';
+import Icon from '../components/RuntimeIcon.astro';
+import '../styles/blog.css';
 
-interface Props {
-  post: CollectionEntry<'blog'>;
-  lang: Locale;
-}
-
-const { post, lang } = Astro.props;
-const base = lang === 'zh' ? '/zh/blog/' : '/blog/';
+interface Props { post: CollectionEntry<'blog'>; lang: Locale; headings: MarkdownHeading[]; }
+const { post, lang, headings } = Astro.props;
+const base = localePath(lang, '/blog/');
 const site = Astro.site ?? new URL('https://1flowbase.taichuy.com');
-const structuredData = {
-  '@context': 'https://schema.org',
-  '@type': 'TechArticle',
-  headline: post.data.title,
-  description: post.data.description,
-  datePublished: post.data.publishedAt.toISOString(),
+const published = await getCollection('blog', ({ data }) => !data.draft);
+const related = published.filter(candidate => candidate.data.lang === lang && candidate.id !== post.id)
+  .sort((a, b) => Number(b.data.topic === post.data.topic) - Number(a.data.topic === post.data.topic) || b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf()).slice(0, 2);
+const translation = published.find(candidate => candidate.data.lang !== lang && candidate.data.slug === post.data.slug);
+const alternatePath = translation ? localePath(translation.data.lang, `/blog/${translation.data.slug}/`) : localePath(lang === 'zh' ? 'en' : 'zh', '/blog/');
+const topic = blogTopics[lang][post.data.topic];
+const toc = headings.filter(heading => heading.depth === 2);
+const copy = lang === 'zh'
+  ? { blog: '博客', published: '发布于', updated: '更新于', minutes: '分钟阅读', toc: '本文目录', next: '把这篇文章用于你的项目', nextBody: '从指南里的一个检查项开始，记录你使用的版本和实际结果。', install: '查看安装方式', related: '继续阅读', back: '返回博客', feed: '通过 RSS 订阅' }
+  : { blog: 'Blog', published: 'Published', updated: 'Updated', minutes: 'min read', toc: 'In this article', next: 'Put this guide to work.', nextBody: 'Start with one check from the guide. Record the version you use and the result you actually observe.', install: 'See installation options', related: 'Keep reading', back: 'Back to blog', feed: 'Subscribe via RSS' };
+const structuredData = [{
+  '@context': 'https://schema.org', '@type': 'TechArticle', headline: post.data.title,
+  description: post.data.description, datePublished: post.data.publishedAt.toISOString(),
   dateModified: (post.data.updatedAt ?? post.data.publishedAt).toISOString(),
-  inLanguage: lang === 'zh' ? 'zh-CN' : 'en',
-  author: { '@type': 'Organization', name: '1flowbase' },
-  publisher: { '@type': 'Organization', name: '1flowbase' },
+  inLanguage: lang === 'zh' ? 'zh-CN' : 'en', keywords: post.data.tags,
+  author: { '@type': 'Organization', name: '1flowbase' }, publisher: { '@type': 'Organization', name: '1flowbase' },
   mainEntityOfPage: new URL(`${base}${post.data.slug}/`, site),
-};
+}, {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '1flowbase', item: new URL(localePath(lang), site) },
+    { '@type': 'ListItem', position: 2, name: copy.blog, item: new URL(base, site) },
+    { '@type': 'ListItem', position: 3, name: post.data.title, item: new URL(`${base}${post.data.slug}/`, site) },
+  ],
+}];
 ---
-
-<BaseLayout lang={lang} title={post.data.title} description={post.data.description} type="article" structuredData={structuredData}>
+<BaseLayout lang={lang} title={post.data.title} description={post.data.description} type="article" structuredData={structuredData} alternatePath={alternatePath} hasTranslation={Boolean(translation)}>
   <article>
-    <header class="dark-panel">
-      <div class="site-container relative z-10 max-w-4xl py-20 sm:py-28">
-        <div class="flex flex-wrap gap-2">
-          {post.data.tags.map((tag) => <span class="rounded-full border border-emerald/20 bg-white/70 px-2.5 py-1 text-[0.65rem] font-black uppercase tracking-[0.1em] text-emerald">{tag}</span>)}
-        </div>
-        <h1 class="mt-7 text-[clamp(2.8rem,7vw,5.8rem)] font-[760] leading-[0.97] tracking-[-0.065em] text-white">{post.data.title}</h1>
-        <p class="mt-6 max-w-2xl text-lg leading-8 text-white/62">{post.data.description}</p>
-        <p class="mt-8 font-mono text-xs text-white/38">{post.data.publishedAt.toLocaleDateString(lang === 'zh' ? 'zh-CN' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+    <header class="dark-panel blog-post-header">
+      <div class="site-container relative z-10 max-w-4xl">
+        <nav aria-label={lang === 'zh' ? '面包屑导航' : 'Breadcrumb'} class="blog-breadcrumb"><a href={base}>{copy.blog}</a><span aria-hidden="true">/</span><a href={`${base}#${post.data.topic}`}>{topic.title}</a></nav>
+        <div class="blog-tags">{post.data.tags.map(tag => <span>{tag}</span>)}</div>
+        <h1>{post.data.title}</h1>
+        <p class="blog-post-description">{post.data.description}</p>
+        <div class="blog-meta"><span>{copy.published} <time datetime={post.data.publishedAt.toISOString()}>{formatPostDate(post.data.publishedAt, lang)}</time></span>{post.data.updatedAt && post.data.updatedAt.valueOf() > post.data.publishedAt.valueOf() && <span>{copy.updated} <time datetime={post.data.updatedAt.toISOString()}>{formatPostDate(post.data.updatedAt, lang)}</time></span>}<span>·</span><span>{readingMinutes(post.body)} {copy.minutes}</span></div>
       </div>
     </header>
-    <div class="site-container max-w-3xl py-16 sm:py-24">
+    <div class="site-container max-w-3xl py-12 sm:py-16">
+      {toc.length > 1 && <nav class="blog-toc" aria-label={copy.toc}><h2>{copy.toc}</h2><ol>{toc.map(heading => <li><a href={`#${heading.slug}`}>{heading.text}</a></li>)}</ol></nav>}
       <div class="prose-site"><slot /></div>
-      <div class="mt-16 border-t border-line pt-8">
-        <a class="text-sm font-black text-emerald" href={base}>← {lang === 'zh' ? '返回博客' : 'Back to blog'}</a>
-      </div>
+      <aside class="blog-next-step" aria-labelledby="next-step-title"><span class="eyebrow">{lang === 'zh' ? '下一步' : 'Next step'}</span><h2 id="next-step-title">{copy.next}</h2><p>{copy.nextBody}</p><div class="blog-next-actions"><a class="blog-primary-link" href={localePath(lang, `/docs/${topic.guide ? `${topic.guide}/` : ''}`)}>{topic.next}<Icon name="arrow" /></a><a href={`${localePath(lang)}#get-started`}>{copy.install}<Icon name="arrow" /></a></div></aside>
+      {related.length > 0 && <section class="blog-related" aria-labelledby="related-title"><h2 id="related-title">{copy.related}</h2><div>{related.map(candidate => <a href={`${base}${candidate.data.slug}/`}><span>{blogTopics[lang][candidate.data.topic].title}</span><h3>{candidate.data.title}</h3><Icon name="arrow" /></a>)}</div></section>}
+      <div class="blog-bottom-links"><a href={base}>← {copy.back}</a><a href="/rss.xml">{copy.feed}<Icon name="arrowUpRight" /></a></div>
     </div>
   </article>
 </BaseLayout>

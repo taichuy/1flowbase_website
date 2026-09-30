@@ -4,6 +4,7 @@ description: "When an AI app needs several providers, one client-facing API and 
 publishedAt: 2026-09-30
 lang: en
 slug: self-hosted-ai-gateway-for-small-teams
+topic: gateway
 tags:
   - AI gateway
   - application teams

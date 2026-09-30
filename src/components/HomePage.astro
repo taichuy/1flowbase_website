@@ -6,6 +6,7 @@ import api from '../assets/product/api-publish.jpeg';
 import { SITE, type Locale, localePath } from '../config';
 import { homeCopy } from '../data/home';
 import Icon from './RuntimeIcon.astro';
+import HomeGuides from './HomeGuides.astro';
 import '../styles/home.css';
 interface Props { lang: Locale; }
 const { lang } = Astro.props;
@@ -59,6 +60,8 @@ const commands = [
   <section class="home-section agent-section"><div class="site-container agent-grid"><div class="section-intro"><span class="micro-label"><span class="status-dot"></span>{c.agentsEyebrow}</span><h2 class="preserve-lines">{c.agentsTitle}</h2><p>{c.agentsText}</p><a class="text-link" href={localePath(lang,'/docs/')}>{lang==='zh'?'探索文档':'Explore the docs'}<Icon name="arrow"/></a></div><div><div class="agent-tools">{c.agentsSteps.map(([command,description],i) => <div><span class="tool-number">0{i+1}</span><code>{command}<span>()</span></code><p>{description}</p><span class="external-arrow" aria-hidden="true"><Icon name="arrowUpRight" /></span></div>)}</div><div class="roadmap-note"><span class="roadmap-marker"></span><div><strong>{c.agentsStatusTitle}</strong><p>{c.agentsStatus}</p></div></div></div></div></section>
 
   <section class="home-section audience-section"><div class="site-container"><div class="section-intro"><span class="micro-label">{c.audienceEyebrow}</span><h2>{c.audienceTitle}</h2></div><div class="audience-grid">{c.audiences.map(([num,title,text]) => <article><span>{num}</span><h3>{title}</h3><p>{text}</p></article>)}</div><a class="text-link" href={localePath(lang,'/use-cases/')}>{lang==='zh'?'找到你的使用场景':'Find your use case'}<Icon name="arrow"/></a></div></section>
+
+  <HomeGuides lang={lang} />
 
   <section class="home-section install-section" id="get-started"><div class="site-container install-grid"><div class="section-intro"><span class="micro-label">{c.installEyebrow}</span><h2 class="preserve-lines">{c.installTitle}</h2><p>{c.installText}</p><a class="text-link" href={localePath(lang,'/docs/')}>{c.installLink}<Icon name="arrow"/></a></div><div class="install-card" data-tabs><div class="install-tabs" role="tablist" aria-label={lang==='zh'?'选择操作系统':'Choose operating system'}>{commands.map((item,i) => <button type="button" id={`install-tab-${i}`} role="tab" aria-selected={i===0?'true':'false'} aria-controls={`install-panel-${i}`} tabindex={i===0?0:-1} data-tab={i}>{item.name}</button>)}</div>{commands.map((item,i) => <div hidden={i!==0} id={`install-panel-${i}`} role="tabpanel" aria-labelledby={`install-tab-${i}`} data-panel={i}><div class="command-topline"><span>{item.label}</span><button type="button" class="copy-command" data-copy-command={item.command} data-copy-label={c.copy} data-copied-label={c.copied} data-copy-error={c.copyError}>{c.copy}<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 8h12v12H8zM16 8V4H4v12h4"/></svg></button></div><pre><code>{item.command}</code></pre><a class="script-link" href={item.url}>{c.reviewScript}<span class="external-arrow" aria-hidden="true"><Icon name="arrowUpRight" /></span></a></div>)}<p class="install-note">{c.installNote}</p><p class="copy-status" role="status" aria-live="polite"></p></div></div></section>
 

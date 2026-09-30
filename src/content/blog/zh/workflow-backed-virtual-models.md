@@ -4,6 +4,7 @@ description: "虚拟模型不只是供应商别名，它也可以是由多个模
 publishedAt: 2026-07-14
 lang: zh
 slug: workflow-backed-virtual-models
+topic: workflows
 tags:
   - 架构
   - 虚拟模型

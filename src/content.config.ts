@@ -16,6 +16,7 @@ const blog = defineCollection({
     lang: z.enum(['en', 'zh']),
     slug: z.string(),
     tags: z.array(z.string()).default([]),
+    topic: z.enum(['gateway', 'workflows', 'observability', 'field-notes']).default('field-notes'),
     draft: z.boolean().default(false),
   }),
 });

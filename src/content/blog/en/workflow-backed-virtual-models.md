@@ -4,6 +4,7 @@ description: "A virtual model can be more than a provider alias: it can be a reu
 publishedAt: 2026-07-14
 lang: en
 slug: workflow-backed-virtual-models
+topic: workflows
 tags:
   - architecture
   - virtual models

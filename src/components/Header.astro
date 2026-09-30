@@ -20,7 +20,7 @@ const labels = lang === 'zh'
       nav: [
         ['产品能力', localePath(lang, '/features/')],
         ['使用场景', localePath(lang, '/use-cases/')],
-        ['博客', SITE.blogDirectory],
+        ['博客', localePath(lang, '/blog/')],
       ],
       docs: '文档',
       docsMenu: [
@@ -35,7 +35,7 @@ const labels = lang === 'zh'
       nav: [
         ['Features', localePath(lang, '/features/')],
         ['Use cases', localePath(lang, '/use-cases/')],
-        ['Blog', SITE.blogDirectory],
+        ['Blog', localePath(lang, '/blog/')],
       ],
       docs: 'Docs',
       docsMenu: [
@@ -56,7 +56,7 @@ const labels = lang === 'zh'
 
     <nav class="hidden items-center gap-7 text-sm font-semibold text-muted md:flex" aria-label="Main navigation">
       {labels.nav.map(([label, href]) => (
-        <a class="transition hover:text-emerald" href={href} target={href.startsWith('http') ? '_blank' : undefined} rel={href.startsWith('http') ? 'noreferrer' : undefined}>
+        <a class="transition hover:text-emerald" href={href} aria-current={path.startsWith(href) ? 'page' : undefined} target={href.startsWith('http') ? '_blank' : undefined} rel={href.startsWith('http') ? 'noreferrer' : undefined}>
           {label}
         </a>
       ))}
@@ -90,7 +90,7 @@ const labels = lang === 'zh'
       </summary>
       <div class="absolute right-0 mt-3 w-64 rounded-2xl border border-line bg-white p-3 shadow-2xl shadow-forest/10">
         <nav class="grid gap-1 text-sm font-semibold text-muted">
-          {labels.nav.map(([label, href]) => <a class="rounded-xl px-3 py-2.5 hover:bg-paper hover:text-emerald" href={href}>{label}</a>)}
+          {labels.nav.map(([label, href]) => <a class="rounded-xl px-3 py-2.5 hover:bg-paper hover:text-emerald" href={href} aria-current={path.startsWith(href) ? 'page' : undefined}>{label}</a>)}
           <div class="mt-1 rounded-xl bg-paper p-1">
             <p class="px-2 py-1.5 text-xs font-black uppercase tracking-[0.08em] text-muted">{labels.docs}</p>
             {labels.docsMenu.map(([label, href]) => <a class="block rounded-lg px-2 py-2 hover:bg-white hover:text-emerald" href={href}>{label}</a>)}

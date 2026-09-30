@@ -4,6 +4,7 @@ description: "当多个 AI 应用需要不同模型、统一调用入口和可�
 publishedAt: 2026-09-30
 lang: zh
 slug: self-hosted-ai-gateway-for-small-teams
+topic: gateway
 tags:
   - AI 网关
   - 应用开发

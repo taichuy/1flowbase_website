@@ -4,6 +4,7 @@ description: "面向需要排查 AI 回答的小团队，介绍如何用 1flowba
 publishedAt: 2026-09-30
 lang: zh
 slug: from-ai-run-logs-to-review-app
+topic: observability
 tags:
   - AI 可观测性
   - 应用运行时

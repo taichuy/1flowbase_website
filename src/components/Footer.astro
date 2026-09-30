@@ -45,7 +45,7 @@ const copy = lang === 'zh'
       <ul class="mt-4 grid gap-3 text-sm text-muted">
         <li><a class="hover:text-emerald" href={localePath(lang, '/features/')}>{copy.features}</a></li>
         <li><a class="hover:text-emerald" href={localePath(lang, '/use-cases/')}>{copy.useCases}</a></li>
-        <li><a class="hover:text-emerald" href={SITE.blogDirectory}>{copy.blog}</a></li>
+        <li><a class="hover:text-emerald" href={localePath(lang, '/blog/')}>{copy.blog}</a></li>
       </ul>
     </div>
     <div>

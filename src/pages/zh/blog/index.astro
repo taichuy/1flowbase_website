@@ -5,6 +5,6 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 
 const posts = (await getCollection('blog', ({ data }) => data.lang === 'zh' && !data.draft)).sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
 ---
-<BaseLayout lang="zh" title="博客" description="关于工作流虚拟模型、多模型编排、本地 Agent 和可观测性的技术文章。">
+<BaseLayout lang="zh" title="博客" description="面向 AI 应用团队的实践指南：评估自托管网关、组合模型工作流，并排查 AI 运行。">
   <BlogIndex lang="zh" posts={posts} />
 </BaseLayout>

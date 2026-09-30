@@ -68,7 +68,8 @@ const t = zh ? {
       <div class="hero-flow-arrow hero-flow-arrow-pair" aria-hidden="true">{[0,1].map(() => <span><svg viewBox="0 0 20 24"><path d="M10 1v20m-5-5 5 5 5-5"/></svg><i></i></span>)}</div>
     </li>
     <li>
-      <div class="hero-flow-final"><span class="hero-flow-final-number" aria-hidden="true">06</span><div class="hero-flow-endpoints" aria-label={t.users}><strong>{t.person}</strong><strong><Icon name="spark"/>{t.agent}</strong></div></div>
+      <h3><span aria-hidden="true">06</span>{t.users}</h3>
+      <div class="hero-flow-endpoints"><strong>{t.person}</strong><strong><Icon name="spark"/>{t.agent}</strong></div>
     </li>
   </ol>
   <figcaption>{t.note}</figcaption>
@@ -103,9 +104,7 @@ const t = zh ? {
   .hero-flow-example{font-size:11px;line-height:1.6;color:#5b6c53;margin:5px 0 0}
   .hero-flow-arrow-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .hero-flow-arrow-pair>span{position:relative}
-  .hero-flow-final{display:flex;align-items:center;gap:8px}
-  .hero-flow-final-number{font:11px var(--font-mono);color:#64765c}
-  .hero-flow-endpoints{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .hero-flow-endpoints{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .hero-flow-endpoints strong{display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 7px;border:1px solid #afc6a3;border-radius:6px;background:#eef3e6;font-size:12px;font-weight:600;line-height:1.5;text-align:center}
   .hero-flow-endpoints :global(svg){width:16px;height:16px}
   .hero-flow figcaption{font-size:11px;line-height:1.7;color:#65725c;margin-top:10px}

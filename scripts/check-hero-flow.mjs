@@ -7,6 +7,7 @@ const source = await readFile(new URL('../src/components/HeroFlow.astro', import
 const script = source.match(/<script>([\s\S]*?)<\/script>/)?.[1];
 assert.ok(script, 'Progressive enhancement script exists');
 assert.equal((source.match(/<li>/g) ?? []).length, 6, 'Six semantic layers including the build capabilities');
+assert.ok(!source.includes('hero-flow-final'), 'Endpoints use the same full-width row as every layer');
 assert.ok(source.includes('prefers-reduced-motion:reduce'), 'CSS reduced-motion fallback exists');
 const js = ts.transpileModule(script, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
 for (const initiallyReduced of [false, true]) {
@@ -35,8 +36,6 @@ for (const initiallyReduced of [false, true]) {
 const copy = await readFile(new URL('../src/data/home.ts', import.meta.url), 'utf8');
 assert.ok(copy.includes("headline: ['从 AI Gateway，', '到完整的', 'AI 应用系统。']"));
 assert.ok(copy.includes("headline: ['Start with a gateway.', 'Build an entire', 'AI application.']"));
-assert.ok(copy.includes('让 AI 对话长出可复用、可管理、持续沉淀的知识库与业务系统。'));
-assert.ok(copy.includes('Grow reusable, manageable knowledge bases and business systems from your AI conversations.'));
 assert.ok(copy.includes('让 AI 对话长出可复用、可管理、持续沉淀的知识库与业务系统。'));
 assert.ok(copy.includes('Grow reusable, manageable knowledge bases and business systems from your AI conversations.'));
 for (const path of ['../dist/index.html', '../dist/zh/index.html']) {

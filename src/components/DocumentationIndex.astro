@@ -11,6 +11,11 @@ const { lang } = Astro.props;
 const pages = (await getCollection('wikiPages', ({ data }) => data.kind === 'guide' && data.lang === lang))
   .sort((a, b) => a.data.categoryOrder - b.data.categoryOrder || a.data.order - b.data.order);
 const categories = Array.from(Map.groupBy(pages, (page) => page.data.category));
+const categoryAnchors: Record<string, string> = {
+  'Use cases': 'use-cases', '使用场景': 'use-cases',
+  'Evaluation checklists': 'evaluation-checklists', '场景评估清单': 'evaluation-checklists',
+  'Engineering': 'engineering', '工程手册': 'engineering',
+};
 const copy = lang === 'zh'
   ? {
       title: '文档',
@@ -41,7 +46,7 @@ const copy = lang === 'zh'
   <section class="section-shell">
     <div class="site-container grid gap-14">
       {categories.map(([category, entries], categoryIndex) => (
-        <section aria-labelledby={`category-${categoryIndex}`}>
+        <section id={categoryAnchors[category] ?? `docs-category-${categoryIndex}`} aria-labelledby={`category-${categoryIndex}`}>
           <div class="flex items-end justify-between gap-5 border-b border-line pb-5">
             <h2 id={`category-${categoryIndex}`} class="text-2xl font-[750] tracking-[-0.04em] text-ink sm:text-3xl">{category}</h2>
             <span class="font-mono text-xs text-muted">{String(categoryIndex + 1).padStart(2, '0')}</span>

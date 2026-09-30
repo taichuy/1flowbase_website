@@ -329,6 +329,6 @@ summary:focus-visible {
 .skip-link:focus{transform:translateY(0)}
 [data-github-stars][hidden]{display:none!important}
 body > header{background:rgb(252 253 249 / 94%)!important}
-body > header .site-container{height:72px}
+body > header .header-row{height:72px}
 body > header a,body > header summary{font-weight:550}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}

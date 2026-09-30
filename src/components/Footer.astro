@@ -16,6 +16,7 @@ const copy = lang === 'zh'
       useCases: '使用场景',
       blog: '博客',
       docs: '文档',
+      license: '许可协议',
       issues: 'Issues',
       source: '官网源码',
       rights: '开源、可自托管。',
@@ -28,6 +29,7 @@ const copy = lang === 'zh'
       useCases: 'Use cases',
       blog: 'Blog',
       docs: 'Documentation',
+      license: 'License',
       issues: 'Issues',
       source: 'Website source',
       rights: 'Open source and self-hostable.',
@@ -52,6 +54,7 @@ const copy = lang === 'zh'
       <h2 class="text-sm font-black text-ink">{copy.resources}</h2>
       <ul class="mt-4 grid gap-3 text-sm text-muted">
         <li><a class="hover:text-emerald" href={localePath(lang, '/docs/')}>{copy.docs}</a></li>
+        <li><a class="hover:text-emerald" href={localePath(lang, '/license/')}>{copy.license}</a></li>
         <li><a class="hover:text-emerald" href={SITE.issues}>{copy.issues}</a></li>
         <li><a class="hover:text-emerald" href={SITE.websiteRepository}>{copy.source}</a></li>
       </ul>

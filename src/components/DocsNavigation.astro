@@ -1,0 +1,32 @@
+---
+import { type Locale, localePath } from '../config';
+const { lang } = Astro.props as { lang: Locale };
+const groups = lang === 'zh' ? [
+  { title: '开始使用', links: [
+    ['全部文档', '浏览完整的教程与参考资料', ''],
+    ['场景教程', '从实际任务开始搭建工作流', '#use-cases'],
+    ['评估清单', '验证方案是否适合你的场景', '#evaluation-checklists'],
+  ] },
+  { title: '开发者资源', links: [
+    ['工程手册', '了解开发流程与工程实践', '#engineering'],
+  ] },
+] : [
+  { title: 'Get started', links: [
+    ['All docs', 'Browse every guide and reference', ''],
+    ['Scenario tutorials', 'Build workflows around real tasks', '#use-cases'],
+    ['Evaluation checklists', 'Check the fit for your use case', '#evaluation-checklists'],
+  ] },
+  { title: 'Developer resources', links: [
+    ['Engineering handbook', 'Development guides · Chinese', '#engineering'],
+  ] },
+];
+---
+<div class="docs-navigation">
+  {groups.map(group => <div class="docs-navigation-group">
+    <p class="docs-navigation-heading">{group.title}</p>
+    {group.links.map(([title, description, hash]) => <a class="docs-navigation-link" href={`${localePath(hash === '#engineering' ? 'zh' : lang, '/docs/')}${hash}`}>
+      <span>{title}<span aria-hidden="true">↗</span></span>
+      <small>{description}</small>
+    </a>)}
+  </div>)}
+</div>

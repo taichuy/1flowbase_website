@@ -1,5 +1,7 @@
 ---
 import Logo from './Logo.astro';
+import DocsNavigation from './DocsNavigation.astro';
+import '../styles/navigation.css';
 import { SITE, type Locale, localePath } from '../config';
 
 interface Props {
@@ -16,91 +18,44 @@ const switchHref = alternatePath ?? (path.startsWith('/404')
     : `/zh${path === '/' ? '/' : path}`);
 
 const labels = lang === 'zh'
-  ? {
-      nav: [
-        ['产品能力', localePath(lang, '/features/')],
-        ['使用场景', localePath(lang, '/use-cases/')],
-        ['博客', localePath(lang, '/blog/')],
-      ],
-      docs: '文档',
-      docsMenu: [
-        ['文档', localePath(lang, '/docs/')],
-        ['许可协议', localePath(lang, '/license/')],
-      ],
-      language: 'EN',
-      github: 'GitHub',
-      menu: '打开导航',
-    }
-  : {
-      nav: [
-        ['Features', localePath(lang, '/features/')],
-        ['Use cases', localePath(lang, '/use-cases/')],
-        ['Blog', localePath(lang, '/blog/')],
-      ],
-      docs: 'Docs',
-      docsMenu: [
-        ['Documentation', localePath(lang, '/docs/')],
-        ['License', localePath(lang, '/license/')],
-      ],
-      language: '中文',
-      github: 'GitHub',
-      menu: 'Open navigation',
-    };
+  ? { nav: [['产品能力', '/features/'], ['使用场景', '/use-cases/'], ['博客', '/blog/']], docs: '文档', language: 'EN', menu: '打开导航', close: '关闭导航', navigation: '主导航', home: '1flowbase 首页', switchLanguage: 'Switch to English' }
+  : { nav: [['Features', '/features/'], ['Use cases', '/use-cases/'], ['Blog', '/blog/']], docs: 'Docs', language: '中文', menu: 'Open navigation', close: 'Close navigation', navigation: 'Main navigation', home: '1flowbase home', switchLanguage: '切换到中文' };
 ---
-
-<header class="sticky top-0 z-50 border-b border-line/80 bg-paper/85 backdrop-blur-xl">
-  <div class="site-container flex h-[4.5rem] items-center justify-between gap-6">
-    <a href={localePath(lang)} aria-label="1flowbase home">
-      <Logo />
-    </a>
-
-    <nav class="hidden items-center gap-7 text-sm font-semibold text-muted md:flex" aria-label="Main navigation">
-      {labels.nav.map(([label, href]) => (
-        <a class="transition hover:text-emerald" href={href} aria-current={path.startsWith(href) ? 'page' : undefined} target={href.startsWith('http') ? '_blank' : undefined} rel={href.startsWith('http') ? 'noreferrer' : undefined}>
-          {label}
-        </a>
-      ))}
-      <details class="group relative">
-        <summary class="flex cursor-pointer list-none items-center gap-1.5 py-5 transition hover:text-emerald">
-          {labels.docs}
-          <svg aria-hidden="true" viewBox="0 0 12 12" class="size-3 fill-none stroke-current stroke-[1.5] transition group-open:rotate-180"><path d="m2.5 4.5 3.5 3 3.5-3" /></svg>
-        </summary>
-        <div class="absolute left-1/2 top-full w-48 -translate-x-1/2 rounded-2xl border border-line bg-white p-2 shadow-2xl shadow-forest/10">
-          {labels.docsMenu.map(([label, href]) => (
-            <a class="block rounded-xl px-3 py-2.5 text-sm text-muted transition hover:bg-paper hover:text-emerald" href={href}>{label}</a>
-          ))}
-        </div>
-      </details>
-    </nav>
-
-    <div class="hidden items-center gap-2 md:flex">
-      <a class="rounded-full px-3 py-2 text-sm font-bold text-muted transition hover:bg-white hover:text-emerald" href={switchHref}>
-        {labels.language}
-      </a>
-      <a class="inline-flex items-center gap-2 rounded-full bg-night px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-forest/15 transition hover:-translate-y-0.5 hover:bg-forest" href={SITE.repository} target="_blank" rel="noreferrer">
-        <svg aria-hidden="true" viewBox="0 0 24 24" class="size-4 fill-current"><path d="M12 .7A11.5 11.5 0 0 0 8.36 23.1c.58.1.79-.25.79-.56v-2.23c-3.22.7-3.9-1.37-3.9-1.37-.52-1.34-1.28-1.7-1.28-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.57-.29-5.27-1.28-5.27-5.68 0-1.26.45-2.28 1.19-3.08-.12-.29-.52-1.46.11-3.04 0 0 .97-.31 3.16 1.17a10.96 10.96 0 0 1 5.76 0c2.2-1.48 3.16-1.17 3.16-1.17.63 1.58.23 2.75.11 3.04.74.8 1.19 1.82 1.19 3.08 0 4.41-2.7 5.38-5.28 5.67.42.36.79 1.06.79 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .7Z"/></svg>
-        {labels.github}
-        <span class="border-l border-white/20 pl-2 text-white/72" data-github-stars aria-label="GitHub stars" hidden>★ <span data-github-stars-value></span></span>
-      </a>
-    </div>
-
-    <details class="group relative md:hidden">
-      <summary class="grid size-10 cursor-pointer list-none place-items-center rounded-full border border-line bg-white text-ink" aria-label={labels.menu}>
-        <svg aria-hidden="true" viewBox="0 0 24 24" class="size-5 fill-none stroke-current stroke-2"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
-      </summary>
-      <div class="absolute right-0 mt-3 w-64 rounded-2xl border border-line bg-white p-3 shadow-2xl shadow-forest/10">
-        <nav class="grid gap-1 text-sm font-semibold text-muted">
-          {labels.nav.map(([label, href]) => <a class="rounded-xl px-3 py-2.5 hover:bg-paper hover:text-emerald" href={href} aria-current={path.startsWith(href) ? 'page' : undefined}>{label}</a>)}
-          <div class="mt-1 rounded-xl bg-paper p-1">
-            <p class="px-2 py-1.5 text-xs font-black uppercase tracking-[0.08em] text-muted">{labels.docs}</p>
-            {labels.docsMenu.map(([label, href]) => <a class="block rounded-lg px-2 py-2 hover:bg-white hover:text-emerald" href={href}>{label}</a>)}
-          </div>
-          <a class="rounded-xl px-3 py-2.5 hover:bg-paper hover:text-emerald" href={switchHref}>{labels.language}</a>
-          <a class="mt-1 rounded-xl bg-night px-3 py-2.5 text-center text-white" href={SITE.repository}>GitHub <span data-github-stars hidden>· ★ <span data-github-stars-value></span></span></a>
-        </nav>
+<header class="site-header" data-site-header>
+  <div class="site-container header-row">
+    <a href={localePath(lang)} aria-label={labels.home}><Logo /></a>
+    <nav class="desktop-navigation" aria-label={labels.navigation}>
+      {labels.nav.map(([label, href]) => <a href={localePath(lang, href)} aria-current={path.startsWith(localePath(lang, href)) ? 'page' : undefined}>{label}</a>)}
+      <div class="desktop-docs" data-disclosure>
+        <button type="button" class="navigation-toggle" aria-expanded="false" aria-controls="desktop-docs-panel" data-disclosure-toggle>
+          {labels.docs}<svg aria-hidden="true" viewBox="0 0 12 12"><path d="m2.5 4.5 3.5 3 3.5-3" /></svg>
+        </button>
+        <div id="desktop-docs-panel" class="desktop-docs-panel" hidden><DocsNavigation lang={lang} /></div>
       </div>
-    </details>
+    </nav>
+    <div class="header-actions">
+      <a class="language-link" href={switchHref} aria-label={labels.switchLanguage} lang={lang === 'zh' ? 'en' : 'zh-CN'}>{labels.language}</a>
+      <a class="github-link desktop-github" href={SITE.repository} target="_blank" rel="noreferrer">GitHub <span data-github-stars hidden>★ <span data-github-stars-value></span></span><span aria-hidden="true">↗</span></a>
+      <button type="button" class="mobile-menu-toggle" aria-expanded="false" aria-controls="mobile-navigation" aria-label={labels.menu} data-open-label={labels.menu} data-close-label={labels.close}>
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path class="menu-lines" d="M4 7h16M4 12h16M4 17h16"/><path class="menu-cross" d="m6 6 12 12M6 18 18 6"/></svg>
+      </button>
+    </div>
   </div>
+  <div id="mobile-navigation" class="mobile-navigation" hidden>
+    <nav class="site-container" aria-label={labels.navigation}>
+      {labels.nav.map(([label, href]) => <a class="mobile-primary-link" href={localePath(lang, href)} aria-current={path.startsWith(localePath(lang, href)) ? 'page' : undefined}>{label}</a>)}
+      <div class="mobile-docs" data-disclosure>
+        <button type="button" class="navigation-toggle" aria-expanded="false" aria-controls="mobile-docs-panel" data-disclosure-toggle>{labels.docs}<svg aria-hidden="true" viewBox="0 0 12 12"><path d="m2.5 4.5 3.5 3 3.5-3" /></svg></button>
+        <div id="mobile-docs-panel" hidden><DocsNavigation lang={lang} /></div>
+      </div>
+      <a class="github-link mobile-github" href={SITE.repository} target="_blank" rel="noreferrer">GitHub <span data-github-stars hidden>★ <span data-github-stars-value></span></span><span aria-hidden="true">↗</span></a>
+    </nav>
+  </div>
+    <nav class="navigation-fallback site-container flex flex-wrap gap-4 py-4 text-sm font-semibold" aria-label={labels.navigation}>
+      {labels.nav.map(([label, href]) => <a href={localePath(lang, href)}>{label}</a>)}
+      <a href={localePath(lang, '/docs/')}>{labels.docs}</a>
+      <a href={SITE.repository}>GitHub</a>
+    </nav>
 </header>
 
 <script>
@@ -129,12 +84,43 @@ const labels = lang === 'zh'
 </script>
 
 <script>
-  const headerMenus = document.querySelectorAll<HTMLDetailsElement>('body > header details');
+  const header = document.querySelector<HTMLElement>('[data-site-header]')!;
+  const mobileToggle = header.querySelector<HTMLButtonElement>('.mobile-menu-toggle')!;
+  const toggles = [...header.querySelectorAll<HTMLButtonElement>('[aria-controls]')];
+  const setExpanded = (toggle: HTMLButtonElement, expanded: boolean) => {
+    toggle.setAttribute('aria-expanded', String(expanded));
+    document.getElementById(toggle.getAttribute('aria-controls')!)!.hidden = !expanded;
+    if (toggle === mobileToggle) toggle.setAttribute('aria-label', expanded ? toggle.dataset.closeLabel! : toggle.dataset.openLabel!);
+  };
+  const closeAll = () => toggles.forEach(toggle => setExpanded(toggle, false));
+  toggles.forEach(toggle => toggle.addEventListener('click', () => {
+    const expanded = toggle.getAttribute('aria-expanded') !== 'true';
+    setExpanded(toggle, expanded);
+    if (toggle === mobileToggle && !expanded) header.querySelectorAll<HTMLButtonElement>('[data-disclosure-toggle]').forEach(button => setExpanded(button, false));
+  }));
   document.addEventListener('keydown', event => {
-    if(event.key === 'Escape') headerMenus.forEach(menu => { if(menu.open) { menu.open = false; menu.querySelector('summary')?.focus(); } });
+    if (event.key !== 'Escape') return;
+    const open = toggles.filter(toggle => toggle.getAttribute('aria-expanded') === 'true');
+    if (!open.length) return;
+    // Close the nested disclosure first; another Escape closes mobile navigation.
+    const toggle = open.find(button => button !== mobileToggle) ?? mobileToggle;
+    setExpanded(toggle, false);
+    toggle.focus();
+    event.preventDefault();
   });
   document.addEventListener('click', event => {
-    headerMenus.forEach(menu => { if(event.target instanceof Node && !menu.contains(event.target)) menu.open = false; });
+    if (event.target instanceof Node && !header.contains(event.target)) closeAll();
   });
-  headerMenus.forEach(menu => menu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => { menu.open = false; })));
+  header.addEventListener('focusout', event => {
+    if (event.relatedTarget instanceof Node && !header.contains(event.relatedTarget)) closeAll();
+  });
+  header.querySelectorAll('a').forEach(link => link.addEventListener('click', closeAll));
+  window.addEventListener('pageshow', closeAll);
+  window.addEventListener('popstate', closeAll);
+  window.matchMedia('(min-width: 960px)').addEventListener('change', () => {
+    const activeToggle = toggles.find(toggle => toggle.getAttribute('aria-expanded') === 'true');
+    closeAll();
+    if (activeToggle && header.contains(document.activeElement)) header.querySelector<HTMLAnchorElement>('.language-link')?.focus();
+  });
+  header.setAttribute('data-navigation-ready', '');
 </script>

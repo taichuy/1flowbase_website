@@ -23,6 +23,7 @@ const layers = zh ? [
 ];
 const kinds = ['data','capabilities','apps','interfaces','endpoints'];
 ---
+<div class="hero-flow-widget" data-flow-widget>
 <figure class="hero-flow" data-hero-flow aria-label={title}>
   <ol class="hero-flow-layers" role="list">
     <li style="--beam-delay:0s">
@@ -31,7 +32,7 @@ const kinds = ['data','capabilities','apps','interfaces','endpoints'];
       <div class="flow-layer-panel hero-flow-gateway"><Node label={gateway} description={gatewayNote} id="flow-gateway" icon="route"/></div>
       <div class="hero-flow-arrow" aria-hidden="true"><svg viewBox="0 0 20 24"><path d="M10 1v20m-5-5 5 5 5-5"/></svg></div>
     </li>
-    {layers.map((nodes,i) => <li style={`--beam-delay:${(i+1)*.75}s`}>
+    {layers.map((nodes,i) => <li style={`--beam-delay:${(i+1)*2}s`}>
       <div class:list={['flow-layer-panel','hero-flow-row',`hero-flow-${kinds[i]}`]}>{nodes.map(([label,description,icon],j) => <Node label={label} description={description} icon={icon} id={`flow-node-${i}-${j}`}/>)}</div>
       {i < 3 && <div class="hero-flow-arrow" aria-hidden="true"><svg viewBox="0 0 20 24"><path d="M10 1v20m-5-5 5 5 5-5"/></svg></div>}
       {i === 3 && <div class="hero-flow-arrow-pair" aria-hidden="true">{[0,1].map(() => <svg viewBox="0 0 20 24"><path d="M10 1v20m-5-5 5 5 5-5"/></svg>)}</div>}
@@ -39,15 +40,30 @@ const kinds = ['data','capabilities','apps','interfaces','endpoints'];
   </ol>
   <div class="flow-tooltip" data-flow-tooltip role="tooltip" aria-hidden="true" hidden></div>
 </figure>
+<label class="flow-motion-control" hidden data-motion-label>
+  <input type="checkbox" role="switch" data-motion-control aria-describedby="flow-motion-status" />
+  <span>{zh ? '动态效果' : 'Motion'}</span>
+  <span id="flow-motion-status" data-motion-status data-on={zh ? '开启' : 'On'} data-off={zh ? '关闭' : 'Off'} data-system={zh ? '跟随系统：静止' : 'System: reduced motion'} aria-live="polite"></span>
+</label>
+</div>
 <style>
   @property --flow-beam-angle{syntax:'<angle>';initial-value:0deg;inherits:false}
+  .hero-flow-widget{min-width:0}
   .hero-flow{margin:0;min-width:0;padding:22px;background:linear-gradient(145deg,#f2f5e9,#f8faf3);border:1px solid #d4dfd1;border-radius:14px;box-shadow:0 13px 50px #52634008;color:#183a30}
   .hero-flow-layers{padding:0;margin:0;list-style:none}
   .hero-flow-layers>li{margin:0;padding:0}
   .flow-layer-panel{position:relative;border-radius:7px;isolation:isolate}
   .flow-layer-panel:after{content:'';position:absolute;inset:-1px;border:2px solid transparent;border-radius:8px;background:conic-gradient(from var(--flow-beam-angle),transparent 0deg,transparent 260deg,#a8d987 310deg,#297e5b 350deg,transparent 360deg) border-box;mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);mask-composite:exclude;pointer-events:none;opacity:0;z-index:1}
-  [data-motion=playing] .flow-layer-panel:after{animation:flow-border-beam .65s linear var(--beam-delay) 1 both}
-  @keyframes flow-border-beam{0%{--flow-beam-angle:0deg;opacity:0}12%{opacity:.85}88%{opacity:.85}100%{--flow-beam-angle:360deg;opacity:0}}
+  [data-motion] .flow-layer-panel:after{animation:flow-border-beam 14s linear var(--beam-delay) infinite both;animation-play-state:paused}
+  [data-motion=playing] .flow-layer-panel:after{animation-play-state:running}
+  [data-motion=static] .flow-layer-panel:after{opacity:0!important}
+  @keyframes flow-border-beam{0%{--flow-beam-angle:0deg;opacity:0}1.4286%{opacity:.65}12.8571%{opacity:.65}14.2857%,100%{--flow-beam-angle:360deg;opacity:0}}
+  .flow-motion-control{display:flex;align-items:center;justify-content:flex-end;gap:7px;min-height:32px;margin-top:5px;color:#65725c;font:11px/1.5 var(--font-sans,sans-serif);cursor:pointer}
+  .flow-motion-control[hidden]{display:none}
+  .flow-motion-control input{width:12px;height:12px;accent-color:#476c53;margin:0}
+  .flow-motion-control input:focus-visible{outline:2px solid #176e55;outline-offset:3px}
+  .flow-motion-control [data-motion-status]{color:#75816f;font-size:10px}
+
   .hero-flow-clients,.hero-flow-client-lines{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
   .hero-flow-client{display:grid;min-width:0}
   .hero-flow-client :global(.hero-explainer-node){font-family:var(--font-mono)}
@@ -64,28 +80,48 @@ const kinds = ['data','capabilities','apps','interfaces','endpoints'];
   .hero-flow-arrow-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
   .flow-tooltip{position:fixed;z-index:1000;box-sizing:border-box;width:max-content;max-width:min(280px,calc(100vw - 24px));margin:0;padding:11px 13px;border:1px solid #c9d8c1;border-radius:8px;background:#173e31;color:#fff;box-shadow:0 8px 24px #16352625;font:12px/1.65 var(--font-sans,sans-serif);text-align:left;overflow-wrap:anywhere}
   .flow-tooltip[hidden]{display:none}
-  @media(max-width:780px){.hero-flow{max-width:560px;width:100%;justify-self:center;box-sizing:border-box}}
+  @media(max-width:780px){.hero-flow-widget{max-width:560px;width:100%;justify-self:center}.hero-flow{box-sizing:border-box}}
   @media(max-width:480px){.hero-flow{padding:16px 12px}.hero-flow-capabilities,.hero-flow-apps{grid-template-columns:repeat(2,minmax(0,1fr))}.hero-flow-clients,.hero-flow-client-lines{gap:5px}}
   @media(prefers-reduced-motion:reduce){.flow-layer-panel:after{animation:none!important;opacity:0!important}}
 </style>
 <script>
   document.querySelectorAll<HTMLElement>('[data-hero-flow]').forEach(flow => {
     const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let played = false;
-    let animationTimer: ReturnType<typeof setTimeout> | undefined;
-    const finish = () => { flow.dataset.motion = 'complete'; clearTimeout(animationTimer); };
+    const widget = flow.closest<HTMLElement>('[data-flow-widget]');
+    const control = widget?.querySelector<HTMLInputElement>('[data-motion-control]');
+    const status = widget?.querySelector<HTMLElement>('[data-motion-status]');
+    if (!control || !status) return;
+    let enabled = true;
+    try { enabled = sessionStorage.getItem('1flowbase:hero-motion') !== 'off'; } catch { /* Storage is optional. */ }
+    let visible = false;
+    let hovered = false;
+    let focused = false;
+    let tooltipOpen = false;
+    const updateMotion = () => {
+      const allowed = enabled && !preference.matches;
+      flow.dataset.motion = !allowed ? 'static' : visible && !document.hidden && !hovered && !focused && !tooltipOpen ? 'playing' : 'paused';
+      control.checked = allowed;
+      control.disabled = preference.matches;
+      status.textContent = (preference.matches ? status.dataset.system : enabled ? status.dataset.on : status.dataset.off) ?? '';
+    };
     const observer = new IntersectionObserver(entries => {
-      if (played || !entries.some(entry => entry.isIntersecting)) return;
-      played = true;
-      observer.disconnect();
-      if (preference.matches) { finish(); return; }
-      flow.dataset.motion = 'playing';
-      animationTimer = setTimeout(finish, 4800);
-    }, { threshold: .2 });
-    flow.dataset.motion = 'ready';
-    if (preference.matches) { played = true; finish(); } else observer.observe(flow);
-    const onPreference = () => { if (preference.matches) { played = true; observer.disconnect(); finish(); } };
-    preference.addEventListener('change', onPreference);
+      visible = entries.some(entry => entry.isIntersecting);
+      updateMotion();
+    }, { threshold: 0 });
+    observer.observe(flow);
+    flow.addEventListener('pointerenter', event => { if (event.pointerType === 'mouse') { hovered = true; updateMotion(); } });
+    flow.addEventListener('pointerleave', () => { hovered = false; updateMotion(); });
+    flow.addEventListener('focusin', () => { focused = true; updateMotion(); });
+    flow.addEventListener('focusout', event => { focused = !!event.relatedTarget && flow.contains(event.relatedTarget as Node); updateMotion(); });
+    control.addEventListener('change', () => {
+      enabled = control.checked;
+      try { sessionStorage.setItem('1flowbase:hero-motion', enabled ? 'on' : 'off'); } catch { /* Storage is optional. */ }
+      updateMotion();
+    });
+    preference.addEventListener('change', updateMotion);
+    document.addEventListener('visibilitychange', updateMotion);
+    widget?.querySelector<HTMLElement>('[data-motion-label]')?.removeAttribute('hidden');
+    updateMotion();
 
     const tooltip = flow.querySelector<HTMLElement>('[data-flow-tooltip]');
     if (!tooltip) return;
@@ -103,12 +139,13 @@ const kinds = ['data','capabilities','apps','interfaces','endpoints'];
       tooltip.style.left = `${left}px`;
       tooltip.style.top = `${Math.max(12, Math.min(top, window.innerHeight - box.height - 12))}px`;
     };
-    const close = () => { clearTimeout(hideTimer); active = null; pinned = null; tooltip.hidden = true; };
+    const close = () => { clearTimeout(hideTimer); active = null; pinned = null; tooltip.hidden = true; tooltipOpen = false; updateMotion(); };
     const show = (button: HTMLButtonElement) => {
       clearTimeout(hideTimer);
       active = button;
       tooltip.textContent = button.dataset.description ?? '';
       tooltip.hidden = false;
+      tooltipOpen = true; updateMotion();
       position();
     };
     const leave = () => { if (!pinned && document.activeElement !== active) hideTimer = setTimeout(close, 140); };
@@ -130,8 +167,9 @@ const kinds = ['data','capabilities','apps','interfaces','endpoints'];
     window.addEventListener('resize', position);
     window.addEventListener('scroll', close, { passive: true });
     document.addEventListener('astro:before-swap', () => {
-      observer.disconnect(); finish(); close(); tooltip.remove();
-      preference.removeEventListener('change', onPreference);
+      observer.disconnect(); close(); flow.dataset.motion = 'static'; tooltip.remove();
+      preference.removeEventListener('change', updateMotion);
+      document.removeEventListener('visibilitychange', updateMotion);
       document.removeEventListener('pointerdown', outside);
       document.removeEventListener('keydown', escape);
       window.removeEventListener('resize', position);

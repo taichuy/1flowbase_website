@@ -25,7 +25,7 @@ const commands = [
     <div class="site-container hero-grid hero-stack">
       <div class="hero-message">
         <span class="micro-label"><span class="status-dot"></span>{c.badge}</span>
-        <h1>{c.headline.map((line, i) => <span class:list={[i === 2 && 'accent-line']}>{line}</span>)}</h1>
+        <h1>{c.headline.map((line, i) => <span class:list={[i === 2 && 'accent-line']}>{line}{lang === 'en' && i < 2 ? '\u00a0' : ''}</span>)}</h1>
         <p class="hero-lead">{c.lead}</p>
         <div class="hero-actions"><a class="button-primary" href="#get-started">{c.primary}<Icon name="arrow" /></a><a class="button-secondary" href={SITE.repository}>{c.secondary}<span class="external-arrow" aria-hidden="true"><Icon name="arrowUpRight" /></span></a></div>
         <ul class="trust-list">{c.trust.map(item => <li><span aria-hidden="true">✓</span>{item}</li>)}</ul>

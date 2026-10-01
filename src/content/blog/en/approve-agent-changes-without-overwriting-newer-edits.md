@@ -4,7 +4,7 @@ description: "A worked ticket example for keeping agent proposals separate from 
 publishedAt: 2026-10-01
 lang: en
 slug: approve-agent-changes-without-overwriting-newer-edits
-topic: workflows
+topic: field-notes
 tags:
   - Human-agent collaboration
   - Data integrity

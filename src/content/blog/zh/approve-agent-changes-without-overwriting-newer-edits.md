@@ -4,7 +4,7 @@ description: "用一条合成工单演示提案与正式数据分离、过期审
 publishedAt: 2026-10-01
 lang: zh
 slug: approve-agent-changes-without-overwriting-newer-edits
-topic: workflows
+topic: field-notes
 tags:
   - 人与 Agent 协作
   - 数据可信度

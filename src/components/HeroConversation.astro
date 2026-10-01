@@ -1,6 +1,7 @@
 ---
 import type { Locale } from '../config';
 import Icon from './RuntimeIcon.astro';
+import AssistantIcon from './AssistantIcon.astro';
 interface Props { lang: Locale; }
 const { lang } = Astro.props;
 const zh = lang === 'zh';
@@ -30,7 +31,7 @@ const uses = zh ? [['report','报表','从对话中提取业务数据'],['book',
   <div class="demo-scene">
     <div class="chat-column">
       <p class="scene-note">{zh?'日常的工作对话…':'Everyday work conversations…'}<svg viewBox="0 0 40 35" aria-hidden="true"><path d="M6 2q-2 19 23 28m-9-1 9 1-2-9"/></svg></p>
-      {chats.map((chat,i) => <article class="sample-chat" data-chat-example={i}><span class:list={['chat-avatar',chat.tone]}><Icon name={chat.icon}/></span><div><header><strong>{chat.source}</strong><time>{chat.time}</time></header><p>{chat.text}{i===0&&<span class="chat-check" aria-hidden="true">✓</span>}</p></div></article>)}
+      {chats.map((chat,i) => <article class="sample-chat" data-chat-example={i}><span class:list={['chat-avatar',chat.tone]}>{i<2?<AssistantIcon name={i===0?'claude':'chatgpt'}/>:<Icon name={chat.icon}/>}</span><div><header><strong>{chat.source}</strong><time>{chat.time}</time></header><p>{chat.text}{i===0&&<span class="chat-check" aria-hidden="true">✓</span>}</p></div></article>)}
       <div class="more-chat"><span class="chat-avatar muted">···</span><strong>{zh?'更多 Agent':'More agents'}</strong><Icon name="code"/><Icon name="spark"/><span aria-hidden="true">···</span></div>
     </div>
     <div class="scene-bridge">
@@ -46,7 +47,7 @@ const uses = zh ? [['report','报表','从对话中提取业务数据'],['book',
         <div class="report-stats">{stats.map(([label,count,tone])=><div class:list={['report-stat',tone]}><span class="stat-icon"><Icon name={tone==='done'?'check':tone==='attention'?'clock':'circle'}/></span><div><span>{label}</span><strong>{count}</strong></div></div>)}</div>
         <div class="report-navigation"><div role="tablist" aria-label={zh?'报表示例':'Report example'}>{tabNames.map((name,i)=><button type="button" role="tab" aria-selected={i===0?'true':'false'} aria-controls={`sample-report-panel-${i}`} id={`sample-report-tab-${i}`} tabindex={i===0?0:-1} data-demo-tab={i}>{name}</button>)}</div><button class="source-action" type="button" data-open-demo-source>{zh?'查看原始对话':'View conversation'}<Icon name="arrowUpRight"/></button></div>
         <div class="report-panel" id="sample-report-panel-0" role="tabpanel" aria-labelledby="sample-report-tab-0" data-demo-panel="0">
-          <table><caption class="sr-only">{zh?'项目任务示例数据':'Example project tasks'}</caption><thead><tr>{(zh?['事项','状态','数据来源','更新时间']:['Task','Status','Source','Updated']).map(label=><th scope="col">{label}</th>)}</tr></thead><tbody>{tasks.map(([name,state,tone,source,time,index])=><tr><td>{name}</td><td><span class:list={['task-status',tone]}>{state}</span></td><td><span class:list={['source-name',index===0?'claude':index===1?'codex':index===2?'person':'muted']}><Icon name={index===0?'spark':index===1?'code':index===2?'user':'more'}/><span>{source}</span></span></td><td>{time}</td></tr>)}</tbody></table>
+          <table><caption class="sr-only">{zh?'项目任务示例数据':'Example project tasks'}</caption><thead><tr>{(zh?['事项','状态','数据来源','更新时间']:['Task','Status','Source','Updated']).map(label=><th scope="col">{label}</th>)}</tr></thead><tbody>{tasks.map(([name,state,tone,source,time,index])=><tr><td>{name}</td><td><span class:list={['task-status',tone]}>{state}</span></td><td><span class:list={['source-name',index===0?'claude':index===1?'codex':index===2?'person':'muted']}>{index===0||index===1?<AssistantIcon name={index===0?'claude':'chatgpt'}/>:<Icon name={index===2?'user':'more'}/>}<span>{source}</span></span></td><td>{time}</td></tr>)}</tbody></table>
         </div>
         <div class="report-panel sample-progress" id="sample-report-panel-1" role="tabpanel" aria-labelledby="sample-report-tab-1" data-demo-panel="1" hidden><p>{zh?'任务状态概览 · 示例数据':'Task status overview · sample data'}</p>{stats.map(([label,count])=><div><span>{label}</span><meter min="0" max="20" value={count} aria-label={label}>{count}/20</meter><strong>{count}</strong></div>)}</div>
         <div class="report-panel sample-sources" id="sample-report-panel-2" role="tabpanel" aria-labelledby="sample-report-tab-2" data-demo-panel="2" hidden><p>{zh?'接入与记录范围由你配置。以下为示例对话。':'You configure client connections and what is recorded. These conversations are examples.'}</p>{chats.map(chat=><div><strong>{chat.source}</strong><span>{chat.text}</span></div>)}</div>

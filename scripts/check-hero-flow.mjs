@@ -62,10 +62,10 @@ for (const reduced of [false, true]) {
   }
 }
 const copy = await readFile(new URL('../src/data/home.ts', import.meta.url), 'utf8');
-assert.ok(copy.includes("headline: ['从 Agent 聊天记录中，', '长出你的应用。']"));
-assert.ok(copy.includes("headline: ['From agent conversations,', 'grow your applications.']"));
-assert.ok(copy.includes('从 AI Gateway 到完整 AI 应用'));
-assert.ok(copy.includes('From AI Gateway to complete AI applications.'));
+assert.ok(copy.includes("headline: ['从 AI Gateway', '到完整 AI 应用']"));
+assert.ok(copy.includes("headline: ['From AI Gateway', 'to complete AI applications.']"));
+assert.ok(copy.includes('从 Agent 聊天记录中，长出你的应用。'));
+assert.ok(copy.includes('From agent conversations, grow your applications.'));
 for (const path of ['../dist/index.html', '../dist/zh/index.html']) {
   const html = await readFile(new URL(path, import.meta.url), 'utf8');
   assert.equal((html.match(/class="hero-flow-layers"[^>]*>[\s\S]*?<\/ol>/)?.[0].match(/<li\b/g) ?? []).length, 6, 'Six layers');

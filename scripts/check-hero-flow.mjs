@@ -62,10 +62,10 @@ for (const reduced of [false, true]) {
   }
 }
 const copy = await readFile(new URL('../src/data/home.ts', import.meta.url), 'utf8');
-assert.ok(copy.includes("headline: ['从 AI Gateway，', '到完整的', 'AI 应用系统。']"));
-assert.ok(copy.includes("headline: ['Start with a gateway.', 'Build an entire', 'AI application.']"));
-assert.ok(copy.includes('让 AI 对话长出可复用、可管理、持续沉淀的知识库与业务系统。'));
-assert.ok(copy.includes('Grow reusable, manageable knowledge bases and business systems from your AI conversations.'));
+assert.ok(copy.includes("headline: ['从 Agent 聊天记录中，', '长出你的应用。']"));
+assert.ok(copy.includes("headline: ['From agent conversations,', 'grow your applications.']"));
+assert.ok(copy.includes('从 AI Gateway 到完整 AI 应用'));
+assert.ok(copy.includes('From AI Gateway to complete AI applications.'));
 for (const path of ['../dist/index.html', '../dist/zh/index.html']) {
   const html = await readFile(new URL(path, import.meta.url), 'utf8');
   assert.equal((html.match(/class="hero-flow-layers"[^>]*>[\s\S]*?<\/ol>/)?.[0].match(/<li\b/g) ?? []).length, 6, 'Six layers');
@@ -121,20 +121,24 @@ fixture.dataset.motion='static';beam.sync();assert.ok(active.every(a=>a.state===
 console.log('PASS: constant 260px/s SVG arc speed, 18 clockwise card loops from upper-right, single-card order, resize continuity, pause/resume, switch/session, hover/focus/tooltip/offscreen/hidden/reduced-motion, preserved layout and copy');
 
 const home = await readFile(new URL('../src/components/HomePage.astro',import.meta.url),'utf8');
-const value = await readFile(new URL('../src/components/HeroValue.astro',import.meta.url),'utf8');
-assert.ok(home.indexOf('<HeroValue')<home.indexOf('architecture-section')&&home.indexOf('architecture-section')<home.indexOf('<HeroFlow'),'Native value visual in hero; architecture follows in its own section');
-assert.ok(!value.includes('<img')&&!value.includes('.png'),'Reference is recreated as native markup');
-assert.ok(value.includes('概念说明')&&value.includes('Concept note'));
-assert.ok(value.includes('需配置兼容的模型接口')&&value.includes('Configure a compatible model endpoint'));
-assert.ok(value.includes('value-feedback')&&value.includes('value-charts'));
-console.log('PASS: native value-cycle visual, explicit concept boundary, architecture relocated below hero');
-
-assert.ok(home.includes('hero-stack'));
-assert.ok(value.includes('value-stages')&&value.includes('grid-template-columns:minmax(0,1fr) 58px minmax(0,1.35fr) 58px minmax(0,1fr)'));
-console.log('PASS: stacked page hero with wide left-to-right concept stages and mobile vertical reflow');
-
-for (const label of ['Claude Code','Codex','OpenClaw','DeepSeek harness','AionUi','更多 Agent']) assert.ok(value.includes(label));
-assert.ok(value.includes('从聊天记录中长出 AI 应用')&&value.includes('Grow AI applications from chat history'));
-assert.ok(value.includes('聊天 · 沉淀 · 记忆 · Agent 自进化')&&value.includes('Chat · Capture · Memory · Agent evolution'));
-assert.ok(value.includes('不代表自动训练模型')&&value.includes('automatic model training'));
-console.log('PASS: familiar client examples, revised bilingual copy and accessible configuration/concept notes');
+const conversation = await readFile(new URL('../src/components/HeroConversation.astro',import.meta.url),'utf8');
+assert.ok(home.indexOf('<HeroConversation')<home.indexOf('architecture-section')&&home.indexOf('architecture-section')<home.indexOf('<HeroFlow'),'Conversation visual precedes unchanged architecture');
+assert.ok(!conversation.includes('.png'),'No embedded screenshot');
+assert.ok(conversation.includes('构建示例')&&conversation.includes('sample data'));
+assert.ok(!conversation.includes('+33%')&&!conversation.includes('-17%'),'No pretend trend metrics');
+assert.ok(conversation.includes('prefers-reduced-motion:reduce'));
+assert.ok(copy.includes("primary: '快速开始', secondary: 'GitHub'"));
+assert.ok(home.includes('href="#get-started"')&&home.includes('href={SITE.repository}'));
+const demoScript=conversation.match(/<script>([\s\S]*?)<\/script>/)[1];
+const demoEvents={};const tabEvents=[];const tabs=Array.from({length:3},(_,i)=>({attrs:{},tabIndex:0,setAttribute(k,v){this.attrs[k]=v;},focus(){demoEvents.focus=i;},addEventListener(k,f){(tabEvents[i]??={})[k]=f;}}));
+const demoPanels=Array.from({length:3},()=>({hidden:false}));const dialog={open:false,showModal(){this.open=true;},close(){this.open=false;demoEvents.close();},addEventListener(k,f){demoEvents[k]=f;},getBoundingClientRect(){return {left:0,right:100,top:0,bottom:100};}};
+const trigger={focus(){demoEvents.returned=true;},addEventListener(_k,f){demoEvents.trigger=f;}};
+const root={querySelectorAll:s=>s==='[data-demo-tab]'?tabs:demoPanels,querySelector:s=>s==='dialog'?dialog:trigger};
+vm.runInNewContext(ts.transpileModule(demoScript,{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText,{document:{querySelectorAll:()=>[root]}});
+tabEvents[1].click();assert.equal(tabs[1].attrs['aria-selected'],'true');assert.equal(demoPanels[1].hidden,false);assert.equal(demoPanels[0].hidden,true);
+tabEvents[1].keydown({key:'ArrowRight',preventDefault(){}});assert.equal(demoEvents.focus,2);assert.equal(tabs[2].tabIndex,0);
+tabEvents[2].keydown({key:'Home',preventDefault(){}});assert.equal(demoEvents.focus,0);assert.equal(demoPanels[0].hidden,false);
+tabEvents[0].keydown({key:'ArrowLeft',preventDefault(){}});assert.equal(demoEvents.focus,2);
+demoEvents.trigger();assert.equal(dialog.open,true);demoEvents.click({target:dialog,clientX:110,clientY:110});assert.equal(dialog.open,false);assert.equal(demoEvents.returned,true);
+for(const path of ['../dist/index.html','../dist/zh/index.html']){const html=await readFile(new URL(path,import.meta.url),'utf8');assert.ok(html.includes('data-conversation-demo'));assert.equal((html.match(/data-demo-tab=/g)??[]).length,3);assert.ok(html.includes('sample-conversation'));}
+console.log('PASS: selected new hero copy/CTA targets, no raster hero, explicit sample data, working tabs/keyboard/local-source dialog, reduced-motion static');

@@ -1,0 +1,107 @@
+import { useEffect, useRef, useState } from 'react';
+import { Alert, Button, Card, Col, Input, Row, Select, Space, Table, Tag, Typography } from 'antd';
+import type { BlockComponentProps } from '@1flowbase/block-sdk';
+
+const BASE = '/api/runtime/models/feedback_evidence';
+const initial = {
+  public_title: 'Demo-01: First project needs a clearer next step',
+  public_summary: 'Add a guided checklist after creating the first project.',
+  source_type: 'onboarding_observation',
+  status: 'new',
+  internal_source_url: '',
+  internal_observed_step: 'SYNTHETIC: The participant created a project, opened Settings twice, and did not find how to add the first item.',
+  internal_decision_reason: '',
+  internal_hypothesis: 'Hypothesis, not observed fact: the next action may be hard to discover.',
+  internal_moderator_prompt: 'After the participant paused, the moderator asked: What would you try next? No button was pointed out.'
+};
+const transitions: Record<string, string[]> = { new: ['planned', 'declined'], planned: ['in_progress', 'declined'], in_progress: ['done', 'declined'], done: [], declined: [] };
+const colors: Record<string, string> = { new: 'blue', planned: 'gold', in_progress: 'cyan', done: 'green', declined: 'red' };
+const labels: Record<string, string> = { public_title: 'Title', public_summary: 'Proposed improvement', internal_observed_step: 'Observed facts: attempt and point of friction', internal_hypothesis: 'Hypothesis, separate from evidence', internal_moderator_prompt: 'Moderator prompt or help', internal_source_url: 'Optional public evidence URL' };
+
+export default function FeedbackDemo({ ctx }: BlockComponentProps) {
+  const [rows, setRows] = useState<any[]>([]);
+  const [selected, setSelected] = useState<any>(null);
+  const [draft, setDraft] = useState(initial);
+  const [reason, setReason] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
+  const [total, setTotal] = useState(0);
+  const request = useRef(0);
+  const locked = useRef(false);
+
+  async function load() {
+    const ticket = ++request.current;
+    const result: any = await ctx.api.get(BASE + '/list', { query: { page: 1, page_size: 100, sort: 'created_at:desc' } });
+    if (!Array.isArray(result.items)) throw new Error('The server did not return the expected items list.');
+    if (ticket === request.current) { setRows(result.items); setTotal(result.total ?? result.items.length); }
+    return result.items;
+  }
+  useEffect(() => { load().catch(e => setError(String(e.message || e))); return () => { request.current++; }; }, []);
+  async function action(work: () => Promise<void>) {
+    if (locked.current) return;
+    locked.current = true; setBusy(true); setError(''); setNotice('');
+    try { await work(); } catch (e: any) { setError(String(e.message || e) + ' Refresh before retrying an uncertain write.'); }
+    finally { locked.current = false; setBusy(false); }
+  }
+  async function create() {
+    await action(async () => {
+      for (const key of ['public_title', 'public_summary', 'internal_observed_step'] as const) if (!draft[key].trim()) throw new Error(labels[key] + ' is required.');
+      if (!['feedback', 'onboarding_observation'].includes(draft.source_type)) throw new Error('Choose a valid source type.');
+      const existing = await load();
+      const same = existing.find((r: any) => r.public_title === draft.public_title.trim());
+      if (same) { setSelected(same); setNotice('This synthetic title already exists. Selected the saved record; no duplicate was created.'); return; }
+      const saved: any = await ctx.api.post(BASE + '/create', { body: { ...draft, public_title: draft.public_title.trim(), status: 'new', internal_decision_reason: '' } });
+      if (!saved.id) throw new Error('No server record ID was returned. Reconcile before retrying.');
+      const fresh = await load();
+      const verified = fresh.find((r: any) => r.id === saved.id);
+      if (!verified) throw new Error('Write returned an ID, but the refreshed list did not contain it.');
+      setSelected(verified); setReason(''); setNotice('Created and reloaded server record ' + saved.id);
+    });
+  }
+  async function decide(target: string) {
+    await action(async () => {
+      if (!selected || !reason.trim()) throw new Error('Select an item and enter a human decision reason.');
+      const fresh = await load();
+      const current = fresh.find((r: any) => r.id === selected.id);
+      if (!current || current.status !== selected.status) throw new Error('The record changed. Select its current version before deciding.');
+      if (!(transitions[current.status] || []).includes(target)) throw new Error('This status transition is not available.');
+      const history = [current.internal_decision_reason, '[' + target + '] ' + reason.trim()].filter(Boolean).join('\n');
+      await ctx.api.patch(BASE + '/update/{id}', { path: { id: current.id }, body: { status: target, internal_decision_reason: history } });
+      const updated = (await load()).find((r: any) => r.id === current.id);
+      if (!updated || updated.status !== target) throw new Error('The refreshed server state did not match the requested status.');
+      setSelected(updated); setReason(''); setNotice('Saved and reloaded: ' + target);
+    });
+  }
+  const field = (key: keyof typeof labels, rows = 2) => <div key={key} style={{ marginBottom: 12 }}><Typography.Text strong>{labels[key]}</Typography.Text><Input.TextArea value={(draft as any)[key]} rows={rows} disabled={busy} onChange={e => setDraft({ ...draft, [key]: e.target.value })} /></div>;
+  return <div style={{ padding: 24, maxWidth: 1400, margin: 'auto' }}>
+    <Typography.Title level={2}>Evidence → decision → roadmap</Typography.Title>
+    <Alert type="info" showIcon message="Synthetic demo · manual operator decisions" description="This page uses the model CRUD API directly. It does not execute the draft workflow or demonstrate workflow approval. Field-level public/private isolation and atomic conflict protection have not been verified." />
+    <Space style={{ margin: '16px 0' }} wrap><Button disabled={busy} onClick={() => action(async () => { const fresh = await load(); if (selected) setSelected(fresh.find((r: any) => r.id === selected.id) || null); setNotice('Reloaded current server data.'); })}>Refresh server data</Button><Typography.Text>{total} saved records</Typography.Text>{Object.keys(transitions).map(s => <Tag key={s} color={colors[s]}>{s}: {rows.filter(r => r.status === s).length}</Tag>)}</Space>
+    {error && <Alert type="error" showIcon message={error} style={{ marginBottom: 12 }} />}
+    {notice && <Alert type="success" showIcon message={notice} style={{ marginBottom: 12 }} />}
+    <Table rowKey="id" size="small" pagination={{ pageSize: 5 }} dataSource={rows} columns={[
+      { title: 'Evidence', dataIndex: 'public_title' },
+      { title: 'Source', dataIndex: 'source_type' },
+      { title: 'Roadmap', dataIndex: 'status', render: (s: string) => <Tag color={colors[s]}>{s}</Tag> },
+      { title: 'Review', render: (_: any, r: any) => <Button disabled={busy} onClick={() => { setSelected(r); setReason(''); }}>Open</Button> }
+    ]} />
+    <Row gutter={[20, 20]} style={{ marginTop: 18 }}>
+      <Col xs={24} lg={12}><Card title="1. Capture a synthetic observation">
+        {field('public_title', 1)}{field('public_summary')}
+        <Typography.Text strong>Source type</Typography.Text><Select style={{ width: '100%', marginBottom: 12 }} value={draft.source_type} disabled={busy} options={[{ value: 'onboarding_observation', label: 'Onboarding observation' }, { value: 'feedback', label: 'Feedback' }]} onChange={source_type => setDraft({ ...draft, source_type })} />
+        {field('internal_observed_step', 3)}{field('internal_hypothesis')}{field('internal_moderator_prompt', 3)}{field('internal_source_url', 1)}
+        <Button type="primary" disabled={busy} loading={busy} onClick={create}>Create as new</Button>
+      </Card></Col>
+      <Col xs={24} lg={12}><Card title="2. Human decision and delivery">
+        {selected ? <><Typography.Title level={4}>{selected.public_title}</Typography.Title><Tag color={colors[selected.status]}>{selected.status}</Tag><Typography.Paragraph type="secondary">Server ID: {selected.id}</Typography.Paragraph>
+          {[['Observed facts', selected.internal_observed_step], ['Hypothesis', selected.internal_hypothesis], ['Moderator prompt', selected.internal_moderator_prompt], ['Proposed improvement', selected.public_summary]].map(([label, value]) => <div key={label}><Typography.Text strong>{label}</Typography.Text><Typography.Paragraph style={{ whiteSpace: 'pre-wrap' }}>{value || 'Not recorded'}</Typography.Paragraph></div>)}
+          <Typography.Text strong>Recorded decisions</Typography.Text><Typography.Paragraph style={{ whiteSpace: 'pre-wrap' }}>{selected.internal_decision_reason || 'Awaiting a human decision'}</Typography.Paragraph>
+          <Input.TextArea rows={3} placeholder="Explain the evidence and your decision" value={reason} disabled={busy} onChange={e => setReason(e.target.value)} />
+          <Space wrap style={{ marginTop: 12 }}>{(transitions[selected.status] || []).map(s => <Button key={s} disabled={busy || !reason.trim()} onClick={() => decide(s)}>{s === 'planned' ? 'Adopt → planned' : s === 'in_progress' ? 'Start work' : s === 'done' ? 'Mark done' : 'Decline'}</Button>)}</Space>
+        </> : <Typography.Paragraph>Select an existing item or create the synthetic observation.</Typography.Paragraph>}
+      </Card></Col>
+    </Row>
+    <Typography.Paragraph type="secondary" style={{ marginTop: 16 }}>Single-operator demonstration. UI validation and duplicate-title reconciliation are not backend idempotency or atomic compare-and-set. No automatic seeding, deletion, or external model calls.</Typography.Paragraph>
+  </div>;
+}

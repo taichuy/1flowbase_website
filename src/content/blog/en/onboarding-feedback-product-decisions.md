@@ -80,7 +80,7 @@ ctx.api.patch('/api/runtime/models/feedback_evidence/update/{id}', {
 });
 ```
 
-If your generated contract differs, adapt the block to that contract before writing data. [Download the complete tested TSX source as plain text](/downloads/onboarding-feedback-product-decisions/feedback-manual-block.tsx.txt), or copy it from the code appendix below. The download and appendix contain the same source used for the verified demo. If saving a local source file, remove the final `.txt` extension to name it `feedback-manual-block.tsx`. Save it in the native block, run the preview, and confirm that the list loads before creating an example.
+If your generated contract differs, adapt the block to that contract before writing data. [Download the complete tested TSX source as plain text](/downloads/onboarding-feedback-product-decisions/feedback-manual-block.tsx.txt), [view the pinned source on GitHub](https://github.com/taichuy/1flowbase_website/blob/ef537d1af32b6e7ed6ed05064d79b2fb89475bee/public/downloads/onboarding-feedback-product-decisions/feedback-manual-block.tsx.txt), or copy it from the code appendix below. The download, pinned source, and appendix contain the same source used for the verified demo. If saving a local source file, remove the final `.txt` extension to name it `feedback-manual-block.tsx`. Save it in the native block, run the preview, and confirm that the list loads before creating an example.
 
 ## Step 3: Make each human decision explicit
 

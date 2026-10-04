@@ -1,19 +1,22 @@
 ---
 import { Image } from 'astro:assets';
-import workflow from '../assets/product/workflow-editor.png';
-import execution from '../assets/product/execution-logs.jpeg';
-import api from '../assets/product/api-publish.jpeg';
+import orchestration from '../assets/product/console-orchestration.jpeg';
+import api from '../assets/product/console-api.jpeg';
+import statistics from '../assets/product/console-statistics.jpeg';
+import pagesAssistant from '../assets/product/console-pages-assistant.jpeg';
+import mcp from '../assets/product/console-mcp.jpeg';
 import { SITE, type Locale, localePath } from '../config';
 import { homeCopy } from '../data/home';
 import Icon from './RuntimeIcon.astro';
 import HomeGuides from './HomeGuides.astro';
 import HeroFlow from './HeroFlow.astro';
+import HomeArchitecture from './HomeArchitecture.astro';
 import HeroConversation from './HeroConversation.astro';
 import '../styles/home.css';
 interface Props { lang: Locale; }
 const { lang } = Astro.props;
 const c = homeCopy[lang];
-const screenshots = [workflow, execution, api];
+const screenshots = [orchestration, api, statistics, pagesAssistant, mcp];
 const commands = [
   { name: 'Linux / macOS', label: 'bash', url: 'https://raw.githubusercontent.com/taichuy/1flowbase/main/scripts/shell/docker-deploy.sh', command: 'curl -fsSL https://raw.githubusercontent.com/taichuy/1flowbase/main/scripts/shell/docker-deploy.sh | sh' },
   { name: 'PowerShell', label: 'powershell', url: 'https://raw.githubusercontent.com/taichuy/1flowbase/main/scripts/powershell/docker-deploy.ps1', command: 'irm https://raw.githubusercontent.com/taichuy/1flowbase/main/scripts/powershell/docker-deploy.ps1 | iex' },
@@ -38,6 +41,7 @@ const commands = [
     <div class="site-container">
       <div class="architecture-heading"><div><span class="micro-label">{lang === 'zh' ? '从对话到应用' : 'FROM CONVERSATIONS TO APPLICATIONS'}</span><h2 id="architecture-title">{lang === 'zh' ? '每一步，都连接在一起。' : 'Every step, connected.'}</h2></div><p>{lang === 'zh' ? '点选方块，了解每一层如何工作。' : 'Select a card to explore how each layer works.'}</p></div>
       <HeroFlow lang={lang} />
+      <HomeArchitecture lang={lang} />
     </div>
   </section>
 
@@ -53,7 +57,7 @@ const commands = [
   <section class="home-section product-section" id="product"><div class="site-container"><div class="section-intro centered"><span class="micro-label">{c.productEyebrow}</span><h2>{c.productTitle}</h2><p>{c.productText}</p></div>
     <div class="product-viewer" data-tabs>
       <div class="product-tabs" role="tablist" aria-label={c.productTitle}>{c.productTabs.map((title,i) => <button id={`product-tab-${i}`} type="button" role="tab" aria-selected={i===0 ? 'true' : 'false'} aria-controls={`product-panel-${i}`} tabindex={i===0 ? 0 : -1} data-tab={i}><span>0{i+1}</span>{title}</button>)}</div>
-      {screenshots.map((src,i) => <div id={`product-panel-${i}`} role="tabpanel" aria-labelledby={`product-tab-${i}`} tabindex="0" hidden={i!==0} data-panel={i}><div class="viewer-toolbar"><div aria-hidden="true"><i></i><i></i><i></i></div><span>1flowbase / {['workflow','execution','api'][i]}</span><span>{c.screenshotNote}</span></div><div class="product-image-wrap"><Image src={src} alt={c.productCaptions[i]} widths={[640,960,1440,2034]} sizes="(max-width: 1200px) 94vw, 1160px" loading="lazy" class="product-image" /></div><p class="image-caption">{c.productCaptions[i]}</p></div>)}
+      {screenshots.map((src,i) => <div id={`product-panel-${i}`} role="tabpanel" aria-labelledby={`product-tab-${i}`} tabindex="0" hidden={i!==0} data-panel={i}><div class="viewer-toolbar"><div aria-hidden="true"><i></i><i></i><i></i></div><span>1flowbase / {c.productPaths[i]}</span><span>{c.screenshotNote}</span></div><div class="product-image-wrap"><Image src={src} alt={c.productCaptions[i]} widths={[640,960,1440,2160]} sizes="(max-width: 1200px) 94vw, 1160px" loading="lazy" class="product-image" /></div><p class="image-caption">{c.productCaptions[i]}</p></div>)}
     </div>
   </div></section>
 

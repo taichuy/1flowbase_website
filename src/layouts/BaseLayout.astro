@@ -1,6 +1,7 @@
 ---
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import PostHog from '../components/posthog.astro';
 import { SITE, type Locale } from '../config';
 import '../styles/global.css';
 
@@ -39,6 +40,7 @@ const imageUrl = new URL(image, site);
 <!doctype html>
 <html lang={lang === 'zh' ? 'zh-CN' : 'en'}>
   <head>
+    <PostHog />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />

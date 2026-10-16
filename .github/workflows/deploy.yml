@@ -44,6 +44,9 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build website
+        env:
+          PUBLIC_POSTHOG_KEY: ${{ vars.PUBLIC_POSTHOG_KEY }}
+          PUBLIC_POSTHOG_HOST: ${{ vars.PUBLIC_POSTHOG_HOST }}
         run: pnpm build
 
       - name: Deploy to Cloudflare Workers

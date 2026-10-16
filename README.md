@@ -115,9 +115,65 @@ Wiki content updates are picked up by the scheduled deployment workflow within 3
 - Primary CTA: local installation section; secondary CTA: project repository
 - Three operating-system tabs offer the official deployment commands; copying never executes them.
 - Templates and reduced-source-context Agent building remain explicitly labeled as in progress.
-- No tracking provider or analytics account is installed by this change. Traffic growth requires ongoing distribution and measurement, not only a visual redesign.
+- PostHog tracks page views and interactions through `src/components/posthog.astro`, included in the shared layout. Session recording is disabled. Analytics is disabled unless a build-time `PUBLIC_POSTHOG_KEY` is configured; `PUBLIC_POSTHOG_HOST` defaults to the US ingestion endpoint. No project token is stored in source. These public ingestion settings are embedded in the static output and are not personal API credentials. Local visits also send events, so filter localhost out of production reports.
 
 Publication is consequential: pushing or merging to `main` triggers production deployment. Scheduled, `repository_dispatch`, and manual workflow runs also deploy the `main` content. Review on a separate branch before merging.
+
+## Website analytics
+
+Configure `PUBLIC_POSTHOG_KEY` and `PUBLIC_POSTHOG_HOST` under GitHub repository
+**Settings → Environments → production → Environment variables**. The deploy
+workflow passes these variables to the build. Updating variables requires a
+new build/deployment; Cloudflare runtime variables cannot change static output.
+These are public ingestion settings, so GitHub Variables are sufficient. Keep
+Cloudflare deployment credentials in Secrets.
+
+For local analytics, copy `.env.example` to `.env.local`, fill in the public
+project key, and restart the dev server. `.env.local` is ignored by Git. Leave
+the key empty to disable the SDK and event listeners. Do not use a personal API
+key. A public project key is visible in the built website even when configured
+through environment variables.
+
+`src/lib/analytics.ts` emits the following events through PostHog. Automatic
+pageview/pageleave capture is disabled so each full-page navigation sends only
+one explicit `$pageview`. Session recording remains disabled.
+
+| Event | Meaning / useful properties |
+| --- | --- |
+| `$pageview` | Page visit: `page_url`, `page_path`, `page_title`, `page_language`, `page_type` |
+| `blog_index_viewed` | Blog listing opened |
+| `blog_viewed` | Blog article opened, with `blog_slug` (not proof of a completed read) |
+| `github_clicked` | GitHub outbound link activated, with `destination_url`, `repository`, `is_project_repository`, `is_repository_landing`, `link_location` |
+| `page_engagement` | Visible-time increment in `duration_seconds`, plus cumulative `total_visible_seconds`, `page_view_id`, `segment_index` and `reason` |
+
+All events include `entry_source`, `entry_referrer_host`, `entry_path`, and
+`entry_utm_source`, `entry_utm_medium`, `entry_utm_campaign`, `entry_utm_content`,
+`entry_utm_term`. Entry attribution is retained in sessionStorage for the tab's
+session, so internal navigation does not replace the original source. Without
+storage, it falls back to the current page. Referrers may be missing because of
+browser policies; `direct_or_unknown` does not necessarily mean a typed URL.
+PostHog also attaches its standard URL, referrer, campaign and session fields.
+
+Use UTM-tagged promotion links, for example
+`https://1flowbase.taichuy.com/zh/?utm_source=github&utm_medium=readme&utm_campaign=launch`.
+In Product analytics, break down `$pageview` by `entry_source` / `page_path`.
+Create a funnel from `$pageview` to `github_clicked`, filtering the latter by
+`is_project_repository = true` and `is_repository_landing = true` to measure
+project repository visits rather than unrelated GitHub links. This measures
+outbound click intent, not a confirmed GitHub page load, Star, or installation.
+
+Visible time is flushed every 15 seconds and when the document is hidden or
+left, using beacon transport. Background-tab time is excluded; visible time
+does not prove the visitor is actively reading. Sum `duration_seconds` per
+`page_view_id` to calculate each visit's recorded duration, then average those
+visit totals for average time per page. Do not sum `total_visible_seconds` or
+average individual heartbeat events. Network failures or abrupt browser exits
+can lose the final interval; some visits may have no duration event.
+
+Filter by the production hostname in reports to exclude localhost testing.
+The local site emits these events immediately; production requires deploying
+the updated build. Check Activity for `$pageview`, `blog_viewed`,
+`github_clicked`, and `page_engagement` after browsing and switching tabs.
 
 ## Blog publishing and reading paths
 

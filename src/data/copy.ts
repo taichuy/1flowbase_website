@@ -180,7 +180,7 @@ export const pageCopy = {
   },
   zh: {
     features: {
-      eyebrow: '产品能力',
+      eyebrow: '应用模板',
       title: '从 AI Gateway 到完整的应用运行时。',
       description: '分发 AI 能力，完整沉淀会话，再通过工作流、API、业务数据与 React 构建应用。把这一切自托管在你掌控的基础设施中。',
     },

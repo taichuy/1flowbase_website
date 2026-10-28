@@ -45,6 +45,9 @@ const imageUrl = new URL(image, site);
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" content="#041713" />
+    {import.meta.env.PROD && (
+      <script is:inline src="https://analytics.ahrefs.com/analytics.js" data-key="avOBmDMere1h6fpinKJcmQ" async></script>
+    )}
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />

@@ -7,6 +7,11 @@
 .language-link:hover { color: var(--color-emerald); background: white; }
 .github-link { align-items: center; justify-content: center; gap: .65rem; border-radius: 999px; padding: .7rem 1.1rem; background: var(--color-night); color: white; font-size: .875rem; font-weight: 700; }
 .github-link:hover { background: var(--color-forest); }
+.github-icon-link { position: relative; flex-shrink: 0; align-items: center; justify-content: center; width: 3rem; height: 3rem; margin-right: .5rem; border-radius: 50%; color: var(--color-ink); }
+.github-icon-link:hover { color: var(--color-emerald); background: white; }
+.github-icon-link:focus-visible { outline: 2px solid var(--color-emerald); outline-offset: 4px; }
+.github-icon-link > svg { width: 1.9rem; height: 1.9rem; }
+.github-star-badge { position: absolute; top: -.1rem; left: 1.5rem; min-width: 1.6rem; padding: .12rem .4rem; border: 1px solid var(--color-line); border-radius: 999px; background: white; color: var(--color-ink); box-shadow: 0 2px 5px rgb(0 0 0 / 10%); font-size: .7rem; font-weight: 500; line-height: 1.2; white-space: nowrap; }
 .navigation-toggle { display: flex; align-items: center; justify-content: space-between; gap: .5rem; cursor: pointer; color: inherit; font: inherit; }
 .navigation-toggle svg { width: .8rem; height: .8rem; fill: none; stroke: currentColor; stroke-width: 1.5; transition: transform 160ms ease; }
 .navigation-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }

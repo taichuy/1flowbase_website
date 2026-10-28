@@ -44,7 +44,7 @@ const views: View[] = zh ? [
   },
 ] : [
   {
-    tab: 'Business architecture',
+    tab: 'Business',
     layers: [
       { name: 'Actors', role: 'Who uses it', items: [['Business users', 'Operate apps within their permissions'], ['Admins', 'Configure models, access and workspaces'], ['Agents', 'Call exposed capabilities through MCP'], ['AI apps / SDKs', 'Use 1flowbase as the model endpoint']] },
       { name: 'Channels', role: 'Where they enter', items: [['GUI console', 'Review and manage visually'], ['MCP / WebMCP', 'Progressive list / get / call'], ['Compatible model APIs', 'Anthropic Messages · OpenAI Chat / Responses']] },
@@ -57,7 +57,7 @@ const views: View[] = zh ? [
     note: 'Top to bottom: actors use applications through channels, applications are built on platform capabilities, and the platform dispatches underlying resources. Governance spans every layer. Applications are examples that require configuration and development.',
   },
   {
-    tab: 'Technical architecture',
+    tab: 'Technical',
     layers: [
       { name: 'Frontend', role: 'web container', items: [['React console', 'React 19 · antd 6 · TanStack Router · Zustand · Vite'], ['Nginx', 'Static hosting · reverse-proxies /api to api-server']] },
       { name: 'Protocol adapters', role: 'api-server · Axum', items: [['HTTP / SSE', 'REST and streaming responses'], ['WebSocket', 'Long-lived sessions'], ['MCP / WebMCP', 'Agent tool protocols'], ['Model-compatible ingress', 'Anthropic · OpenAI protocols']] },
@@ -76,7 +76,7 @@ const views: View[] = zh ? [
 ---
 <figure class="arch" aria-labelledby="arch-title" data-tabs>
   <figcaption class="arch-heading">
-    <div><span class="micro-label">{heading.eyebrow}</span><h2 id="arch-title">{heading.title}</h2></div>
+    <div><h2 id="arch-title">{heading.title}</h2></div>
     <div class="arch-tabs" role="tablist" aria-label={heading.tabs}>{views.map((view, i) => <button type="button" id={`arch-tab-${i}`} role="tab" aria-selected={i === 0 ? 'true' : 'false'} aria-controls={`arch-panel-${i}`} tabindex={i === 0 ? 0 : -1} data-tab={i}>{view.tab}</button>)}</div>
   </figcaption>
 
@@ -104,7 +104,7 @@ const views: View[] = zh ? [
   .arch-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:20px}
   .arch-heading :is(h2,h3){font-size:clamp(19px,2vw,24px);font-weight:560;letter-spacing:-.03em;line-height:1.3;margin:10px 0 0}
   .arch-tabs{display:inline-flex;flex-shrink:0;padding:3px;background:#e6eedb;border-radius:8px}
-  .arch-tabs button{padding:7px 14px;border:0;border-radius:6px;background:transparent;color:#4d6248;font:500 12.5px/1.4 var(--font-sans);cursor:pointer}
+  .arch-tabs button{min-height:44px;white-space:nowrap;padding:7px 14px;border:0;border-radius:6px;background:transparent;color:#4d6248;font:500 12.5px/1.4 var(--font-sans);cursor:pointer}
   .arch-tabs button[aria-selected=true]{background:#1d4b3b;color:#fff}
   .arch-tabs button:focus-visible{outline:2px solid #176e55;outline-offset:2px}
   .arch-grid{display:grid;grid-template-columns:minmax(0,1fr) 210px;gap:10px}
@@ -135,4 +135,8 @@ const views: View[] = zh ? [
   @media(max-width:960px){.arch-grid{grid-template-columns:minmax(0,1fr)}.arch-cross{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.arch-cross-title{grid-column:1/-1}}
   @media(max-width:780px){.arch-heading{display:block}.arch-tabs{margin-top:14px}.arch-layer-items{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media(max-width:560px){.arch{padding:18px 12px}.arch-layer{grid-template-columns:minmax(0,1fr)}.arch-layer-label{flex-direction:row;align-items:baseline;flex-wrap:wrap;gap:6px;border-right:0;border-bottom:1px solid #e4ebdf;padding:2px 4px 8px}.tone-dark .arch-layer-label{border-color:#3d7259}.arch-layer:not(:last-child)::after{left:50%}.arch-layer-items,.arch-cross{grid-template-columns:minmax(0,1fr)}}
+  .arch-layer-label span,.arch-layer-label em{font:400 12px/1.5 var(--font-sans);color:var(--home-muted)}
+  .arch-note{font-size:12px;color:var(--home-muted)}
+  .arch-node span{font-size:12px}
+  .arch-cross-title{font-family:var(--font-sans);font-size:12px;letter-spacing:0;text-transform:none}
 </style>

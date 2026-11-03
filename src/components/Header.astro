@@ -1,6 +1,7 @@
 ---
 import Logo from './Logo.astro';
 import DocsNavigation from './DocsNavigation.astro';
+import TemplateNavigation from './TemplateNavigation.astro';
 import '../styles/navigation.css';
 import { SITE, type Locale, localePath } from '../config';
 
@@ -18,13 +19,19 @@ const switchHref = alternatePath ?? (path.startsWith('/404')
     : `/zh${path === '/' ? '/' : path}`);
 
 const labels = lang === 'zh'
-  ? { nav: [['应用模板', '/features/'], ['使用场景', '/use-cases/'], ['博客', '/blog/']], docs: '文档', language: 'EN', menu: '打开导航', close: '关闭导航', navigation: '主导航', home: '1flowbase 首页', switchLanguage: 'Switch to English' }
-  : { nav: [['Features', '/features/'], ['Use cases', '/use-cases/'], ['Blog', '/blog/']], docs: 'Docs', language: '中文', menu: 'Open navigation', close: 'Close navigation', navigation: 'Main navigation', home: '1flowbase home', switchLanguage: '切换到中文' };
+  ? { templates: '应用模板', nav: [['使用场景', '/use-cases/'], ['博客', '/blog/']], docs: '文档', language: 'EN', menu: '打开导航', close: '关闭导航', navigation: '主导航', home: '1flowbase 首页', switchLanguage: 'Switch to English' }
+  : { templates: 'App templates', nav: [['Use cases', '/use-cases/'], ['Blog', '/blog/']], docs: 'Docs', language: '中文', menu: 'Open navigation', close: 'Close navigation', navigation: 'Main navigation', home: '1flowbase home', switchLanguage: '切换到中文' };
 ---
 <header class="site-header" data-site-header>
   <div class="site-container header-row">
     <a href={localePath(lang)} aria-label={labels.home}><Logo /></a>
     <nav class="desktop-navigation" aria-label={labels.navigation}>
+      <div class="desktop-docs" data-disclosure>
+        <button type="button" class="navigation-toggle" aria-expanded="false" aria-controls="desktop-templates-panel" data-disclosure-toggle>
+          {labels.templates}<svg aria-hidden="true" viewBox="0 0 12 12"><path d="m2.5 4.5 3.5 3 3.5-3" /></svg>
+        </button>
+        <div id="desktop-templates-panel" class="desktop-docs-panel template-panel" hidden><TemplateNavigation lang={lang} /></div>
+      </div>
       {labels.nav.map(([label, href]) => <a href={localePath(lang, href)} aria-current={path.startsWith(localePath(lang, href)) ? 'page' : undefined}>{label}</a>)}
       <div class="desktop-docs" data-disclosure>
         <button type="button" class="navigation-toggle" aria-expanded="false" aria-controls="desktop-docs-panel" data-disclosure-toggle>
@@ -46,6 +53,10 @@ const labels = lang === 'zh'
   </div>
   <div id="mobile-navigation" class="mobile-navigation" hidden>
     <nav class="site-container" aria-label={labels.navigation}>
+      <div class="mobile-docs" data-disclosure>
+        <button type="button" class="navigation-toggle" aria-expanded="false" aria-controls="mobile-templates-panel" data-disclosure-toggle>{labels.templates}<svg aria-hidden="true" viewBox="0 0 12 12"><path d="m2.5 4.5 3.5 3 3.5-3" /></svg></button>
+        <div id="mobile-templates-panel" hidden><TemplateNavigation lang={lang} /></div>
+      </div>
       {labels.nav.map(([label, href]) => <a class="mobile-primary-link" href={localePath(lang, href)} aria-current={path.startsWith(localePath(lang, href)) ? 'page' : undefined}>{label}</a>)}
       <div class="mobile-docs" data-disclosure>
         <button type="button" class="navigation-toggle" aria-expanded="false" aria-controls="mobile-docs-panel" data-disclosure-toggle>{labels.docs}<svg aria-hidden="true" viewBox="0 0 12 12"><path d="m2.5 4.5 3.5 3 3.5-3" /></svg></button>
@@ -55,6 +66,7 @@ const labels = lang === 'zh'
     </nav>
   </div>
     <nav class="navigation-fallback site-container flex flex-wrap gap-4 py-4 text-sm font-semibold" aria-label={labels.navigation}>
+      <details><summary>{labels.templates}</summary><TemplateNavigation lang={lang} /></details>
       {labels.nav.map(([label, href]) => <a href={localePath(lang, href)}>{label}</a>)}
       <a href={localePath(lang, '/docs/')}>{labels.docs}</a>
       <a href={SITE.repository}>GitHub</a>
@@ -96,8 +108,25 @@ const labels = lang === 'zh'
     if (toggle === mobileToggle) toggle.setAttribute('aria-label', expanded ? toggle.dataset.closeLabel! : toggle.dataset.openLabel!);
   };
   const closeAll = () => toggles.forEach(toggle => setExpanded(toggle, false));
+  const desktopHover = window.matchMedia('(min-width: 960px) and (hover: hover) and (pointer: fine)');
+  header.querySelectorAll<HTMLElement>('.desktop-navigation [data-disclosure]').forEach(disclosure => {
+    const toggle = disclosure.querySelector<HTMLButtonElement>('[data-disclosure-toggle]')!;
+    disclosure.addEventListener('pointerenter', event => {
+      if (!desktopHover.matches || event.pointerType === 'touch') return;
+      toggles.filter(button => button !== toggle && button !== mobileToggle).forEach(button => setExpanded(button, false));
+      setExpanded(toggle, true);
+    });
+    disclosure.addEventListener('pointerleave', event => {
+      if (!desktopHover.matches || event.pointerType === 'touch') return;
+      if (!disclosure.contains(document.activeElement)) setExpanded(toggle, false);
+    });
+    disclosure.addEventListener('focusout', event => {
+      if (event.relatedTarget instanceof Node && !disclosure.contains(event.relatedTarget) && !disclosure.matches(':hover')) setExpanded(toggle, false);
+    });
+  });
   toggles.forEach(toggle => toggle.addEventListener('click', () => {
     const expanded = toggle.getAttribute('aria-expanded') !== 'true';
+    if (expanded && toggle !== mobileToggle) toggles.filter(button => button !== toggle && button !== mobileToggle).forEach(button => setExpanded(button, false));
     setExpanded(toggle, expanded);
     if (toggle === mobileToggle && !expanded) header.querySelectorAll<HTMLButtonElement>('[data-disclosure-toggle]').forEach(button => setExpanded(button, false));
   }));

@@ -51,3 +51,9 @@
 
 .navigation-arrow { width: .9rem; height: .9rem; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.5; }
 .docs-navigation-link .navigation-arrow { color: var(--color-emerald); }
+.template-navigation { padding: .6rem; }
+.template-link-pending { opacity: .55; cursor: default; }
+.template-link-pending:hover { background: transparent; }
+@media (min-width: 960px) {
+  .desktop-docs-panel.template-panel { width: 15rem; }
+}

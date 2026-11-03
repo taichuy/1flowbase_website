@@ -1,0 +1,13 @@
+---
+import { type Locale } from '../config';
+const { lang } = Astro.props as { lang: Locale };
+// Populate destinations when the application URLs are available.
+const links: { label: string; href?: string }[] = lang === 'zh'
+  ? [{ label: 'LLM聚合网关' }, { label: '个人笔记' }, { label: '更多' }]
+  : [{ label: 'LLM Gateway' }, { label: 'Personal Notes' }, { label: 'More' }];
+---
+<div class="template-navigation">
+  {links.map(({ label, href }) => href
+    ? <a class="docs-navigation-link" href={href}><span>{label}</span></a>
+    : <span class="docs-navigation-link template-link-pending" aria-disabled="true"><span>{label}</span></span>)}
+</div>

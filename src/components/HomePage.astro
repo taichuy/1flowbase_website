@@ -5,7 +5,7 @@ import api from '../assets/product/console-api.jpeg';
 import statistics from '../assets/product/console-statistics.jpeg';
 import pagesAssistant from '../assets/product/console-pages-assistant.jpeg';
 import mcp from '../assets/product/console-mcp.jpeg';
-import { SITE, type Locale, localePath } from '../config';
+import { type Locale, localePath } from '../config';
 import { homeCopy } from '../data/home';
 import Icon from './RuntimeIcon.astro';
 import HomeGuides from './HomeGuides.astro';
@@ -28,12 +28,30 @@ const commands = [
       <div class="hero-message">
         <h1>{c.headline.map((line, i) => <span class:list={[i === c.headline.length - 1 && 'accent-line']}>{line}</span>)}</h1>
         <p class="hero-lead">{c.lead}</p>
-        <div class="hero-actions"><a class="button-primary" href="#product">{c.primary}<Icon name="arrow" /></a><a class="button-secondary" href={SITE.repository}>{c.secondary}<span class="external-arrow" aria-hidden="true"><Icon name="arrowUpRight" /></span></a></div>
+        <div class="hero-actions">
+          <div class="local-download">
+            <a class="button-primary download-main" href="https://github.com/taichuy/1flowbase/releases/latest" data-local-install><span data-download-label>{c.primary}</span></a>
+            <details class="download-selector" data-download-selector>
+              <summary aria-label={lang === 'zh' ? '选择其他系统安装包' : 'Choose another platform'}><Icon name="chevronDown" /></summary>
+              <div class="download-menu">
+                <p>{lang === 'zh' ? '选择系统和处理器' : 'Choose your system and processor'}</p>
+                {[
+                  ['windows', 'x64', 'Windows · x64', '1flowbase-windows-x64.zip'],
+                  ['macos', 'arm64', 'macOS · Apple Silicon (arm64)', '1flowbase-macos-arm64.tar.gz'],
+                  ['macos', 'x64', 'macOS · Intel (x64)', '1flowbase-macos-x64.tar.gz'],
+                  ['linux', 'x64', 'Linux · x64', '1flowbase-linux-x64.tar.gz'],
+                  ['linux', 'arm64', 'Linux · arm64', '1flowbase-linux-arm64.tar.gz'],
+                ].map(([os, arch, label, filename]) => <a href={`https://github.com/taichuy/1flowbase/releases/latest/download/${filename}`} data-download-os={os} data-download-arch={arch}><span>{label}</span><Icon name="arrow" /></a>)}
+                <a class="all-releases" href="https://github.com/taichuy/1flowbase/releases/latest">{lang === 'zh' ? '查看最新版本' : 'View latest release'} ↗</a>
+              </div>
+            </details>
+          </div>
+          <a class="button-secondary" href="#get-started">{c.secondary}<Icon name="arrow" /></a>
+        </div>
         <ul class="trust-list">{c.trust.map(item => <li><span aria-hidden="true">✓</span>{item}</li>)}</ul>
       </div>
       <HeroConversation lang={lang} />
     </div>
-    <div class="site-container protocol-strip"><span>{c.protocolLabel}</span><div><span>Anthropic <b>Messages</b></span><i></i><span>OpenAI <b>Chat Completions</b></span><i></i><span>OpenAI <b>Responses</b></span></div></div>
   </section>
 
   <section class="home-section product-section" id="product"><div class="site-container"><div class="section-intro centered"><h2>{c.productTitle}</h2><p>{c.productText}</p></div>
@@ -72,6 +90,58 @@ const commands = [
   <section class="closing-section"><div class="site-container"><div><h2>{c.finalTitle}</h2><p>{c.finalText}</p></div><a class="button-primary" href="#get-started">{c.finalCta}<Icon name="arrow"/></a></div></section>
 </div>
 <script>
+  const installLink = document.querySelector<HTMLAnchorElement>('[data-local-install]');
+  const downloadSelector = document.querySelector<HTMLDetailsElement>('[data-download-selector]');
+  if (installLink && downloadSelector) {
+    const isZh = document.querySelector('.runtime-home')?.getAttribute('data-locale') === 'zh';
+    let matched = false;
+    installLink.addEventListener('click', event => {
+      if (!matched) {
+        event.preventDefault();
+        downloadSelector.open = true;
+        downloadSelector.querySelector<HTMLElement>('summary')?.focus();
+      }
+    });
+    document.addEventListener('click', event => {
+      if (event.target instanceof Node && !downloadSelector.contains(event.target) && event.target !== installLink && !installLink.contains(event.target)) downloadSelector.open = false;
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && downloadSelector.open) {
+        downloadSelector.open = false;
+        downloadSelector.querySelector<HTMLElement>('summary')?.focus();
+      }
+    });
+    void (async () => {
+      const ua = navigator.userAgent;
+      const uaData = (navigator as Navigator & { userAgentData?: { platform?: string; getHighEntropyValues?: (hints: string[]) => Promise<{ architecture?: string; bitness?: string }> } }).userAgentData;
+      const platform = uaData?.platform || navigator.platform || ua;
+      const mobile = /Android|iPhone|iPad|iPod/i.test(ua) || (/Mac/i.test(platform) && navigator.maxTouchPoints > 1);
+      const os = mobile ? '' : /Win/i.test(platform) ? 'windows' : /Mac/i.test(platform) ? 'macos' : /Linux/i.test(platform) ? 'linux' : '';
+      let arch = '';
+      try {
+        const hints = await uaData?.getHighEntropyValues?.(['architecture', 'bitness']);
+        if (hints?.bitness === '64') {
+          if (/arm/i.test(hints.architecture ?? '')) arch = 'arm64';
+          else if (/x86/i.test(hints.architecture ?? '')) arch = 'x64';
+        }
+      } catch { /* Some browsers do not expose processor information. */ }
+      if (!arch && (os === 'linux' || os === 'windows')) {
+        const systemInfo = `${platform} ${ua}`;
+        if (/aarch64|arm64/i.test(systemInfo)) arch = 'arm64';
+        else if (/x86_64|x64|amd64|win64|wow64/i.test(systemInfo)) arch = 'x64';
+      }
+      const match = downloadSelector.querySelector<HTMLAnchorElement>(`[data-download-os="${os}"][data-download-arch="${arch}"]`);
+      const label = installLink.querySelector<HTMLElement>('[data-download-label]');
+      if (match && label) {
+        const system = match.querySelector('span')?.textContent ?? '';
+        installLink.href = match.href;
+        label.textContent = isZh ? `下载 ${system}` : `Download ${system}`;
+        matched = true;
+      } else if (label) {
+        label.textContent = isZh ? '选择本地安装包' : 'Choose a download';
+      }
+    })();
+  }
   document.querySelectorAll<HTMLElement>('[data-tabs]').forEach(root => {
     const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-tab]'));
     const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-panel]'));
@@ -113,6 +183,21 @@ const commands = [
   .hero-stack .hero-message h1 span{display:block;margin:0}
   .hero-stack .hero-lead{max-width:760px;margin:0 auto 22px;font-size:18px;line-height:1.72;text-align:left;text-indent:2em}
   .hero-stack .hero-lead span{display:block}.hero-stack .hero-actions,.hero-stack .trust-list{justify-content:center}.hero-stack .hero-actions{gap:23px}.hero-stack .button-primary,.hero-stack .button-secondary{min-width:162px;justify-content:center}.hero-stack .trust-list{margin-top:18px}
+  .local-download{display:flex;position:relative;z-index:3}
+  .hero-stack .download-main{border-radius:7px 0 0 7px}
+  .download-main:hover{transform:none}
+  .download-selector{display:flex;align-items:stretch}
+  .download-selector>summary{display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:48px;min-height:49px;padding:0;border:1px solid #163e31;border-left:1px solid #ffffff45;border-radius:0 7px 7px 0;background:#163e31;color:#fff;cursor:pointer;list-style:none}
+  .download-selector>summary :global(svg){display:block;width:24px;height:24px;stroke-width:2}
+  .download-selector>summary::-webkit-details-marker{display:none}
+  .download-selector>summary:hover,.download-selector[open]>summary{background:#245640}
+  .download-selector>summary:focus-visible,.download-menu a:focus-visible{outline:2px solid #176e55;outline-offset:2px}
+  .download-menu{position:absolute;top:calc(100% + 8px);left:0;width:max(100%,280px);box-sizing:border-box;padding:8px;border:1px solid #d6e2d7;border-radius:10px;background:#fff;box-shadow:0 12px 35px #102a2026;text-align:left}
+  .download-menu p{margin:3px 10px 6px;color:#718379;font-size:12px}
+  .download-menu a{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 10px;border-radius:6px;color:#183a30;font-size:13px;font-weight:600;text-decoration:none}
+  .download-menu a:hover{background:#f0f6ef}
+  .download-menu a svg{width:15px;height:15px}
+  .download-menu .all-releases{margin-top:4px;border-top:1px solid #e6eee6;border-radius:0;color:#60796b;font-weight:500}
   @media(max-width:780px){.hero-stack{gap:26px;padding-top:30px;padding-bottom:30px}.hero-stack .hero-message{max-width:620px}.hero-stack .hero-message h1{font-size:clamp(28px,6.9vw,40px)}.hero-stack .hero-lead{font-size:16px}}
   @media(max-width:480px){.hero-stack .hero-message h1{font-size:29px}.hero-stack .hero-actions{gap:10px}.hero-stack .button-primary,.hero-stack .button-secondary{min-width:138px}.hero-stack .hero-lead{font-size:15px}}
   .architecture-section{padding:66px 0;background:#fff;border-bottom:1px solid #e2e8dd}

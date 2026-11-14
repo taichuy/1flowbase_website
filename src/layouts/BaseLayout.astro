@@ -46,6 +46,9 @@ const imageUrl = new URL(image, site);
     <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" content="#041713" />
     {import.meta.env.PROD && (
+      <script is:inline defer src="https://umami.taichuy.com/script.js" data-website-id="ceb0503a-7095-44e3-b143-d48e9da5daa3"></script>
+    )}
+    {import.meta.env.PROD && (
       <script is:inline src="https://analytics.ahrefs.com/analytics.js" data-key="avOBmDMere1h6fpinKJcmQ" async></script>
     )}
     <title>{pageTitle}</title>

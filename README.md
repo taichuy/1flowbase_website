@@ -121,6 +121,13 @@ Publication is consequential: pushing or merging to `main` triggers production d
 
 ## Website analytics
 
+Umami records page views across the English and Chinese site through the shared
+`src/layouts/BaseLayout.astro` layout. Production builds load
+`https://umami.taichuy.com/script.js` with website ID
+`ceb0503a-7095-44e3-b143-d48e9da5daa3`; the development server does not load this
+tracker. The website ID is public and requires no deployment secrets. After a
+deployment, visit the live site and check the website's Umami dashboard.
+
 Configure `PUBLIC_POSTHOG_KEY` and `PUBLIC_POSTHOG_HOST` under GitHub repository
 **Settings → Environments → production → Environment variables**. The deploy
 workflow passes these variables to the build. Updating variables requires a

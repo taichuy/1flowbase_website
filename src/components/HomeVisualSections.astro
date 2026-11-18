@@ -1,0 +1,2504 @@
+---
+import type { Locale } from '../config';
+import { homeCopy } from '../data/home';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const zh = lang === 'zh';
+const c = homeCopy[lang];
+const s = c.sections;
+
+const agents = [
+  ['Claude Code', '#d97757', 'C'],
+  ['Codex', '#3b82f6', '◎'],
+  ['DeepSeek Harness', '#2563eb', 'D'],
+  ['Gemini CLI', '#0ea5e9', '✦'],
+  ['OpenCode', '#111827', '▣'],
+  ['Cursor', '#0f172a', '⌘'],
+  [zh ? '微信私聊通讯' : 'WeChat IM', '#07c160', '微'],
+  ['WebMCP / MCP', '#059669', 'M'],
+];
+
+const models = [
+  ['DeepSeek', '#2563eb'],
+  ['Claude', '#d97757'],
+  ['OpenAI', '#10a37f'],
+  ['Gemini', '#0284c7'],
+  ['Qwen', '#6366f1'],
+  ['GLM', '#0ea5e9'],
+  ['Kimi', '#111827'],
+  ['OpenRouter', '#4f46e5'],
+  ['Ollama', '#334155'],
+];
+
+const collectors = [
+  {
+    name: 'Claude Code',
+    ver: 'v0.1.1',
+    tone: 'claude',
+    glyph: '✳',
+    desc: zh ? 'Claude Code 生命周期会话采集包' : 'Native Claude Code lifecycle collector',
+    action: zh ? '下载采集 CLI' : 'Download CLI',
+    ready: true,
+  },
+  {
+    name: 'Codex',
+    ver: 'v0.4.1',
+    tone: 'openai',
+    glyph: '◎',
+    desc: zh ? 'Codex 原生客户端三级日志采集器' : 'Native Codex 3-tier trajectory collector',
+    action: zh ? '下载采集 CLI' : 'Download CLI',
+    ready: true,
+  },
+  {
+    name: 'DeepSeek Harness',
+    ver: 'v0.1.1',
+    tone: 'deepseek',
+    glyph: 'D',
+    desc: zh ? 'DSH Cordis 运行轨迹同步采集器' : 'DeepSeek Harness Cordis collector',
+    action: zh ? '安装到 1flowbase' : 'Install Package',
+    ready: false,
+  },
+  {
+    name: 'OpenCode',
+    ver: 'v0.1.1',
+    tone: 'dark',
+    glyph: '▣',
+    desc: zh ? 'OpenCode 本地会话无侵入归档包' : 'Native OpenCode session collector',
+    action: zh ? '安装到 1flowbase' : 'Install Package',
+    ready: false,
+  },
+];
+
+const ghRows = [
+  { rank: '👑 1', name: 'NVIDIA/auto-ontology', desc: zh ? 'NVIDIA 开源的可解释语义图谱与 Agent 数据推理框架' : 'Explainable semantic graph & Agent data reasoning framework', gain: '+2,053', stars: '4.9k', forks: '394', tone: 'row-coral' },
+  { rank: '👑 2', name: 'max-sixty/worktrunk', desc: zh ? '服务多 Agent 并行编码的 Git worktree 工作流 CLI' : 'Git worktree workflow CLI for parallel multi-agent coding', gain: '+524', stars: '11.0k', forks: '411', tone: 'row-sky' },
+  { rank: '👑 3', name: 'mattpocock/skills', desc: zh ? '面向真实工程任务的可复用 Agent Skills 集合' : 'Reusable Agent Skills for real software engineering workflows', gain: '+1,376', stars: '313.3k', forks: '26.2k', tone: 'row-mint' },
+  { rank: '4', name: 'floci-io/floci', desc: zh ? '免费开源的本地云服务模拟器与测试沙箱' : 'Open-source local cloud service emulator and sandbox', gain: '+1,082', stars: '29.6k', forks: '3,274', tone: 'row-amber' },
+  { rank: '5', name: 'thedotmack/claude-mem', desc: zh ? '跨会话 Agent 持久记忆与上下文压缩引擎' : 'Cross-session persistent Agent memory & context compression', gain: '+1,165', stars: '112.8k', forks: '9,799', tone: 'row-lavender' },
+];
+
+const mcpSteps = zh
+  ? [
+      {
+        tab: '01 mcp_list · 渐进发现',
+        folder: 'build_api',
+        badge: '节省 >94% 初始上下文',
+        req: 'mcp_list({ path: "/" })',
+        res: `// 仅返回顶层模块目录摘要，不一次性塞入 287 个工具 Schema
+[
+  { "path": "/frontstage_ui", "tools": 24, "desc": "创建与修改原生 React TSX 页面与菜单" },
+  { "path": "/build_api",     "tools": 31, "desc": "数据建模建物理表生成 CRUD API 与工作流" },
+  { "path": "/ai_chat_logs",  "tools": 18, "desc": "先统计，再检索对话，按需读取详细日志" },
+  { "path": "/settings",      "tools": 42, "desc": "模型供应商、角色接口权限与额度配置" }
+]`,
+      },
+      {
+        tab: '02 mcp_get · 按需读定义',
+        folder: 'build_api',
+        badge: '单工具精准拉取 Schema',
+        req: 'mcp_get({ tool_id: "data_model.create_table" })',
+        res: `// 确定目标工具后，才拉取这 1 个接口的精确参数契约
+{
+  "tool_id": "data_model.create_table",
+  "method": "POST /api/console/data-sources/primary/tables",
+  "input_schema": {
+    "code": "string (全局唯一物理表名)",
+    "template": "general | ordered_tree | file_table",
+    "open_api": "boolean (默认自动开放 CRUD 接口)"
+  }
+}`,
+      },
+      {
+        tab: '03 mcp_call · 执行操作',
+        folder: 'frontstage_ui',
+        badge: 'RBAC 同源权限校验',
+        req: 'mcp_call({ tool_id: "data_model.create_table", arguments: { code: "biaoshu_rules", template: "general", open_api: true } })',
+        res: `// 直接在 PostgreSQL 同步创建物理表并注册 OpenAPI 路由
+{
+  "status": "succeeded",
+  "physical_table": "public.biaoshu_rules",
+  "generated_endpoints": [
+    "GET    /api/biaoshu_rules",
+    "POST   /api/biaoshu_rules",
+    "PATCH  /api/biaoshu_rules/:id"
+  ]
+}`,
+      },
+      {
+        tab: '04 mcp_result · 分页提取',
+        folder: 'ai_chat_logs',
+        badge: '防大返回值撑爆窗口',
+        req: 'mcp_result({ call_id: "call_9f2a81", page: 1, page_size: 20 })',
+        res: `// 当查询日志或文档结果过大时，自动游标分页读取，绝不撑爆模型上下文
+{
+  "call_id": "call_9f2a81",
+  "page": 1,
+  "total_pages": 6,
+  "has_more": true,
+  "next_cursor": "cur_p2_offset_20",
+  "items_preview": "[20 条精选会话摘要已安全载入...]"
+}`,
+      },
+    ]
+  : [
+      {
+        tab: '01 mcp_list · Discover',
+        folder: 'build_api',
+        badge: 'Saves >94% prompt tokens',
+        req: 'mcp_list({ path: "/" })',
+        res: `// Returns lightweight directory groups instead of dumping 287 schemas
+[
+  { "path": "/frontstage_ui", "tools": 24, "desc": "Create & update Native React TSX pages & menus" },
+  { "path": "/build_api",     "tools": 31, "desc": "Sync physical Postgres tables & workflows" },
+  { "path": "/ai_chat_logs",  "tools": 18, "desc": "Aggregate stats, search chats & read traces" },
+  { "path": "/settings",      "tools": 42, "desc": "Providers, endpoint RBAC & credit quotas" }
+]`,
+      },
+      {
+        tab: '02 mcp_get · Read Schema',
+        folder: 'build_api',
+        badge: 'Single-tool schema fetch',
+        req: 'mcp_get({ tool_id: "data_model.create_table" })',
+        res: `// Fetches the parameter contract ONLY for the selected endpoint
+{
+  "tool_id": "data_model.create_table",
+  "method": "POST /api/console/data-sources/primary/tables",
+  "input_schema": {
+    "code": "string (unique physical table name)",
+    "template": "general | ordered_tree | file_table",
+    "open_api": "boolean (auto-expose CRUD endpoints)"
+  }
+}`,
+      },
+      {
+        tab: '03 mcp_call · Execute',
+        folder: 'frontstage_ui',
+        badge: 'RBAC permission checked',
+        req: 'mcp_call({ tool_id: "data_model.create_table", arguments: { code: "bid_audit_rules", template: "general", open_api: true } })',
+        res: `// Syncs physical PostgreSQL table and registers live OpenAPI routes
+{
+  "status": "succeeded",
+  "physical_table": "public.bid_audit_rules",
+  "generated_endpoints": [
+    "GET    /api/bid_audit_rules",
+    "POST   /api/bid_audit_rules",
+    "PATCH  /api/bid_audit_rules/:id"
+  ]
+}`,
+      },
+      {
+        tab: '04 mcp_result · Paginate',
+        folder: 'ai_chat_logs',
+        badge: 'Zero context overflow',
+        req: 'mcp_result({ call_id: "call_9f2a81", page: 1, page_size: 20 })',
+        res: `// Large query payloads are cursor-paginated so context windows stay clean
+{
+  "call_id": "call_9f2a81",
+  "page": 1,
+  "total_pages": 6,
+  "has_more": true,
+  "next_cursor": "cur_p2_offset_20",
+  "items_preview": "[20 summarized records safely loaded...]"
+}`,
+      },
+    ];
+---
+
+<!-- 0. ECOSYSTEM COMPATIBILITY ICON STRIP -->
+<section class="brand-strip-section">
+  <div class="site-container">
+    <p class="strip-label">{c.agentStripTitle}</p>
+    <div class="brand-chip-row">
+      {agents.map(([name, color, glyph]) => (
+        <span class="brand-chip">
+          <i style={`background:${color}`}>{glyph}</i>
+          {name}
+        </span>
+      ))}
+    </div>
+
+    <p class="strip-label mt-strip">{c.modelStripTitle}</p>
+    <div class="brand-chip-row">
+      {models.map(([name, color]) => (
+        <span class="brand-chip subtle">
+          <b class="model-dot" style={`background:${color}`}></b>
+          {name}
+        </span>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     MODULE 1: TRAJECTORY MEMORY & AGENT-LOGS CLI (c241d90e...png + ddef19...jpeg)
+     ======================================================================= -->
+<section class="vis-section bg-white" id="capabilities">
+  <div class="site-container">
+    <div class="vis-intro">
+      <span class="vis-eyebrow">{s.memory.eyebrow}</span>
+      <h2>{s.memory.title}</h2>
+      <p>{s.memory.desc}</p>
+    </div>
+
+    <!-- Top: Authentic 采集 CLI 4-Card Strip (from c241d90e...-9.png) -->
+    <div class="collector-strip-card">
+      <div class="cs-head">
+        <div>
+          <strong>⌘ {zh ? '采集 CLI · 端侧无侵入同步包' : 'Collector CLI · Local Agent Sync Packages'}</strong>
+          <span>{zh ? '先将采集器安装到 1flowbase，再下载对应 CLI 上传客户端对话日志' : 'Install collector packages and upload local coding agent trajectories'}</span>
+        </div>
+        <b class="saved-pill">agent-logs</b>
+      </div>
+
+      <div class="collector-grid">
+        {collectors.map((col) => (
+          <div class="col-pkg-card">
+            <div class="cp-top">
+              <span class:list={['cp-ico', `tone-${col.tone}`]}>{col.glyph}</span>
+              <div>
+                <strong>{col.name}</strong>
+                <small>{col.ver}</small>
+              </div>
+              <em class:list={['cp-state', col.ready && 'ready']}>
+                {col.ready ? (zh ? '平台已安装' : 'Installed') : (zh ? '可一键安装' : 'Available')}
+              </em>
+            </div>
+            <p>{col.desc}</p>
+            <span class:list={['cp-btn', col.ready && 'primary']}>{col.action}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Main: Pixel Replica of AI chat history · 总轨迹 (ddef19b6d...jpeg) -->
+    <div class="ui-replica trace-replica">
+      <div class="trace-head">
+        <div class="trace-title-row">
+          <strong>{zh ? '总轨迹 · AI chat history' : 'Execution Trajectory · AI chat history'}</strong>
+          <div class="trace-seg">
+            <span class="active">{zh ? '客户端请求' : 'Client Requests'}</span>
+            <span>{zh ? '工作流内部事件' : 'Workflow Events'}</span>
+          </div>
+          <span class="trace-search">🔍 {zh ? '搜索已加载步骤' : 'Search trace steps'}</span>
+        </div>
+
+        <div class="trace-gantt">
+          <div class="gantt-row">
+            <span>{zh ? '输入' : 'Input'}</span>
+            <div class="gantt-track"><i class="bar-gray" style="left:2%;width:9%"></i></div>
+          </div>
+          <div class="gantt-row">
+            <span>{zh ? '模型' : 'Model'}</span>
+            <div class="gantt-track"><i class="bar-purple" style="left:12%;width:22%"></i><i class="bar-purple" style="left:68%;width:16%"></i></div>
+          </div>
+          <div class="gantt-row">
+            <span>{zh ? '工具' : 'Tools'}</span>
+            <div class="gantt-track"><i class="bar-orange" style="left:35%;width:31%"></i><i class="bar-orange" style="left:85%;width:9%"></i></div>
+          </div>
+        </div>
+
+        <div class="trace-chips">
+          <span class="chip-on">{zh ? '全部' : 'All'}</span>
+          <span>{zh ? '助手消息 2' : 'Assistant 2'}</span>
+          <span>{zh ? '推理 2' : 'Reasoning 2'}</span>
+          <span>{zh ? '系统提示词 3' : 'System 3'}</span>
+          <span>{zh ? '工具调用 4' : 'Tool Calls 4'}</span>
+          <span>{zh ? '工具定义 14' : 'Tool Defs 14'}</span>
+          <span class="trace-meta">reasoning.effort=high · stream=true</span>
+        </div>
+      </div>
+
+      <div class="trace-list">
+        <div class="trace-item">
+          <span class="t-badge orange">{zh ? '工具调用' : 'Tool Call'}</span>
+          <code>mcp_list(path="/ai_chat_logs")</code>
+          <em>{zh ? '检索团队近 24h 会话统计与提交回执' : 'Query 24h team session summaries & commits'}</em>
+          <b>#13</b>
+        </div>
+        <div class="trace-item">
+          <span class="t-badge purple">{zh ? '模型推理' : 'Reasoning'}</span>
+          <code>deepseek/deepseek-v4-pro</code>
+          <em>{zh ? '交叉核对约 200 条运行记录摘要与 GitHub Issue' : 'Cross-check 200 run traces with GitHub issues'}</em>
+          <b>#21</b>
+        </div>
+        <div class="trace-item">
+          <span class="t-badge emerald">{zh ? '自动产出' : 'Artifact'}</span>
+          <code>daily_reports.insert()</code>
+          <em>{zh ? '已生成《工作日报｜文件表与 SSH/MCP 双向传输》' : 'Generated structured Daily Engineering Report'}</em>
+          <b>#34</b>
+        </div>
+      </div>
+    </div>
+
+    <div class="compact-3grid">
+      {s.memory.cards.map(([title, body]) => (
+        <div class="c-cell">
+          <h3>{title}</h3>
+          <p>{body}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     MODULE 2: BACKEND EXTENSION — WORKFLOWS, EVENT CENTER & WECHAT IM
+     (Merges Event Hooks + API Extension Nodes + WeChat /paipan Slash Trigger)
+     ======================================================================= -->
+<section class="vis-section bg-mint">
+  <div class="site-container">
+    <div class="vis-intro">
+      <span class="vis-eyebrow">{s.superagent.eyebrow}</span>
+      <h2>{s.superagent.title}</h2>
+      <p>{s.superagent.desc}</p>
+    </div>
+
+    <div class="event-router-pair">
+      <!-- Left: Switchable Event Center & Workflow API Extension Replica -->
+      <div class="ui-replica backend-ext-card" data-tabs>
+        <div class="replica-bar">
+          <div class="ext-tab-pills" role="tablist" aria-label={zh ? '切换事件中心与工作流扩展' : 'Switch Event Center & Workflow'}>
+            <button type="button" role="tab" aria-selected="true" tabindex="0" data-tab="0">
+              {zh ? '事件中心 · 请求前后钩子' : 'Event Center · Hooks'}
+            </button>
+            <button type="button" role="tab" aria-selected="false" tabindex="-1" data-tab="1">
+              {zh ? '工作流 · 接口扩展与节点' : 'Workflow · API & Nodes'}
+            </button>
+          </div>
+          <span class="btn-mint-sm">{zh ? '无需重启' : 'Hot Reload'}</span>
+        </div>
+
+        <!-- Panel 0: Event Center Catalog (103935299.png) -->
+        <div class="ev-rows" data-panel="0">
+          <div class="ev-row ev-head">
+            <span>{zh ? '订阅事件名称' : 'Subscribed Event'}</span>
+            <span>{zh ? '捕捉时机' : 'Hook Timing'}</span>
+            <span>{zh ? '启用' : 'Active'}</span>
+          </div>
+          <div class="ev-row">
+            <div>
+              <strong class="teal-text">{zh ? '标书上传完成后自动逐页解析' : 'biaoshu.file.uploaded.after'}</strong>
+              <small>{zh ? '文件表响应完成后 · 送入 MinerU 提取页码与文本' : 'Post-upload hook · parse pages via MinerU'}</small>
+            </div>
+            <span class="ev-tag">{zh ? '响应后拦截' : 'After API'}</span>
+            <span class="ui-switch on" aria-hidden="true"><i></i></span>
+          </div>
+          <div class="ev-row">
+            <div>
+              <strong class="teal-text">{zh ? '紫微/八字排盘请求（微信指令）' : 'communication.command.paipan'}</strong>
+              <small>communication_commands · {zh ? '自定义聊天事件触发工作流' : 'WeChat slash command event'}</small>
+            </div>
+            <span class="ev-tag">{zh ? '指令订阅' : 'IM Event'}</span>
+            <span class="ui-switch on" aria-hidden="true"><i></i></span>
+          </div>
+          <div class="ev-row">
+            <div>
+              <strong class="teal-text">{zh ? '敏感删除接口前置合规校验' : 'table.record.delete.before'}</strong>
+              <small>{zh ? '接口请求执行前 · 校验审批状态与备份留痕' : 'Pre-request hook · audit & guard'}</small>
+            </div>
+            <span class="ev-tag">{zh ? '请求前拦截' : 'Before API'}</span>
+            <span class="ui-switch on" aria-hidden="true"><i></i></span>
+          </div>
+          <div class="ev-row">
+            <div>
+              <strong class="teal-text">{zh ? '00:10 每日工作报告与日榜更新' : 'cron.daily.engineering_report'}</strong>
+              <small>scheduled_tasks · {zh ? '定时聚合会话日志与仓库动态' : 'Scheduled workflow job'}</small>
+            </div>
+            <span class="ev-tag">Cron</span>
+            <span class="ui-switch on" aria-hidden="true"><i></i></span>
+          </div>
+        </div>
+
+        <!-- Panel 1: Workflow API Extension & Built-in Nodes (104505119.png + 104723919.png) -->
+        <div class="wf-ext-panel" data-panel="1" hidden>
+          <div class="wf-api-box">
+            <div class="wab-top">
+              <span class="method-pill">POST</span>
+              <code>/api/ex/biaoshu/check</code>
+              <b class="sync-tag">{zh ? '接口扩展 · 同步响应' : 'API Extension · Sync'}</b>
+            </div>
+            <p>{zh ? '自定义入参与响应结构，不重启后端直接发布新业务 API。' : 'Custom request/response schema published dynamically as a REST endpoint.'}</p>
+          </div>
+
+          <div class="wf-nodes-label">{zh ? '内置确定性与大模型编排节点' : 'Built-in Deterministic & LLM Nodes'}</div>
+          <div class="wf-nodes-grid">
+            <div class="wfn-chip"><b>W</b><span>Workflow Start / End</span></div>
+            <div class="wfn-chip"><b>🗄</b><span>Data Model CRUD</span></div>
+            <div class="wfn-chip"><b>⇆</b><span>If / Else {zh ? '条件判断' : 'Branch'}</span></div>
+            <div class="wfn-chip"><b>↻</b><span>Iteration / Loop {zh ? '循环' : ''}</span></div>
+            <div class="wfn-chip"><b>&lt;/&gt;</b><span>JS Code &amp; SQL {zh ? '脚本' : ''}</span></div>
+            <div class="wfn-chip"><b>⚡</b><span>LLM &amp; HTTP {zh ? '调用' : 'Call'}</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: WeChat Communication Hub + /paipan Live Chat Replica (105330486 + 112003026) -->
+      <div class="ui-replica wechat-card">
+        <div class="replica-bar">
+          <div class="wx-status">
+            <span class="wx-dot"></span>
+            <strong>{zh ? '通讯中心 · 微信私聊与自定义指令' : 'Communication Hub · WeChat Slash Commands'}</strong>
+          </div>
+          <span class="saved-pill">{zh ? '已连接微信' : 'WeChat Live'}</span>
+        </div>
+
+        <div class="wx-cmd-strip">
+          <span><code>/new</code> {zh ? '新会话' : 'Reset'}</span>
+          <span><code>/model</code> {zh ? '切模型' : 'Model'}</span>
+          <span class="active"><code>/paipan</code> {zh ? '触发排盘流' : 'Workflow'}</span>
+          <span><code>/report</code> {zh ? '查日报' : 'Report'}</span>
+        </div>
+
+        <div class="wx-chat-window">
+          <div class="wx-bubble-user">
+            {zh
+              ? '/paipan --birth=2026-11-11 --time=13:09 --gender=男 --city=湛江市'
+              : '/report --date=2026-10-13 --workspace=1flowbase-gateway'}
+          </div>
+
+          <div class="wx-bubble-bot">
+            <strong>{zh ? '【事件已唤醒工作流并返回精简结论】' : '[Workflow Triggered & Executed]'}</strong>
+            <ul>
+              {zh ? (
+                <>
+                  <li>• 出生地点：广东省 湛江市（110.36°E, 21.27°N）</li>
+                  <li>• 真太阳时校准：2026-11-11 12:46:26（JS 节点精确换算）</li>
+                  <li>• 完整排盘报告已写入数据表，可随时在网页端查看 ↗</li>
+                </>
+              ) : (
+                <>
+                  <li>• Aggregated 154 Codex runs &amp; ~200 gateway trace summaries</li>
+                  <li>• Verified 3 completed issues (#2408) with commit hashes</li>
+                  <li>• Saved to Daily Reports table—tap to open web view ↗</li>
+                </>
+              )}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="compact-3grid">
+      {s.superagent.cards.map(([title, body]) => (
+        <div class="c-cell">
+          <h3>{title}</h3>
+          <p>{body}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     MODULE 3: PROGRESSIVE MCP ENGINE (4-Step Interactive Discovery & Pagination)
+     ======================================================================= -->
+<section class="vis-section bg-white">
+  <div class="site-container">
+    <div class="vis-intro">
+      <span class="vis-eyebrow">{s.mcpChat.eyebrow}</span>
+      <h2>{s.mcpChat.title}</h2>
+      <p>{s.mcpChat.desc}</p>
+    </div>
+
+    <div class="mcp-engine-stage" data-tabs>
+      <div class="app-stage-tabs" role="tablist" aria-label={s.mcpChat.title}>
+        {mcpSteps.map((st, idx) => (
+          <button
+            type="button"
+            id={`mcp-tab-${idx}`}
+            role="tab"
+            aria-selected={idx === 0 ? 'true' : 'false'}
+            aria-controls={`mcp-panel-${idx}`}
+            tabindex={idx === 0 ? 0 : -1}
+            data-tab={idx}
+          >
+            {st.tab}
+          </button>
+        ))}
+      </div>
+
+      {mcpSteps.map((st, idx) => (
+        <div
+          class="ui-replica mcp-step-panel"
+          id={`mcp-panel-${idx}`}
+          role="tabpanel"
+          aria-labelledby={`mcp-tab-${idx}`}
+          data-panel={idx}
+          hidden={idx !== 0}
+        >
+          <div class="mcp-panel-split">
+            <!-- Left: Authentic 1flowbase MCP Directory Tree (094937314.png) -->
+            <div class="mcp-tree-side">
+              <div class="mts-head">
+                <strong>1flowbase MCP</strong>
+                <span>63 {zh ? '分组' : 'Groups'} / 287 Tools</span>
+              </div>
+              <div class="mts-list">
+                <div class:list={['mts-row', st.folder === 'frontstage_ui' && 'on']}>
+                  <span>📁</span>
+                  <div>
+                    <b>{zh ? '前台页面 (/frontstage_ui)' : 'Frontstage UI (/frontstage_ui)'}</b>
+                    <small>{zh ? '创建和修改 Native React 页面与菜单' : 'Create & edit Native React TSX blocks'}</small>
+                  </div>
+                </div>
+                <div class:list={['mts-row', st.folder === 'build_api' && 'on']}>
+                  <span>📁</span>
+                  <div>
+                    <b>{zh ? '构建 API (/build_api)' : 'Build API (/build_api)'}</b>
+                    <small>{zh ? '数据建模建表生成 CRUD API 与工作流' : 'Create physical DB tables & workflows'}</small>
+                  </div>
+                </div>
+                <div class:list={['mts-row', st.folder === 'ai_chat_logs' && 'on']}>
+                  <span>📁</span>
+                  <div>
+                    <b>{zh ? '历史聊天与统计 (/ai_chat_logs)' : 'Chat History (/ai_chat_logs)'}</b>
+                    <small>{zh ? '先统计再检索对话，按需分页读取日志' : 'Aggregate, search & paginate chat logs'}</small>
+                  </div>
+                </div>
+                <div class="mts-row">
+                  <span>📁</span>
+                  <div>
+                    <b>{zh ? '后台设置 (/settings)' : 'Backend Settings (/settings)'}</b>
+                    <small>{zh ? '发现模型供应商、角色权限与额度配置' : 'Providers, roles & quota settings'}</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Step Call & Payload Trace -->
+            <div class="mcp-trace-side">
+              <div class="mtr-top">
+                <code>{st.req}</code>
+                <b class="saved-pill">{st.badge}</b>
+              </div>
+              <pre class="mtr-pre"><code>{st.res}</code></pre>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     MODULE 4: REAL APPS GROWN ON 1FLOWBASE
+     Tab 0: GitHub 官方日榜 (014973...jpeg)
+     Tab 1: 标书规则检测与逐页解析 (104402526.png + 104723919.png)
+     Tab 2: 每日报告 · Daily Reports (132fbe57...jpeg)
+     ======================================================================= -->
+<section class="vis-section bg-mint" id="templates">
+  <div class="site-container">
+    <div class="vis-intro">
+      <span class="vis-eyebrow">{s.apps.eyebrow}</span>
+      <h2>{s.apps.title}</h2>
+      <p>{s.apps.desc}</p>
+    </div>
+
+    <div class="app-stage" data-tabs>
+      <div class="app-stage-tabs" role="tablist" aria-label={s.apps.title}>
+        {s.apps.tabs.map((label, idx) => (
+          <button
+            type="button"
+            id={`app-tab-${idx}`}
+            role="tab"
+            aria-selected={idx === 0 ? 'true' : 'false'}
+            aria-controls={`app-panel-${idx}`}
+            tabindex={idx === 0 ? 0 : -1}
+            data-tab={idx}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <!-- TAB 0: GitHub 官方日榜 (014973976bc621068588cf6b68b9f50462590232.jpeg) -->
+      <div class="ui-replica app-panel" id="app-panel-0" role="tabpanel" aria-labelledby="app-tab-0" data-panel="0">
+        <div class="wb-mini-chrome">
+          <span><img src="/favicon.svg" alt="" width="15" height="15" /> <b>1flowbase</b></span>
+          <span class="chrome-tabs">route · demo · wiki · <b class="active">{zh ? '新闻热点 / GitHub-日榜' : 'GitHub Trending'}</b></span>
+          <span class="chrome-right">UI · AI · Root</span>
+        </div>
+
+        <div class="gh-board">
+          <div class="gh-banner">
+            <div class="gh-banner-left">
+              <div class="gh-octo" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .75a11.25 11.25 0 0 0-3.56 21.92c.56.1.77-.24.77-.54v-2.1c-3.13.68-3.79-1.33-3.79-1.33-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.69.08-.69 1.13.08 1.72 1.16 1.72 1.16 1 1.72 2.63 1.22 3.27.93.1-.73.39-1.22.71-1.5-2.5-.28-5.13-1.25-5.13-5.56 0-1.23.44-2.23 1.16-3.02-.12-.28-.5-1.43.11-2.98 0 0 .95-.3 3.1 1.15a10.8 10.8 0 0 1 5.63 0c2.15-1.46 3.1-1.15 3.1-1.15.61 1.55.23 2.7.11 2.98.72.79 1.16 1.79 1.16 3.02 0 4.32-2.64 5.27-5.15 5.55.4.35.76 1.03.76 2.08v3.11c0 .3.2.65.77.54A11.25 11.25 0 0 0 12 .75Z" /></svg>
+              </div>
+              <div>
+                <h3>GitHub <span>{zh ? '官方日榜' : 'Daily Trending'}</span></h3>
+                <p>GitHub Trending Daily · Top 5 · {zh ? '给参考图连上 MCP，由原生 React TSX + 定时表 1:1 构建' : 'Built 1:1 with Native React TSX Block + Scheduled Table'}</p>
+              </div>
+            </div>
+            <div class="gh-actions">
+              <span class="gh-btn">↻</span>
+              <span class="gh-btn primary">⍈ {zh ? '导出图片' : 'Export Poster'}</span>
+            </div>
+          </div>
+
+          <div class="gh-list">
+            {ghRows.map((r) => (
+              <div class:list={['gh-row', r.tone]}>
+                <span class="gh-rank">{r.rank}</span>
+                <strong class="gh-repo">{r.name}</strong>
+                <span class="gh-desc">{r.desc}</span>
+                <div class="gh-metrics">
+                  <span class="m-gain">📈 {r.gain}</span>
+                  <span class="m-star">★ {r.stars}</span>
+                  <span class="m-fork">⑂ {r.forks}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 1: 标书规则检测与逐页解析 (from image-20261115104402526.png & 104723919.png) -->
+      <div class="ui-replica app-panel" id="app-panel-1" role="tabpanel" aria-labelledby="app-tab-1" data-panel="1" hidden>
+        <div class="wb-mini-chrome">
+          <span><img src="/favicon.svg" alt="" width="15" height="15" /> <b>1flowbase</b></span>
+          <span class="chrome-tabs">route · tasks · wiki · <b class="active">{zh ? '标书审校工作台' : 'Bid Document Audit'}</b></span>
+          <span class="chrome-right">POST /api/ex/biaoshu/check</span>
+        </div>
+
+        <div class="bid-audit-layout">
+          <aside class="bid-sidebar">
+            <div class="bs-head">
+              <strong>📄 {zh ? '标书上传与逐页解析' : 'Parsed Bid Files'}</strong>
+              <span class="saved-pill">MinerU</span>
+            </div>
+
+            <div class="bs-file active">
+              <strong>{zh ? '智慧园区算力底座招标文件.pdf' : 'Smart_Campus_Infra_RFP.pdf'}</strong>
+              <small>{zh ? '已保存物理页码与逐页文本 · 共 142 页' : '142 pages indexed · page-mapped'}</small>
+              <div class="bs-tags">
+                <span class="ok">{zh ? '解析完成' : 'Parsed'}</span>
+                <span>{zh ? '支持断点续取' : 'Resumable'}</span>
+              </div>
+            </div>
+
+            <div class="bs-file">
+              <strong>{zh ? '政务私有云网关采购技术规范.pdf' : 'Gov_Cloud_Gateway_Spec.pdf'}</strong>
+              <small>{zh ? '逐页抽取表格与签章条款 · 共 86 页' : '86 pages · table & clause sync'}</small>
+              <div class="bs-tags">
+                <span class="ok">{zh ? '已入文件表' : 'Stored'}</span>
+              </div>
+            </div>
+
+            <div class="bs-pipe-note">
+              <b>{zh ? '关联 3 条后端工作流：' : 'Backed by 3 workflows:'}</b>
+              <span>• {zh ? '标书 · 上传解析' : 'Upload & MinerU Parse'}</span>
+              <span>• {zh ? '标书 · 解析状态与入库' : 'Page Sync & DB Store'}</span>
+              <span>• {zh ? '标书 · 规则检测' : 'Rule Compliance Check'}</span>
+            </div>
+          </aside>
+
+          <div class="bid-main">
+            <div class="bm-toolbar">
+              <div>
+                <h4>{zh ? '标书规则自动检测报告' : 'Automated Compliance & Risk Findings'}</h4>
+                <small>{zh ? '读取逐页物理表与启用规则库，工作流调用评审模型逐条核对原文页码' : 'Cross-checks page-indexed text against active disqualification & scoring rules'}</small>
+              </div>
+              <span class="gh-btn primary">{zh ? '导出审校清单' : 'Export Audit'}</span>
+            </div>
+
+            <div class="bm-findings">
+              <div class="bm-row risk">
+                <span class="bm-tag red">{zh ? '废标红线' : 'Critical'}</span>
+                <div class="bm-body">
+                  <strong>{zh ? '实质性星号（★）条款响应缺失风险' : 'Mandatory (★) Clause Deviation Risk'}</strong>
+                  <p>{zh ? '原文要求提供私有化国产数据库兼容证明，当前应标草案未附对应检测报告编号。' : 'Requires self-hosted DB compatibility certificate; missing report ID in draft.'}</p>
+                </div>
+                <code class="bm-page">P.38 · §4.2</code>
+              </div>
+
+              <div class="bm-row warn">
+                <span class="bm-tag amber">{zh ? '商务偏离' : 'Warning'}</span>
+                <div class="bm-body">
+                  <strong>{zh ? '质保与维保响应时效不一致' : 'SLA Response Window Mismatch'}</strong>
+                  <p>{zh ? '商务分册写明“2 小时内现场响应”，技术方案第 91 页写为“4 小时远程响应”。' : 'Commercial volume states 2h on-site SLA while Page 91 states 4h remote.'}</p>
+                </div>
+                <code class="bm-page">P.91 · §7.1</code>
+              </div>
+
+              <div class="bm-row pass">
+                <span class="bm-tag green">{zh ? '核验通过' : 'Passed'}</span>
+                <div class="bm-body">
+                  <strong>{zh ? '分项报价汇总与大写金额一致性校验（JS 确定性节点）' : 'Itemized Pricing & Total Sum Verification (JS Node)'}</strong>
+                  <p>{zh ? '36 项软硬件明细加总与开标一览表完全一致，无算术偏差。' : 'All 36 line items match the bid summary sheet with zero arithmetic drift.'}</p>
+                </div>
+                <code class="bm-page">P.114 · 表2</code>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: 每日报告 · Daily Reports (1:1 Replica of 132fbe57638d53992301f1ca60701c2e8a930eab.jpeg) -->
+      <div class="ui-replica app-panel" id="app-panel-2" role="tabpanel" aria-labelledby="app-tab-2" data-panel="2" hidden>
+        <div class="wb-mini-chrome">
+          <span><img src="/favicon.svg" alt="" width="15" height="15" /> <b>1flowbase</b></span>
+          <span class="chrome-tabs"><b class="active">route / Daily reports</b> · demo · wiki</span>
+          <span class="chrome-right">UI · AI · Root</span>
+        </div>
+
+        <div class="daily-report-layout">
+          <aside class="dr-list-pane">
+            <div class="dr-filter-bar">
+              <span class="dr-search">🔍 {zh ? '搜索标题' : 'Search reports'}</span>
+              <span class="dr-sort">{zh ? '时间倒序 ▾' : 'Newest ▾'}</span>
+            </div>
+
+            <div class="dr-item">
+              {zh
+                ? '2026-10-14 工作日报｜通知日志与渠道消息、价格自动同步、Agent Logs 互通'
+                : '2026-10-14 Daily｜Channel Notifications, Pricing Sync & Agent Logs'}
+            </div>
+            <div class="dr-item active">
+              {zh
+                ? '2026-10-13 工作日报｜文件表与 SSH/MCP 双向传输、通知中心、扩展体验'
+                : '2026-10-13 Daily｜File Tables, SSH/MCP Transfer & Notification Hub'}
+            </div>
+            <div class="dr-item">
+              {zh
+                ? '2026-10-12 工作日报｜质量门禁、SSH/MCP 会话化与文件模板恢复'
+                : '2026-10-12 Daily｜Quality Gates, Stateful SSH/MCP & File Templates'}
+            </div>
+            <div class="dr-item">
+              {zh
+                ? '2026-10-11 工作日报｜受管插件、Responses 兼容与 MCP 轮次上下文'
+                : '2026-10-11 Daily｜Managed Plugins, Responses API & MCP Context'}
+            </div>
+          </aside>
+
+          <div class="dr-detail-pane">
+            <div class="dr-title-row">
+              <h4>
+                {zh
+                  ? '2026-10-13 工作日报｜文件表与 SSH/MCP 双向传输、通知中心、扩展体验'
+                  : '2026-10-13 Engineering Report｜File Tables, SSH/MCP & Extensions'}
+              </h4>
+              <span>{zh ? '报告日期: 2026-10-13' : 'Date: 2026-10-13'}</span>
+            </div>
+
+            <p class="dr-lead">
+              {zh
+                ? '文件表稳定访问与图片预览完成开发验收；MCP↔SSH 文件导入及下载已在真实 Linux 环境完成 QA 并集成；Codex 运行统计 154 次（含辅助执行），跨会话自动汇总核对。'
+                : 'Completed QA for durable file-table URLs and bidirectional MCP↔SSH file transfers; automatically synthesized across 154 Codex runs and gateway traces.'}
+            </p>
+
+            <div class="dr-evidence-box">
+              <strong>{zh ? '工作内容与证据口径' : 'Verified Deliverables & Trace Evidence'}</strong>
+              <p>
+                {zh
+                  ? '证据口径：自动读取 1flowbase-gateway 当日约 200 条对话轨迹摘要，与 GitHub Issue 评论、提交哈希交叉核对，仅在具备明确验收回执时标为完成。'
+                  : 'Cross-checked ~200 gateway session trajectory digests against GitHub Issue comments and commit receipts.'}
+              </p>
+              <ul>
+                <li>
+                  • {zh ? '文件表的持久访问链接、临时公开分享与图片预览' : 'Durable file-table links, scoped public shares & image previews'}
+                  <code>#2408</code> <code>131bb864</code> <code>f4e71a41</code>
+                </li>
+                <li>
+                  • {zh ? '通知实例 / 工作流 / 插件通知及管理页真实进度上传验收通过' : 'Notification workflows & runtime extension upload verified across 47+90 targeted tests'}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================================
+     MODULE 5: MULTI-USER GOVERNANCE — ENDPOINT RBAC & USER QUOTA LEDGER
+     (2-Tab Replica of 113843864.png + 113733636.png)
+     ======================================================================= -->
+<section class="vis-section bg-white">
+  <div class="site-container">
+    <div class="vis-intro">
+      <span class="vis-eyebrow">{s.governance.eyebrow}</span>
+      <h2>{s.governance.title}</h2>
+      <p>{s.governance.desc}</p>
+    </div>
+
+    <div class="gov-stage" data-tabs>
+      <div class="app-stage-tabs" role="tablist" aria-label={s.governance.title}>
+        <button type="button" id="gov-tab-0" role="tab" aria-selected="true" aria-controls="gov-panel-0" tabindex="0" data-tab="0">
+          {zh ? '角色与接口级 RBAC 权限点' : 'Role & Per-Endpoint RBAC'}
+        </button>
+        <button type="button" id="gov-tab-1" role="tab" aria-selected="false" aria-controls="gov-panel-1" tabindex="-1" data-tab="1">
+          {zh ? '用户余额预留与扣费流水' : 'User Credit Quotas & Ledger'}
+        </button>
+      </div>
+
+      <!-- TAB 0: Pixel Replica of 权限管理 · 接口级权限抽屉 (image-20261115113843864.png) -->
+      <div class="ui-replica gov-panel" id="gov-panel-0" role="tabpanel" aria-labelledby="gov-tab-0" data-panel="0">
+        <div class="rbac-split">
+          <div class="rbac-left">
+            <div class="rl-head">
+              <div>
+                <strong>🛡 Admin / Member</strong>
+                <small>{zh ? '作用域: workspace · 人与 MCP Agent 共用权限校验' : 'Scope: workspace · Shared across GUI & MCP'}</small>
+              </div>
+              <span class="btn-mint-sm">+ {zh ? '新建角色' : 'New Role'}</span>
+            </div>
+
+            <div class="rl-cats">
+              <span>{zh ? '动态路由' : 'Routes'}</span>
+              <span>{zh ? '表-通用配置' : 'Tables'}</span>
+              <span>{zh ? '表-单独配置' : 'Per-Table'}</span>
+              <span class="on">{zh ? '后台设置' : 'Settings'}</span>
+            </div>
+
+            <div class="rl-groups">
+              <div class="rl-grp"><span>✢ {zh ? '扩展中心' : 'Extensions'}</span><small>{zh ? '发现并管理已安装插件' : 'Manage runtime plugins'}</small></div>
+              <div class="rl-grp active"><span>✢ {zh ? '模型供应商' : 'Model Providers'}</span><small>{zh ? '供应商实例与计费规则操作' : 'Provider & billing endpoints'}</small></div>
+              <div class="rl-grp"><span>✢ {zh ? 'MCP 管理' : 'MCP Management'}</span><small>{zh ? '配置 Tool 目录与实例挂载' : 'Configure MCP directories'}</small></div>
+              <div class="rl-grp"><span>✢ {zh ? '应用与数据源' : 'Apps & Data'}</span><small>{zh ? '工作流发布与物理表 DDL 权限' : 'Workflow & schema DDL'}</small></div>
+            </div>
+          </div>
+
+          <!-- Right Drawer: Per-API Endpoint Switches -->
+          <div class="rbac-drawer">
+            <div class="rd-top">
+              <strong>{zh ? '模型供应商 · 接口权限详细配置' : 'Endpoint Permission Switches'}</strong>
+              <div class="rd-bulk">
+                <span>{zh ? '启用所选' : 'Enable'}</span>
+                <span>{zh ? '关闭所选' : 'Disable'}</span>
+              </div>
+            </div>
+
+            <div class="rd-endpoints">
+              <div class="rd-ep-row">
+                <div>
+                  <strong>{zh ? '列出模型计费规则' : 'List model pricing rules'}</strong>
+                  <code>GET /api/console/settings/billing/pricing-rules</code>
+                </div>
+                <span class="ui-switch on" aria-hidden="true"><i></i></span>
+              </div>
+              <div class="rd-ep-row">
+                <div>
+                  <strong>{zh ? '创建模型计费规则' : 'Create model pricing rules'}</strong>
+                  <code>POST /api/console/settings/billing/pricing-rules</code>
+                </div>
+                <span class="ui-switch on" aria-hidden="true"><i></i></span>
+              </div>
+              <div class="rd-ep-row">
+                <div>
+                  <strong>{zh ? '更新模型计费规则' : 'Update model pricing rules'}</strong>
+                  <code>PATCH /api/console/settings/billing/pricing-rules/:id</code>
+                </div>
+                <span class="ui-switch on" aria-hidden="true"><i></i></span>
+              </div>
+              <div class="rd-ep-row">
+                <div>
+                  <strong>{zh ? '删除模型计费规则（对普通角色关闭）' : 'Delete pricing rules (restricted)'}</strong>
+                  <code>DELETE /api/console/settings/billing/pricing-rules/:id</code>
+                </div>
+                <span class="ui-switch off" aria-hidden="true"><i></i></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 1: Pixel Replica of 用户余额与额度控制 (image-20261115113733636.png) -->
+      <div class="ui-replica gov-panel" id="gov-panel-1" role="tabpanel" aria-labelledby="gov-tab-1" data-panel="1" hidden>
+        <div class="replica-bar">
+          <strong>💳 {zh ? '用户消费额度与运行预留流水' : 'User Credit Quotas & In-Flight Reservations'}</strong>
+          <span class="quota-sub">{zh ? '实时冻结预留 · 按次精确扣费 · 完整流水审计' : 'Real-time reservation · Per-call metering · Audit ledger'}</span>
+        </div>
+
+        <div class="quota-table-wrap">
+          <table class="quota-table">
+            <thead>
+              <tr>
+                <th>{zh ? '账号 / 所属组织空间' : 'Account / Workspace'}</th>
+                <th>{zh ? '是否扣费' : 'Metering'}</th>
+                <th>{zh ? '当前余额' : 'Balance'}</th>
+                <th>{zh ? '运行中预留' : 'Reserved'}</th>
+                <th>{zh ? '可用额度' : 'Available'}</th>
+                <th>{zh ? '额度操作' : 'Actions'}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>root</strong><span>System Admin</span></td>
+                <td><span class="ui-switch off" aria-hidden="true"><i></i></span></td>
+                <td>$500.00</td>
+                <td>$0.00</td>
+                <td><span class="amt-ok">$500.00</span></td>
+                <td class="q-btns">
+                  <span>{zh ? '增加额度' : 'Top up'}</span>
+                  <span>{zh ? '调整余额' : 'Adjust'}</span>
+                  <span>{zh ? '查看额度流水' : 'Ledger'}</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>bid_audit_team</strong><span>{zh ? '标书审校与知识库空间' : 'Bid Audit & Wiki Space'}</span></td>
+                <td><span class="ui-switch on" aria-hidden="true"><i></i></span></td>
+                <td>$128.50</td>
+                <td>$3.20</td>
+                <td><span class="amt-ok">$125.30</span></td>
+                <td class="q-btns">
+                  <span>{zh ? '增加额度' : 'Top up'}</span>
+                  <span>{zh ? '直接扣除' : 'Deduct'}</span>
+                  <span>{zh ? '查看额度流水' : 'Ledger'}</span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>client_portal_a</strong><span>{zh ? '外部客户独立交付空间' : 'External Client Space'}</span></td>
+                <td><span class="ui-switch on" aria-hidden="true"><i></i></span></td>
+                <td>$12.40</td>
+                <td>$1.10</td>
+                <td><span class="amt-warn">$11.30</span></td>
+                <td class="q-btns">
+                  <span>{zh ? '增加额度' : 'Top up'}</span>
+                  <span>{zh ? '退 款' : 'Refund'}</span>
+                  <span>{zh ? '查看额度流水' : 'Ledger'}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="compact-3grid">
+      {s.governance.cards.map(([title, body]) => (
+        <div class="c-cell">
+          <h3>{title}</h3>
+          <p>{body}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* 0. Brand Strip */
+  .brand-strip-section {
+    padding: 36px 0 42px;
+    background: #ffffff;
+    border-top: 1px solid rgb(16 42 35 / 6%);
+    border-bottom: 1px solid rgb(16 42 35 / 6%);
+    text-align: center;
+  }
+
+  .strip-label {
+    margin: 0 0 14px;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #6c857d;
+  }
+
+  .mt-strip {
+    margin-top: 26px;
+  }
+
+  .brand-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .brand-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid rgb(16 42 35 / 9%);
+    background: #fcfefd;
+    box-shadow: 0 2px 6px rgb(15 23 42 / 3%);
+    font-size: 13px;
+    font-weight: 640;
+    color: #0d241e;
+  }
+
+  .brand-chip i {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    display: inline-grid;
+    place-items: center;
+    font-style: normal;
+    font-size: 11px;
+    font-weight: 800;
+    color: #ffffff;
+  }
+
+  .brand-chip.subtle {
+    padding: 6px 13px;
+    background: #f8fbfa;
+    font-size: 12.5px;
+  }
+
+  .model-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  /* Shared Visual Section Layout */
+  .vis-section {
+    padding: clamp(72px, 8vw, 108px) 0;
+  }
+
+  .vis-section.bg-white {
+    background: #ffffff;
+  }
+
+  .vis-section.bg-mint {
+    background: linear-gradient(180deg, #f3faf7 0%, #f8fcfa 100%);
+    border-top: 1px solid rgb(16 42 35 / 6%);
+    border-bottom: 1px solid rgb(16 42 35 / 6%);
+  }
+
+  .vis-intro {
+    max-width: 680px;
+    margin-bottom: 36px;
+  }
+
+  .vis-eyebrow {
+    display: inline-block;
+    margin-bottom: 10px;
+    font-size: 12px;
+    font-weight: 760;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #059669;
+  }
+
+  .vis-intro h2 {
+    margin: 0 0 12px;
+    font-family: var(--font-display);
+    font-size: clamp(1.85rem, 3.1vw, 2.5rem);
+    line-height: 1.18;
+    letter-spacing: -0.03em;
+    font-weight: 800;
+    color: #08201a;
+  }
+
+  .vis-intro p {
+    margin: 0;
+    font-size: 1.02rem;
+    line-height: 1.72;
+    color: #4b665e;
+  }
+
+  /* Shared UI Replica Frame */
+  .ui-replica {
+    border-radius: 18px;
+    border: 1px solid #d6e8e1;
+    background: #ffffff;
+    box-shadow:
+      0 20px 50px rgb(4 61 49 / 7%),
+      0 2px 6px rgb(4 61 49 / 3%);
+    overflow: hidden;
+  }
+
+  .replica-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 12px 18px;
+    background: linear-gradient(90deg, #f2fbf7 0%, #fafefd 100%);
+    border-bottom: 1px solid #e3f0eb;
+    font-size: 13px;
+  }
+
+  .saved-pill,
+  .ready-pill {
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #dcfce7;
+    color: #15803d;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .btn-mint-sm {
+    padding: 4px 11px;
+    border-radius: 999px;
+    background: #d1fae5;
+    color: #065f46;
+    font-size: 11.5px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* =======================================================================
+     MODULE 1: Collector CLI Strip + 3-Tier Trajectory Replica
+     ======================================================================= */
+  .collector-strip-card {
+    margin-bottom: 18px;
+    border-radius: 16px;
+    border: 1px solid #d8eae3;
+    background: #fbfefd;
+    padding: 16px 18px;
+  }
+
+  .cs-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .cs-head strong {
+    display: block;
+    font-size: 14px;
+    color: #08231c;
+  }
+
+  .cs-head span {
+    font-size: 12px;
+    color: #5b756d;
+  }
+
+  .collector-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .col-pkg-card {
+    padding: 13px 14px;
+    border-radius: 12px;
+    border: 1px solid #e2eee9;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .cp-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .cp-ico {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .cp-ico.tone-claude { background: #fff1eb; color: #d97757; }
+  .cp-ico.tone-openai { background: #ecfdf5; color: #059669; }
+  .cp-ico.tone-deepseek { background: #eff6ff; color: #2563eb; }
+  .cp-ico.tone-dark { background: #f1f5f9; color: #0f172a; }
+
+  .cp-top strong {
+    display: block;
+    font-size: 12.5px;
+    color: #0f172a;
+    line-height: 1.2;
+  }
+
+  .cp-top small {
+    font-size: 10.5px;
+    color: #64748b;
+  }
+
+  .cp-state {
+    margin-left: auto;
+    font-style: normal;
+    padding: 2px 7px;
+    border-radius: 5px;
+    background: #f1f5f9;
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 680;
+    white-space: nowrap;
+  }
+
+  .cp-state.ready {
+    background: #dcfce7;
+    color: #15803d;
+  }
+
+  .col-pkg-card p {
+    margin: 0;
+    font-size: 11.5px;
+    line-height: 1.45;
+    color: #526c64;
+  }
+
+  .cp-btn {
+    display: block;
+    text-align: center;
+    padding: 5px 8px;
+    border-radius: 7px;
+    border: 1px solid #d5e8df;
+    background: #f4fbf8;
+    color: #047857;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .cp-btn.primary {
+    background: #e3f9ef;
+    border-color: #86efac;
+  }
+
+  .trace-head {
+    padding: 18px 20px 14px;
+    background: #fafefd;
+    border-bottom: 1px solid #e5f1ec;
+  }
+
+  .trace-title-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .trace-title-row strong {
+    font-size: 14.5px;
+    color: #08231c;
+  }
+
+  .trace-seg {
+    display: inline-flex;
+    padding: 3px;
+    border-radius: 8px;
+    background: #edf5f2;
+    font-size: 12px;
+  }
+
+  .trace-seg span {
+    padding: 4px 10px;
+    border-radius: 6px;
+    color: #557068;
+  }
+
+  .trace-seg span.active {
+    background: #ffffff;
+    color: #08231c;
+    font-weight: 700;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 6%);
+  }
+
+  .trace-search {
+    margin-left: auto;
+    padding: 5px 12px;
+    border-radius: 8px;
+    border: 1px solid #dcebe5;
+    background: #ffffff;
+    font-size: 12px;
+    color: #7c968e;
+  }
+
+  .trace-gantt {
+    display: grid;
+    gap: 7px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: #f4faf7;
+    margin-bottom: 12px;
+  }
+
+  .gantt-row {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    align-items: center;
+    gap: 10px;
+    font-size: 11.5px;
+    color: #57736b;
+  }
+
+  .gantt-track {
+    position: relative;
+    height: 8px;
+    border-radius: 999px;
+    background: #e4f0ec;
+    overflow: hidden;
+  }
+
+  .gantt-track i {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-radius: 999px;
+  }
+
+  .bar-gray { background: #64748b; }
+  .bar-purple { background: #8b5cf6; }
+  .bar-orange { background: #d97706; }
+
+  .trace-chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+    font-size: 11.5px;
+  }
+
+  .trace-chips span {
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid #ddebe5;
+    background: #ffffff;
+    color: #4f6b63;
+  }
+
+  .trace-chips .chip-on {
+    background: #d1fae5;
+    border-color: #6ee7b7;
+    color: #065f46;
+    font-weight: 700;
+  }
+
+  .trace-chips .trace-meta {
+    margin-left: auto;
+    border: 0;
+    background: transparent;
+    font-family: var(--font-mono);
+    color: #6c877f;
+  }
+
+  .trace-list {
+    padding: 12px 20px 16px;
+    display: grid;
+    gap: 8px;
+  }
+
+  .trace-item {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    background: #f9fcfb;
+    border: 1px solid #ebf4f0;
+    font-size: 12.5px;
+  }
+
+  .t-badge {
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .t-badge.orange { background: #fef3c7; color: #b45309; }
+  .t-badge.purple { background: #ede9fe; color: #6d28d9; }
+  .t-badge.emerald { background: #d1fae5; color: #047857; }
+
+  .trace-item code {
+    font: 600 12px/1.4 var(--font-mono);
+    color: #0f2922;
+  }
+
+  .trace-item em {
+    font-style: normal;
+    color: #557068;
+  }
+
+  .trace-item b {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: #829c94;
+  }
+
+  .compact-3grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 22px;
+  }
+
+  .c-cell {
+    padding: 18px 20px;
+    border-radius: 14px;
+    border: 1px solid rgb(16 42 35 / 8%);
+    background: rgb(255 255 255 / 82%);
+  }
+
+  .c-cell h3 {
+    margin: 0 0 6px;
+    font-size: 15px;
+    font-weight: 760;
+    color: #08231c;
+  }
+
+  .c-cell p {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.62;
+    color: #4f6b63;
+  }
+
+  /* =======================================================================
+     MODULE 2: Event Center + Workflow API Extension + WeChat /paipan
+     ======================================================================= */
+  .event-router-pair {
+    display: grid;
+    grid-template-columns: 1.08fr 0.92fr;
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  .ext-tab-pills {
+    display: inline-flex;
+    padding: 3px;
+    border-radius: 9px;
+    background: #e6f4ee;
+    gap: 3px;
+  }
+
+  .ext-tab-pills button {
+    border: 0;
+    background: transparent;
+    padding: 5px 11px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 620;
+    color: #4c6860;
+    cursor: pointer;
+  }
+
+  .ext-tab-pills button[aria-selected='true'] {
+    background: #ffffff;
+    color: #047857;
+    font-weight: 760;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 7%);
+  }
+
+  .ev-rows {
+    padding: 10px 18px 16px;
+  }
+
+  .ev-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 4px;
+    border-bottom: 1px solid #eef5f2;
+    font-size: 12.5px;
+  }
+
+  .ev-row:last-child { border-bottom: 0; }
+
+  .ev-row.ev-head {
+    padding-top: 4px;
+    padding-bottom: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #78928a;
+  }
+
+  .teal-text {
+    display: block;
+    color: #0d7a5f;
+    font-size: 13px;
+    margin-bottom: 2px;
+  }
+
+  .ev-row small {
+    color: #6b857d;
+    font-size: 11.5px;
+  }
+
+  .ev-tag {
+    padding: 3px 9px;
+    border-radius: 6px;
+    background: #f0f7f4;
+    color: #3f5d54;
+    font-size: 11px;
+    font-weight: 650;
+    white-space: nowrap;
+  }
+
+  .wf-ext-panel {
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .wf-api-box {
+    padding: 13px 14px;
+    border-radius: 12px;
+    background: #f5fbf8;
+    border: 1px solid #d5ebe1;
+  }
+
+  .wab-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+
+  .method-pill {
+    padding: 2px 8px;
+    border-radius: 5px;
+    background: #2563eb;
+    color: #ffffff;
+    font: 700 10.5px/1.3 var(--font-mono);
+  }
+
+  .wab-top code {
+    font: 700 12.5px/1.3 var(--font-mono);
+    color: #08231c;
+  }
+
+  .sync-tag {
+    margin-left: auto;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #dcfce7;
+    color: #15803d;
+    font-size: 10.5px;
+    font-weight: 700;
+  }
+
+  .wf-api-box p {
+    margin: 0;
+    font-size: 12px;
+    color: #4f6b63;
+  }
+
+  .wf-nodes-label {
+    font-size: 11.5px;
+    font-weight: 740;
+    color: #35524a;
+  }
+
+  .wf-nodes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .wfn-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 11px;
+    border-radius: 9px;
+    border: 1px solid #dfeee8;
+    background: #fcfefd;
+    font-size: 12px;
+    font-weight: 660;
+    color: #0f2922;
+  }
+
+  .wfn-chip b {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+
+  .ui-switch {
+    display: inline-block;
+    position: relative;
+    width: 34px;
+    height: 19px;
+    border-radius: 999px;
+    background: #cbd5e1;
+    flex-shrink: 0;
+  }
+
+  .ui-switch i {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #ffffff;
+  }
+
+  .ui-switch.on { background: #10b981; }
+  .ui-switch.on i { left: auto; right: 2px; }
+
+  /* WeChat Replica */
+  .wx-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .wx-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #07c160;
+  }
+
+  .wx-cmd-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 18px;
+    background: #f9fcfb;
+    border-bottom: 1px solid #ebf3ef;
+    font-size: 11.5px;
+    color: #557068;
+  }
+
+  .wx-cmd-strip span {
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: #ffffff;
+    border: 1px solid #e1ede8;
+  }
+
+  .wx-cmd-strip span.active {
+    background: #ecfdf5;
+    border-color: #6ee7b7;
+    color: #065f46;
+    font-weight: 700;
+  }
+
+  .wx-cmd-strip code {
+    font-family: var(--font-mono);
+    font-weight: 700;
+  }
+
+  .wx-chat-window {
+    padding: 16px 18px;
+    background: #f3f4f6;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+    flex: 1;
+  }
+
+  .wx-bubble-user {
+    align-self: flex-end;
+    max-width: 86%;
+    padding: 9px 13px;
+    border-radius: 12px 2px 12px 12px;
+    background: #95ec69;
+    color: #0f172a;
+    font: 600 12px/1.5 var(--font-mono);
+  }
+
+  .wx-bubble-bot {
+    align-self: flex-start;
+    max-width: 92%;
+    padding: 12px 14px;
+    border-radius: 2px 12px 12px 12px;
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 5%);
+    font-size: 12.5px;
+  }
+
+  .wx-bubble-bot strong {
+    display: block;
+    color: #08231c;
+    margin-bottom: 6px;
+  }
+
+  .wx-bubble-bot ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 4px;
+    color: #475569;
+  }
+
+  /* =======================================================================
+     MODULE 3: Progressive MCP Engine 4-Step Stage
+     ======================================================================= */
+  .app-stage-tabs {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 5px;
+    border-radius: 999px;
+    background: #eef6f3;
+    border: 1px solid #dbece5;
+    margin-bottom: 18px;
+  }
+
+  .app-stage-tabs button {
+    padding: 8px 16px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    font-size: 13px;
+    font-weight: 680;
+    color: #4c6860;
+    cursor: pointer;
+    transition: all 0.16s ease;
+  }
+
+  .app-stage-tabs button[aria-selected='true'] {
+    background: #0b241d;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgb(8 35 28 / 16%);
+  }
+
+  .mcp-panel-split {
+    display: grid;
+    grid-template-columns: 0.92fr 1.08fr;
+    min-height: 280px;
+  }
+
+  .mcp-tree-side {
+    padding: 16px 18px;
+    background: #f8fcfa;
+    border-right: 1px solid #e3f0eb;
+  }
+
+  .mts-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 13px;
+  }
+
+  .mts-head strong { color: #08231c; }
+  .mts-head span { font-size: 11.5px; color: #059669; font-weight: 700; }
+
+  .mts-list {
+    display: grid;
+    gap: 8px;
+  }
+
+  .mts-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    padding: 9px 11px;
+    border-radius: 10px;
+    border: 1px solid #e4f0ec;
+    background: #ffffff;
+  }
+
+  .mts-row.on {
+    background: #e4f8ef;
+    border-color: #6ee7b7;
+  }
+
+  .mts-row b {
+    display: block;
+    font-size: 12px;
+    color: #08231c;
+  }
+
+  .mts-row small {
+    display: block;
+    font-size: 11px;
+    color: #5b756d;
+    margin-top: 2px;
+  }
+
+  .mcp-trace-side {
+    padding: 16px 20px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .mtr-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #edf4f1;
+  }
+
+  .mtr-top code {
+    font: 700 12px/1.4 var(--font-mono);
+    color: #047857;
+  }
+
+  .mtr-pre {
+    margin: 0;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: #0f241e;
+    color: #d9f5ea;
+    font: 12px/1.62 var(--font-mono);
+    overflow-x: auto;
+    flex: 1;
+  }
+
+  /* =======================================================================
+     MODULE 4: Real App Showcase (GitHub Trending / Bid Audit / Daily Reports)
+     ======================================================================= */
+  .wb-mini-chrome {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 18px;
+    background: #effaf5;
+    border-bottom: 1px solid #dfeee8;
+    font-size: 12px;
+    color: #526e66;
+  }
+
+  .wb-mini-chrome > span:first-child {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #08231c;
+  }
+
+  .chrome-tabs b.active {
+    color: #059669;
+  }
+
+  .chrome-right {
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  /* Tab 0: GitHub Trending */
+  .gh-board { padding: 20px; }
+
+  .gh-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 16px 20px;
+    border-radius: 14px;
+    background: linear-gradient(95deg, #f5f9ff 0%, #eefcf6 100%);
+    border: 1px solid #e1eef6;
+    margin-bottom: 14px;
+  }
+
+  .gh-banner-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .gh-octo {
+    width: 42px;
+    height: 42px;
+    color: #0f172a;
+  }
+
+  .gh-banner h3 {
+    margin: 0 0 3px;
+    font-size: 20px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  .gh-banner h3 span { color: #2563eb; }
+  .gh-banner p { margin: 0; font-size: 12px; color: #64748b; }
+
+  .gh-actions { display: flex; gap: 8px; }
+
+  .gh-btn {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #d5e2ec;
+    background: #ffffff;
+    font-size: 12px;
+    font-weight: 680;
+    color: #1e293b;
+    white-space: nowrap;
+  }
+
+  .gh-btn.primary {
+    background: #0f172a;
+    border-color: #0f172a;
+    color: #ffffff;
+  }
+
+  .gh-list { display: grid; gap: 8px; }
+
+  .gh-row {
+    display: grid;
+    grid-template-columns: 54px 190px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    font-size: 12.5px;
+  }
+
+  .row-coral { background: #fff5f2; }
+  .row-sky { background: #f2f7ff; }
+  .row-mint { background: #f0fdf6; }
+  .row-amber { background: #fffbeb; }
+  .row-lavender { background: #f8f5ff; }
+
+  .gh-rank { font-weight: 800; color: #d97706; }
+  .gh-repo { color: #0f172a; font-weight: 760; }
+  .gh-desc { color: #475569; }
+
+  .gh-metrics {
+    display: flex;
+    gap: 8px;
+    font-size: 11.5px;
+    font-weight: 700;
+  }
+
+  .gh-metrics span {
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #ffffff;
+  }
+
+  .m-gain { color: #e11d48; }
+  .m-star { color: #0f172a; }
+  .m-fork { color: #2563eb; }
+
+  /* Tab 1: Bid Document Rule Audit */
+  .bid-audit-layout {
+    display: grid;
+    grid-template-columns: 270px minmax(0, 1fr);
+    min-height: 330px;
+  }
+
+  .bid-sidebar {
+    padding: 16px;
+    background: #f9fcfb;
+    border-right: 1px solid #e4f0ec;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .bs-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+  }
+
+  .bs-file {
+    padding: 11px 12px;
+    border-radius: 10px;
+    border: 1px solid #e2eee9;
+    background: #ffffff;
+  }
+
+  .bs-file.active {
+    border-color: #6ee7b7;
+    background: #ecfdf5;
+  }
+
+  .bs-file strong {
+    display: block;
+    font-size: 12.5px;
+    color: #08231c;
+    margin-bottom: 3px;
+  }
+
+  .bs-file small {
+    display: block;
+    font-size: 11px;
+    color: #5b756d;
+    margin-bottom: 7px;
+  }
+
+  .bs-tags {
+    display: flex;
+    gap: 6px;
+    font-size: 10px;
+  }
+
+  .bs-tags span {
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: #ffffff;
+    border: 1px solid #d5e6df;
+    color: #47625a;
+  }
+
+  .bs-tags span.ok {
+    background: #dcfce7;
+    border-color: #86efac;
+    color: #15803d;
+    font-weight: 700;
+  }
+
+  .bs-pipe-note {
+    margin-top: auto;
+    padding: 10px 12px;
+    border-radius: 9px;
+    background: #f1f8f5;
+    display: grid;
+    gap: 3px;
+    font-size: 11px;
+    color: #48645c;
+  }
+
+  .bs-pipe-note b { color: #08231c; margin-bottom: 2px; }
+
+  .bid-main {
+    padding: 18px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .bm-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .bm-toolbar h4 {
+    margin: 0 0 3px;
+    font-size: 16px;
+    color: #08231c;
+  }
+
+  .bm-toolbar small {
+    font-size: 12px;
+    color: #5b756d;
+  }
+
+  .bm-findings {
+    display: grid;
+    gap: 10px;
+  }
+
+  .bm-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 14px;
+    border-radius: 11px;
+    border: 1px solid #e6efec;
+    background: #fcfefd;
+  }
+
+  .bm-row.risk { background: #fffafa; border-color: #fecaca; }
+  .bm-row.warn { background: #fffdf7; border-color: #fde68a; }
+  .bm-row.pass { background: #f6fdf9; border-color: #bbf7d0; }
+
+  .bm-tag {
+    padding: 3px 9px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 760;
+    white-space: nowrap;
+  }
+
+  .bm-tag.red { background: #fee2e2; color: #b91c1c; }
+  .bm-tag.amber { background: #fef3c7; color: #b45309; }
+  .bm-tag.green { background: #dcfce7; color: #15803d; }
+
+  .bm-body strong {
+    display: block;
+    font-size: 13px;
+    color: #0f172a;
+    margin-bottom: 3px;
+  }
+
+  .bm-body p {
+    margin: 0;
+    font-size: 12px;
+    color: #475569;
+  }
+
+  .bm-page {
+    padding: 4px 9px;
+    border-radius: 6px;
+    background: #ffffff;
+    border: 1px solid #dce8e3;
+    font: 700 11px/1.2 var(--font-mono);
+    color: #0f172a;
+    white-space: nowrap;
+  }
+
+  /* Tab 2: Daily Reports (from 132fbe57...jpeg) */
+  .daily-report-layout {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    min-height: 330px;
+  }
+
+  .dr-list-pane {
+    padding: 14px;
+    background: #fbfdfc;
+    border-right: 1px solid #e5f1ec;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .dr-filter-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 4px;
+    font-size: 11px;
+  }
+
+  .dr-search {
+    flex: 1;
+    padding: 5px 8px;
+    border-radius: 6px;
+    border: 1px solid #dfece6;
+    background: #ffffff;
+    color: #94a3b8;
+  }
+
+  .dr-sort {
+    padding: 5px 8px;
+    border-radius: 6px;
+    border: 1px solid #dfece6;
+    background: #ffffff;
+    color: #475569;
+    white-space: nowrap;
+  }
+
+  .dr-item {
+    padding: 9px 11px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: #334155;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .dr-item.active {
+    background: #d7efe3;
+    color: #064e3b;
+    font-weight: 720;
+    border-bottom-color: transparent;
+  }
+
+  .dr-detail-pane {
+    padding: 20px 24px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .dr-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .dr-title-row h4 {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.35;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  .dr-title-row span {
+    font-size: 11.5px;
+    color: #64748b;
+    white-space: nowrap;
+  }
+
+  .dr-lead {
+    margin: 0;
+    font-size: 12.5px;
+    line-height: 1.65;
+    color: #64748b;
+  }
+
+  .dr-evidence-box {
+    padding: 14px 16px;
+    border-radius: 11px;
+    background: #f8fcfa;
+    border: 1px solid #e2f0ea;
+  }
+
+  .dr-evidence-box strong {
+    display: block;
+    font-size: 13.5px;
+    color: #08231c;
+    margin-bottom: 5px;
+  }
+
+  .dr-evidence-box p {
+    margin: 0 0 8px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #475569;
+  }
+
+  .dr-evidence-box ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+    font-size: 12px;
+    color: #1e293b;
+  }
+
+  .dr-evidence-box code {
+    margin-left: 5px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: #e6f7ef;
+    color: #047857;
+    font: 600 11px/1.3 var(--font-mono);
+  }
+
+  /* =======================================================================
+     MODULE 5: Governance — Endpoint RBAC & Quota Table
+     ======================================================================= */
+  .rbac-split {
+    display: grid;
+    grid-template-columns: 0.94fr 1.06fr;
+  }
+
+  .rbac-left {
+    padding: 18px 20px;
+    background: #f8fcfa;
+    border-right: 1px solid #e3f0eb;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .rl-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .rl-head strong { display: block; font-size: 14px; color: #08231c; }
+  .rl-head small { font-size: 11.5px; color: #5b756d; }
+
+  .rl-cats {
+    display: flex;
+    gap: 14px;
+    border-bottom: 1px solid #e4f0ec;
+    padding-bottom: 8px;
+    font-size: 12px;
+    color: #64748b;
+  }
+
+  .rl-cats .on {
+    color: #059669;
+    font-weight: 740;
+    border-bottom: 2px solid #059669;
+    padding-bottom: 6px;
+    margin-bottom: -9px;
+  }
+
+  .rl-groups {
+    display: grid;
+    gap: 7px;
+  }
+
+  .rl-grp {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 12px;
+    border-radius: 9px;
+    border: 1px solid #e5f0ec;
+    background: #ffffff;
+    font-size: 12.5px;
+  }
+
+  .rl-grp.active {
+    background: #e4f8ef;
+    border-color: #6ee7b7;
+  }
+
+  .rl-grp span { font-weight: 720; color: #0f172a; }
+  .rl-grp small { font-size: 11px; color: #64748b; }
+
+  .rbac-drawer {
+    padding: 18px 20px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .rd-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #edf4f1;
+    font-size: 13px;
+  }
+
+  .rd-bulk {
+    display: flex;
+    gap: 6px;
+  }
+
+  .rd-bulk span {
+    padding: 3px 9px;
+    border-radius: 6px;
+    border: 1px solid #dce8e3;
+    font-size: 11px;
+    color: #475569;
+  }
+
+  .rd-endpoints {
+    display: grid;
+    gap: 9px;
+  }
+
+  .rd-ep-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 12px;
+    border-radius: 9px;
+    background: #fafdfc;
+    border: 1px solid #ebf3ef;
+  }
+
+  .rd-ep-row strong {
+    display: block;
+    font-size: 12.5px;
+    color: #0f172a;
+    margin-bottom: 3px;
+  }
+
+  .rd-ep-row code {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: #f1f5f9;
+    font: 500 10.5px/1.3 var(--font-mono);
+    color: #475569;
+  }
+
+  .quota-sub {
+    font-size: 12px;
+    color: #5b756d;
+  }
+
+  .quota-table-wrap { overflow-x: auto; }
+
+  .quota-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .quota-table th {
+    padding: 12px 18px;
+    text-align: left;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #6b857d;
+    background: #fafefd;
+    border-bottom: 1px solid #e8f2ee;
+  }
+
+  .quota-table td {
+    padding: 14px 18px;
+    border-bottom: 1px solid #eef5f2;
+    font-family: var(--font-mono);
+    color: #1e3b33;
+  }
+
+  .quota-table tbody tr:last-child td { border-bottom: 0; }
+
+  .quota-table td strong {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+    color: #08231c;
+  }
+
+  .quota-table td > span:not(.ui-switch):not(.amt-ok):not(.amt-warn) {
+    font-family: var(--font-sans);
+    font-size: 11.5px;
+    color: #6c877f;
+  }
+
+  .amt-ok { color: #059669; font-weight: 760; }
+  .amt-warn { color: #d97706; font-weight: 760; }
+
+  .q-btns {
+    display: flex;
+    gap: 6px;
+    font-family: var(--font-sans);
+  }
+
+  .q-btns span {
+    padding: 4px 9px;
+    border-radius: 6px;
+    border: 1px solid #dbe9e3;
+    background: #f9fcfb;
+    font-size: 11.5px;
+    color: #2f4f46;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 960px) {
+    .collector-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .event-router-pair,
+    .mcp-panel-split,
+    .bid-audit-layout,
+    .daily-report-layout,
+    .rbac-split,
+    .compact-3grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .gh-row {
+      grid-template-columns: 48px 1fr;
+    }
+    .gh-desc {
+      grid-column: 1 / -1;
+    }
+    .trace-item {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+  }
+</style>

@@ -147,3 +147,4 @@ vite.config.ts.timestamp-*
 
 # Static assets generated from the editable website Wiki
 public/.wiki-content/
+.agents/mcp_config.json

@@ -1,38 +1,89 @@
 ---
-import { Image } from 'astro:assets';
-import orchestration from '../assets/product/console-orchestration.jpeg';
-import api from '../assets/product/console-api.jpeg';
-import statistics from '../assets/product/console-statistics.jpeg';
-import pagesAssistant from '../assets/product/console-pages-assistant.jpeg';
-import mcp from '../assets/product/console-mcp.jpeg';
-import { type Locale, localePath } from '../config';
+import { SITE, type Locale, localePath } from '../config';
 import { homeCopy } from '../data/home';
 import Icon from './RuntimeIcon.astro';
-import HomeGuides from './HomeGuides.astro';
+import HeroWorkbenchReplica from './HeroWorkbenchReplica.astro';
+import HomeVisualSections from './HomeVisualSections.astro';
 import HomeArchitecture from './HomeArchitecture.astro';
-import HeroConversation from './HeroConversation.astro';
 import '../styles/home.css';
-interface Props { lang: Locale; }
+
+interface Props {
+  lang: Locale;
+}
+
 const { lang } = Astro.props;
 const c = homeCopy[lang];
-const screenshots = [orchestration, api, statistics, pagesAssistant, mcp];
+
 const commands = [
-  { name: 'Linux / macOS', label: 'bash', url: 'https://raw.githubusercontent.com/taichuy/1flowbase/main/scripts/shell/docker-deploy.sh', command: 'curl -fsSL https://raw.githubusercontent.com/taichuy/1flowbase/main/scripts/shell/docker-deploy.sh | sh' },
-  { name: 'PowerShell', label: 'powershell', url: 'https://raw.githubusercontent.com/taichuy/1flowbase/main/scripts/powershell/docker-deploy.ps1', command: 'irm https://raw.githubusercontent.com/taichuy/1flowbase/main/scripts/powershell/docker-deploy.ps1 | iex' },
-  { name: 'Windows CMD', label: 'cmd', url: 'https://raw.githubusercontent.com/taichuy/1flowbase/main/scripts/powershell/docker-deploy.ps1', command: 'powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/taichuy/1flowbase/main/scripts/powershell/docker-deploy.ps1 | iex"' },
+  {
+    name: 'Linux / macOS',
+    label: 'bash',
+    url: 'https://raw.githubusercontent.com/taichuy/1flowbase/main/scripts/shell/docker-deploy.sh',
+    command: 'curl -fsSL https://raw.githubusercontent.com/taichuy/1flowbase/main/scripts/shell/docker-deploy.sh | sh',
+  },
+  {
+    name: 'PowerShell',
+    label: 'powershell',
+    url: 'https://raw.githubusercontent.com/taichuy/1flowbase/main/scripts/powershell/docker-deploy.ps1',
+    command: 'irm https://raw.githubusercontent.com/taichuy/1flowbase/main/scripts/powershell/docker-deploy.ps1 | iex',
+  },
+  {
+    name: 'Windows CMD',
+    label: 'cmd',
+    url: 'https://raw.githubusercontent.com/taichuy/1flowbase/main/scripts/powershell/docker-deploy.ps1',
+    command:
+      'powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/taichuy/1flowbase/main/scripts/powershell/docker-deploy.ps1 | iex"',
+  },
 ];
+
+const chipIcons = ['route', 'database', 'layout'];
 ---
+
 <div class="runtime-home" data-locale={lang}>
+  <!-- 1. SPACIOUS HERO: CONCISE LEFT HIERARCHY + REAL WORKBENCH CANVAS REPLICA -->
   <section class="runtime-hero">
-    <div class="site-container hero-grid hero-stack">
-      <div class="hero-message">
-        <h1>{c.headline.map((line, i) => <span class:list={[i === c.headline.length - 1 && 'accent-line']}>{line}</span>)}</h1>
-        <p class="hero-lead">{c.lead}</p>
+    <div class="hero-ambient-mint" aria-hidden="true"></div>
+    <div class="hero-ambient-sky" aria-hidden="true"></div>
+
+    <div class="site-container hero-split">
+      <div class="hero-copy">
+        <h1>
+          <span class="hero-h1-dark">{c.headlineDark}</span>{lang === 'en' ? ' ' : ''}<span class="hero-h1-accent">{c.headlineAccent}</span>
+        </h1>
+
+        <p class="hero-subtitle">{c.subtitle}</p>
+
+        <p class="hero-lead">
+          {c.leadBold}{c.leadBody}
+        </p>
+
+        <!-- Interactive scenario pills synchronized 1:1 with the right workbench tabs -->
+        <div class="hero-route-pills" role="group" aria-label={lang === 'zh' ? '点击切换右侧界面示例' : 'Switch interactive workbench preview'}>
+          {c.heroChips.map(([left, right], idx) => (
+            <button
+              type="button"
+              class:list={['route-pill', idx === 0 && 'is-active']}
+              data-hero-trigger={idx}
+              aria-pressed={idx === 0 ? 'true' : 'false'}
+            >
+              <span class="rp-ico"><Icon name={chipIcons[idx]} /></span>
+              <b>{left}</b>
+              <i aria-hidden="true">→</i>
+              <em>{right}</em>
+            </button>
+          ))}
+        </div>
+
+        <!-- Preserved dual install buttons -->
         <div class="hero-actions">
           <div class="local-download">
-            <a class="button-primary download-main" href="https://github.com/taichuy/1flowbase/releases/latest" data-local-install><span data-download-label>{c.primary}</span></a>
+            <a class="button-primary download-main" href="https://github.com/taichuy/1flowbase/releases/latest" data-local-install>
+              <span data-download-label>{c.primary}</span>
+            </a>
             <details class="download-selector" data-download-selector>
-              <summary aria-label={lang === 'zh' ? '选择其他系统安装包' : 'Choose another platform'}><Icon name="chevronDown" /></summary>
+              <summary aria-label={lang === 'zh' ? '选择其他系统安装包' : 'Choose another platform'}>
+                <Icon name="chevronDown" />
+              </summary>
               <div class="download-menu">
                 <p>{lang === 'zh' ? '选择系统和处理器' : 'Choose your system and processor'}</p>
                 {[
@@ -41,71 +92,222 @@ const commands = [
                   ['macos', 'x64', 'macOS · Intel (x64)', '1flowbase-macos-x64.tar.gz'],
                   ['linux', 'x64', 'Linux · x64', '1flowbase-linux-x64.tar.gz'],
                   ['linux', 'arm64', 'Linux · arm64', '1flowbase-linux-arm64.tar.gz'],
-                ].map(([os, arch, label, filename]) => <a href={`https://github.com/taichuy/1flowbase/releases/latest/download/${filename}`} data-download-os={os} data-download-arch={arch}><span>{label}</span><Icon name="arrow" /></a>)}
-                <a class="all-releases" href="https://github.com/taichuy/1flowbase/releases/latest">{lang === 'zh' ? '查看最新版本' : 'View latest release'} ↗</a>
+                ].map(([os, arch, label, filename]) => (
+                  <a
+                    href={`https://github.com/taichuy/1flowbase/releases/latest/download/${filename}`}
+                    data-download-os={os}
+                    data-download-arch={arch}
+                  >
+                    <span>{label}</span>
+                    <Icon name="arrow" />
+                  </a>
+                ))}
+                <a class="all-releases" href="https://github.com/taichuy/1flowbase/releases/latest">
+                  {lang === 'zh' ? '查看全部发行版本' : 'View all releases'} ↗
+                </a>
               </div>
             </details>
           </div>
-          <a class="button-secondary" href="#get-started">{c.secondary}<Icon name="arrow" /></a>
+
+          <a class="button-secondary" href="#get-started">
+            <span>{c.secondary}</span>
+            <Icon name="arrow" />
+          </a>
         </div>
-        <ul class="trust-list">{c.trust.map(item => <li><span aria-hidden="true">✓</span>{item}</li>)}</ul>
+
+        <p class="hero-version-note">{c.versionNote}</p>
       </div>
-      <HeroConversation lang={lang} />
+
+      <div class="hero-visual-col">
+        <HeroWorkbenchReplica lang={lang} />
+      </div>
     </div>
   </section>
 
-  <section class="home-section product-section" id="product"><div class="site-container"><div class="section-intro centered"><h2>{c.productTitle}</h2><p>{c.productText}</p></div>
-    <div class="product-viewer" data-tabs>
-      <div class="product-tabs" role="tablist" aria-label={c.productTitle}>{c.productTabs.map((title,i) => <button id={`product-tab-${i}`} type="button" role="tab" aria-selected={i===0 ? 'true' : 'false'} aria-controls={`product-panel-${i}`} tabindex={i===0 ? 0 : -1} data-tab={i}><span>0{i+1}</span>{title}</button>)}</div>
-      {screenshots.map((src,i) => <div id={`product-panel-${i}`} role="tabpanel" aria-labelledby={`product-tab-${i}`} tabindex="0" hidden={i!==0} data-panel={i}><div class="viewer-toolbar"><div aria-hidden="true"><i></i><i></i><i></i></div><span>1flowbase / {c.productPaths[i]}</span><span>{c.screenshotNote}</span></div><div class="product-image-wrap"><Image src={src} alt={c.productCaptions[i]} widths={[640,960,1440,2160]} sizes="(max-width: 1200px) 94vw, 1160px" loading="lazy" class="product-image" /></div><p class="image-caption">{c.productCaptions[i]}</p></div>)}
-    </div>
-  </div></section>
+  <!-- 2. BRAND STRIP + 5 GRAPHICAL UI REPLICA SECTIONS -->
+  <HomeVisualSections lang={lang} />
 
-  <section class="home-section capabilities-section" id="capabilities">
-    <div class="site-container"><div class="section-intro"><h2>{c.valueTitle}</h2><p>{c.valueText}</p></div>
-      <div class="capability-grid">{c.features.map(([icon,tag,title,description],i) => <article class="capability-card"><div class="capability-top"><span class="feature-icon"><Icon name={icon}/></span><span>0{i+1}</span></div><span class="card-category">{tag}</span><h3>{title}</h3><p>{description}</p></article>)}</div>
-      <a class="text-link" href={localePath(lang,'/features/')}>{lang === 'zh' ? '了解全部应用模板' : 'Explore all capabilities'} <Icon name="arrow"/></a>
-    </div>
-  </section>
-
-  <section class="home-section architecture-section" aria-labelledby="arch-title">
+  <!-- 3. PRESERVED & UPDATED ARCHITECTURE DUAL-VIEW -->
+  <section class="home-section architecture-section" id="architecture" aria-labelledby="arch-title">
     <div class="site-container">
       <HomeArchitecture lang={lang} />
     </div>
   </section>
 
-  <section class="home-section composition-section"><div class="site-container composition-grid"><div class="section-intro"><h2 class="preserve-lines">{c.composeTitle}</h2><p>{c.composeText}</p><p class="small-note">{c.composeNote}</p></div><div class="composition-flow"><div class="flow-label"><span></span>{c.flowInput}</div>{c.flow.map(([num,title,model],i) => <div class:list={['flow-node',i === 1 && 'worker-node']}><span class="flow-number">{num}</span><div><strong>{title}</strong><span>{model}</span></div><Icon name={i===1 ? 'code' : 'spark'}/></div>)}<div class="flow-result"><Icon name="route"/>{c.flowOutput}<span class="external-arrow" aria-hidden="true"><Icon name="arrowUpRight" /></span></div></div></div></section>
+  <!-- 4. CONCISE COMPARISON TABLE -->
+  <section class="home-section compare-section" id="comparison">
+    <div class="site-container">
+      <div class="section-intro">
+        <span class="micro-label">{c.comparison.eyebrow}</span>
+        <h2>{c.comparison.title}</h2>
+        <p>{c.comparison.subtitle}</p>
+      </div>
 
+      <div class="compare-table-card">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th scope="col">{c.comparison.headers[0]}</th>
+              <th scope="col">{c.comparison.headers[1]}</th>
+              <th scope="col" class="accent-col">{c.comparison.headers[2]}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {c.comparison.rows.map(([tool, category, goodAt, inOneFlow]) => (
+              <tr>
+                <td class="tool-cell">
+                  <strong>{tool}</strong>
+                  <span>{category}</span>
+                </td>
+                <td class="boundary-cell">{goodAt}</td>
+                <td class="solution-cell">{inOneFlow}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
 
+  <!-- 5. CRISP CLI / DOCKER INSTALL -->
+  <section class="home-section install-section" id="get-started">
+    <div class="site-container">
+      <div class="section-intro">
+        <span class="micro-label">{c.install.eyebrow}</span>
+        <h2>{c.install.title}</h2>
+        <p>{c.install.text}</p>
+      </div>
 
-  <section class="home-section agent-section"><div class="site-container agent-grid"><div class="section-intro"><h2 class="preserve-lines">{c.agentsTitle}</h2><p>{c.agentsText}</p><a class="text-link" href={localePath(lang,'/docs/')}>{lang==='zh'?'探索文档':'Explore the docs'}<Icon name="arrow"/></a></div><div><div class="agent-tools">{c.agentsSteps.map(([command,description],i) => <div><span class="tool-number">0{i+1}</span><code>{command}<span>()</span></code><p>{description}</p><span class="external-arrow" aria-hidden="true"><Icon name="arrowUpRight" /></span></div>)}</div><div class="roadmap-note"><span class="roadmap-marker"></span><div><strong>{c.agentsStatusTitle}</strong><p>{c.agentsStatus}</p></div></div></div></div></section>
+      <div class="install-card" data-tabs>
+        <div class="install-tabs" role="tablist" aria-label={lang === 'zh' ? '选择操作系统' : 'Choose operating system'}>
+          {commands.map((item, i) => (
+            <button
+              type="button"
+              id={`install-tab-${i}`}
+              role="tab"
+              aria-selected={i === 0 ? 'true' : 'false'}
+              aria-controls={`install-panel-${i}`}
+              tabindex={i === 0 ? 0 : -1}
+              data-tab={i}
+            >
+              {item.name}
+            </button>
+          ))}
+        </div>
 
-  <section class="home-section audience-section"><div class="site-container"><div class="section-intro"><h2>{c.audienceTitle}</h2></div><div class="audience-grid">{c.audiences.map(([num,title,text]) => <article><span>{num}</span><h3>{title}</h3><p>{text}</p></article>)}</div><a class="text-link" href={localePath(lang,'/use-cases/')}>{lang==='zh'?'找到你的使用场景':'Find your use case'}<Icon name="arrow"/></a></div></section>
+        {commands.map((item, i) => (
+          <div hidden={i !== 0} id={`install-panel-${i}`} role="tabpanel" aria-labelledby={`install-tab-${i}`} data-panel={i}>
+            <div class="cmd-bar">
+              <code>$ {item.command}</code>
+              <button
+                type="button"
+                class="copy-command"
+                data-copy-command={item.command}
+                data-copy-label={c.install.copy}
+                data-copied-label={c.install.copied}
+                data-copy-error={c.install.copyError}
+              >
+                {c.install.copy}
+              </button>
+            </div>
+            <div class="cmd-links">
+              <a href={localePath(lang, '/docs/')}>{c.install.link} →</a>
+              <a href={item.url} target="_blank" rel="noreferrer">{c.install.reviewScript} ↗</a>
+            </div>
+          </div>
+        ))}
+        <p class="install-note">{c.install.note}</p>
+        <p class="copy-status" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </section>
 
-  <HomeGuides lang={lang} />
+  <!-- 6. CONCISE FAQ -->
+  <section class="home-section faq-section" id="faq">
+    <div class="site-container faq-container">
+      <div class="section-intro centered">
+        <span class="micro-label">{c.faqEyebrow}</span>
+        <h2>{c.faqTitle}</h2>
+      </div>
 
-  <section class="home-section install-section" id="get-started"><div class="site-container install-grid"><div class="section-intro"><h2 class="preserve-lines">{c.installTitle}</h2><p>{c.installText}</p><a class="text-link" href={localePath(lang,'/docs/')}>{c.installLink}<Icon name="arrow"/></a></div><div class="install-card" data-tabs><div class="install-tabs" role="tablist" aria-label={lang==='zh'?'选择操作系统':'Choose operating system'}>{commands.map((item,i) => <button type="button" id={`install-tab-${i}`} role="tab" aria-selected={i===0?'true':'false'} aria-controls={`install-panel-${i}`} tabindex={i===0?0:-1} data-tab={i}>{item.name}</button>)}</div>{commands.map((item,i) => <div hidden={i!==0} id={`install-panel-${i}`} role="tabpanel" aria-labelledby={`install-tab-${i}`} data-panel={i}><div class="command-topline"><span>{item.label}</span><button type="button" class="copy-command" data-copy-command={item.command} data-copy-label={c.copy} data-copied-label={c.copied} data-copy-error={c.copyError}>{c.copy}<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 8h12v12H8zM16 8V4H4v12h4"/></svg></button></div><pre><code>{item.command}</code></pre><a class="script-link" href={item.url}>{c.reviewScript}<span class="external-arrow" aria-hidden="true"><Icon name="arrowUpRight" /></span></a></div>)}<p class="install-note">{c.installNote}</p><p class="copy-status" role="status" aria-live="polite"></p></div></div></section>
+      <div class="faq-list">
+        {c.faqs.map(([q, a], idx) => (
+          <details class="faq-item" open={idx === 0}>
+            <summary>
+              <span>{q}</span>
+              <span class="faq-toggle" aria-hidden="true"></span>
+            </summary>
+            <div class="faq-answer">
+              <p>{a}</p>
+            </div>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
 
-  <section class="home-section faq-section" id="faq"><div class="site-container faq-grid"><div class="section-intro"><h2>{c.faqTitle}</h2></div><div>{c.faqs.map(([q,a]) => <details><summary>{q}<span aria-hidden="true">+</span></summary><p>{a}</p></details>)}</div></div></section>
-  <section class="closing-section"><div class="site-container"><div><h2>{c.finalTitle}</h2><p>{c.finalText}</p></div><a class="button-primary" href="#get-started">{c.finalCta}<Icon name="arrow"/></a></div></section>
+  <!-- 7. MAGPIE-STYLE CLEAN CLOSING + PLATFORM CARDS -->
+  <section class="closing-banner">
+    <div class="site-container closing-inner">
+      <img src="/favicon.svg" alt="" width="52" height="52" class="closing-mark" />
+      <h2>{c.closing.title}</h2>
+      <p>{c.closing.sub}</p>
+
+      <div class="closing-actions">
+        <a class="button-primary" href="#get-started">
+          <span>{c.closing.ctaPrimary}</span>
+          <Icon name="arrow" />
+        </a>
+        <a class="button-secondary" href={SITE.repository} target="_blank" rel="noreferrer">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" class="gh-mini">
+            <path d="M12 .75a11.25 11.25 0 0 0-3.56 21.92c.56.1.77-.24.77-.54v-2.1c-3.13.68-3.79-1.33-3.79-1.33-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.69.08-.69 1.13.08 1.72 1.16 1.72 1.16 1 1.72 2.63 1.22 3.27.93.1-.73.39-1.22.71-1.5-2.5-.28-5.13-1.25-5.13-5.56 0-1.23.44-2.23 1.16-3.02-.12-.28-.5-1.43.11-2.98 0 0 .95-.3 3.1 1.15a10.8 10.8 0 0 1 5.63 0c2.15-1.46 3.1-1.15 3.1-1.15.61 1.55.23 2.7.11 2.98.72.79 1.16 1.79 1.16 3.02 0 4.32-2.64 5.27-5.15 5.55.4.35.76 1.03.76 2.08v3.11c0 .3.2.65.77.54A11.25 11.25 0 0 0 12 .75Z" />
+          </svg>
+          <span>{c.closing.ctaSecondary}</span>
+        </a>
+      </div>
+
+      <div class="os-cards">
+        <a href="https://github.com/taichuy/1flowbase/releases/latest">
+          <div><strong>macOS</strong><span>Apple Silicon · Intel</span></div>
+          <em>.tar.gz</em>
+        </a>
+        <a href="https://github.com/taichuy/1flowbase/releases/latest">
+          <div><strong>Windows</strong><span>x64 · PowerShell</span></div>
+          <em>.zip</em>
+        </a>
+        <a href="https://github.com/taichuy/1flowbase/releases/latest">
+          <div><strong>Linux & Docker</strong><span>x64 · ARM64</span></div>
+          <em>Compose</em>
+        </a>
+      </div>
+    </div>
+  </section>
 </div>
+
 <script>
   const installLink = document.querySelector<HTMLAnchorElement>('[data-local-install]');
   const downloadSelector = document.querySelector<HTMLDetailsElement>('[data-download-selector]');
   if (installLink && downloadSelector) {
     const isZh = document.querySelector('.runtime-home')?.getAttribute('data-locale') === 'zh';
     let matched = false;
-    installLink.addEventListener('click', event => {
+    installLink.addEventListener('click', (event) => {
       if (!matched) {
         event.preventDefault();
         downloadSelector.open = true;
         downloadSelector.querySelector<HTMLElement>('summary')?.focus();
       }
     });
-    document.addEventListener('click', event => {
-      if (event.target instanceof Node && !downloadSelector.contains(event.target) && event.target !== installLink && !installLink.contains(event.target)) downloadSelector.open = false;
+    document.addEventListener('click', (event) => {
+      if (
+        event.target instanceof Node &&
+        !downloadSelector.contains(event.target) &&
+        event.target !== installLink &&
+        !installLink.contains(event.target)
+      ) {
+        downloadSelector.open = false;
+      }
     });
-    document.addEventListener('keydown', event => {
+    document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && downloadSelector.open) {
         downloadSelector.open = false;
         downloadSelector.querySelector<HTMLElement>('summary')?.focus();
@@ -113,7 +315,14 @@ const commands = [
     });
     void (async () => {
       const ua = navigator.userAgent;
-      const uaData = (navigator as Navigator & { userAgentData?: { platform?: string; getHighEntropyValues?: (hints: string[]) => Promise<{ architecture?: string; bitness?: string }> } }).userAgentData;
+      const uaData = (
+        navigator as Navigator & {
+          userAgentData?: {
+            platform?: string;
+            getHighEntropyValues?: (hints: string[]) => Promise<{ architecture?: string; bitness?: string }>;
+          };
+        }
+      ).userAgentData;
       const platform = uaData?.platform || navigator.platform || ua;
       const mobile = /Android|iPhone|iPad|iPod/i.test(ua) || (/Mac/i.test(platform) && navigator.maxTouchPoints > 1);
       const os = mobile ? '' : /Win/i.test(platform) ? 'windows' : /Mac/i.test(platform) ? 'macos' : /Linux/i.test(platform) ? 'linux' : '';
@@ -124,7 +333,9 @@ const commands = [
           if (/arm/i.test(hints.architecture ?? '')) arch = 'arm64';
           else if (/x86/i.test(hints.architecture ?? '')) arch = 'x64';
         }
-      } catch { /* Some browsers do not expose processor information. */ }
+      } catch {
+        /* Browser does not expose processor hints. */
+      }
       if (!arch && (os === 'linux' || os === 'windows')) {
         const systemInfo = `${platform} ${ua}`;
         if (/aarch64|arm64/i.test(systemInfo)) arch = 'arm64';
@@ -138,68 +349,54 @@ const commands = [
         label.textContent = isZh ? `下载 ${system}` : `Download ${system}`;
         matched = true;
       } else if (label) {
-        label.textContent = isZh ? '选择本地安装包' : 'Choose a download';
+        label.textContent = isZh ? '本地安装' : 'Local install';
       }
     })();
   }
-  document.querySelectorAll<HTMLElement>('[data-tabs]').forEach(root => {
-    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-tab]'));
-    const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-panel]'));
+
+  document.querySelectorAll<HTMLElement>('[data-tabs]').forEach((root) => {
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>(':scope [role="tablist"] [data-tab]'));
+    const panels = Array.from(root.querySelectorAll<HTMLElement>(':scope > [data-panel]'));
+    if (!tabs.length || !panels.length) return;
     const select = (index: number, focus = false) => {
-      tabs.forEach((tab,i) => { tab.setAttribute('aria-selected',String(i===index)); tab.tabIndex = i===index ? 0 : -1; });
-      panels.forEach((panel,i) => { panel.hidden = i!==index; });
+      tabs.forEach((tab, i) => {
+        tab.setAttribute('aria-selected', String(i === index));
+        tab.tabIndex = i === index ? 0 : -1;
+      });
+      panels.forEach((panel, i) => {
+        panel.hidden = i !== index;
+      });
       if (focus) tabs[index]?.focus();
     };
-    tabs.forEach((tab,i) => {
-      tab.addEventListener('click',() => select(i));
-      tab.addEventListener('keydown',event => {
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => select(i));
+      tab.addEventListener('keydown', (event) => {
         let next = i;
-        if (event.key === 'ArrowRight') next = (i+1)%tabs.length;
-        else if (event.key === 'ArrowLeft') next = (i-1+tabs.length)%tabs.length;
+        if (event.key === 'ArrowRight') next = (i + 1) % tabs.length;
+        else if (event.key === 'ArrowLeft') next = (i - 1 + tabs.length) % tabs.length;
         else if (event.key === 'Home') next = 0;
-        else if (event.key === 'End') next = tabs.length-1;
+        else if (event.key === 'End') next = tabs.length - 1;
         else return;
-        event.preventDefault(); select(next,true);
+        event.preventDefault();
+        select(next, true);
       });
     });
   });
-  document.querySelectorAll<HTMLButtonElement>('[data-copy-command]').forEach(button => {
+
+  document.querySelectorAll<HTMLButtonElement>('[data-copy-command]').forEach((button) => {
     let timer: ReturnType<typeof setTimeout>;
-    button.addEventListener('click',async () => {
+    button.addEventListener('click', async () => {
       const status = button.closest('.install-card')?.querySelector('.copy-status');
       try {
         await navigator.clipboard.writeText(button.dataset.copyCommand ?? '');
-        if(status) status.textContent = button.dataset.copiedLabel ?? 'Copied';
-        clearTimeout(timer); timer = setTimeout(() => { if(status) status.textContent = ''; },3500);
-      } catch { if(status) status.textContent = button.dataset.copyError ?? 'Select the command to copy it manually.'; }
+        if (status) status.textContent = button.dataset.copiedLabel ?? 'Copied';
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          if (status) status.textContent = '';
+        }, 3500);
+      } catch {
+        if (status) status.textContent = button.dataset.copyError ?? 'Select manually to copy';
+      }
     });
   });
 </script>
-
-<style>
-  .hero-stack{display:flex;flex-direction:column;gap:27px;padding-top:28px;padding-bottom:35px}
-  .hero-stack .hero-message{width:100%;max-width:1060px;text-align:center}
-  .hero-stack .hero-message h1{font-size:clamp(32px,4.1vw,54px);line-height:1.14;margin:0 0 14px;letter-spacing:-.045em;font-weight:680}
-  .hero-stack .hero-message h1 span{display:block;margin:0}
-  .hero-stack .hero-lead{max-width:760px;margin:0 auto 22px;font-size:18px;line-height:1.72;text-align:left;text-indent:2em}
-  .hero-stack .hero-lead span{display:block}.hero-stack .hero-actions,.hero-stack .trust-list{justify-content:center}.hero-stack .hero-actions{gap:23px}.hero-stack .button-primary,.hero-stack .button-secondary{min-width:162px;justify-content:center}.hero-stack .trust-list{margin-top:18px}
-  .local-download{display:flex;position:relative;z-index:3}
-  .hero-stack .download-main{border-radius:7px 0 0 7px}
-  .download-main:hover{transform:none}
-  .download-selector{display:flex;align-items:stretch}
-  .download-selector>summary{display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:48px;min-height:49px;padding:0;border:1px solid #163e31;border-left:1px solid #ffffff45;border-radius:0 7px 7px 0;background:#163e31;color:#fff;cursor:pointer;list-style:none}
-  .download-selector>summary :global(svg){display:block;width:24px;height:24px;stroke-width:2}
-  .download-selector>summary::-webkit-details-marker{display:none}
-  .download-selector>summary:hover,.download-selector[open]>summary{background:#245640}
-  .download-selector>summary:focus-visible,.download-menu a:focus-visible{outline:2px solid #176e55;outline-offset:2px}
-  .download-menu{position:absolute;top:calc(100% + 8px);left:0;width:max(100%,280px);box-sizing:border-box;padding:8px;border:1px solid #d6e2d7;border-radius:10px;background:#fff;box-shadow:0 12px 35px #102a2026;text-align:left}
-  .download-menu p{margin:3px 10px 6px;color:#718379;font-size:12px}
-  .download-menu a{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 10px;border-radius:6px;color:#183a30;font-size:13px;font-weight:600;text-decoration:none}
-  .download-menu a:hover{background:#f0f6ef}
-  .download-menu a svg{width:15px;height:15px}
-  .download-menu .all-releases{margin-top:4px;border-top:1px solid #e6eee6;border-radius:0;color:#60796b;font-weight:500}
-  @media(max-width:780px){.hero-stack{gap:26px;padding-top:30px;padding-bottom:30px}.hero-stack .hero-message{max-width:620px}.hero-stack .hero-message h1{font-size:clamp(28px,6.9vw,40px)}.hero-stack .hero-lead{font-size:16px}}
-  @media(max-width:480px){.hero-stack .hero-message h1{font-size:29px}.hero-stack .hero-actions{gap:10px}.hero-stack .button-primary,.hero-stack .button-secondary{min-width:138px}.hero-stack .hero-lead{font-size:15px}}
-  .architecture-section{padding:66px 0;background:#fff;border-bottom:1px solid #e2e8dd}
-  @media(max-width:780px){.architecture-section{padding:46px 0}}
-</style>

@@ -1,121 +1,369 @@
-export const homeCopy = {
-  en: {
-    title: 'Build AI apps fast on an AI application foundation',
-    heroDescription: '1flowbase is an AI application foundation built in Rust. Use it to collect and manage conversations from local agents such as Claude Code and Codex and turn them into memory and knowledge bases; to convert, route and aggregate LLM protocols; and to build custom workspaces, business systems and reports.',
-    badge: 'OPEN SOURCE · SELF-HOSTED',
-    headline: ['AI + 1flowbase', 'Give great ideas a head start'],
-    lead: '1flowbase is an AI application foundation built in Rust. Use it to collect and manage conversations from local agents such as Claude Code and Codex, and turn them into memory and knowledge bases; to convert, route and aggregate LLM protocols; and to build custom workspaces, business systems and reports.',
-    primary: 'Local install', secondary: 'Docker deployment',
-    trust: ['Built in Rust', 'Apache 2.0', 'Self-hosted deployment'],
-    diagramLabel: 'A CONNECTED RUNTIME', diagramCaption: 'Architecture overview',
-    people: 'People', agents: 'Agents', runtime: 'Your AI application',
-    protocolLabel: 'THREE PROTOCOLS. ONE GATEWAY.',
-    valueEyebrow: '01 / BEYOND THE GATEWAY',
-    valueTitle: 'The next layer of your AI stack.',
-    valueText: 'Start with model access. Keep building on the capabilities and data you already own.',
-    features: [
-      ['route', 'AI Gateway', 'One entry point for your AI.', 'Install provider plugins for OpenAI, Anthropic, Gemini, DeepSeek, Alibaba Cloud Bailian or any OpenAI-compatible API, and convert between three major AI protocols. Each gateway application gets its own keys, logs, monitoring and statistics.'],
-      ['flow', 'Workflow', 'A model can be a whole workflow.', 'Route requests by model, fall back across branches, or combine models and tools into a new capability. Publish the workflow and call it like any other model.'],
-      ['database', 'Conversations & cost', 'Every conversation becomes an asset.', 'Record each gateway conversation with its model, reasoning effort, status, tokens and cost in PostgreSQL. Reports break usage down by model and by user.'],
-      ['code', 'API-first backend', 'Build beyond the model call.', 'Define data models and data sources, expose CRUD APIs and schedule workflows. Every application publishes its own OpenAPI 3.1 document.'],
-      ['spark', 'MCP Gateway', 'Give agents a way into your system.', 'Discover tools progressively with list, get and call. Manage MCP instances, tool settings and third-party MCP servers from the console.'],
-      ['layout', 'React pages', 'Your interface. Your React code.', 'Build pages from native React blocks, edit them in place with UI mode, and let the built-in AI assistant work on the page with you.'],
-    ],
-    composeEyebrow: '02 / COMPOSE INTELLIGENCE', composeTitle: 'The right model.\nFor each part of the job.',
-    composeText: 'Let a capable model plan and review. Delegate execution to a faster, lower-cost model. Publish the whole workflow as one virtual model.',
-    composeNote: 'Design your own trade-offs between capability, cost and speed. Actual results depend on the models and tasks you choose.',
-    flow: [['01', 'Plan', 'Primary model'], ['02', 'Execute', 'Worker model'], ['03', 'Review', 'Primary model']],
-    flowInput: 'One API request', flowOutput: 'One model endpoint',
-    productEyebrow: '03 / SEE THE SYSTEM', productTitle: 'A real workspace for your AI.',
-    productText: 'Orchestrate a gateway application, publish its API, track usage and cost, and build pages with an AI assistant. These are real interfaces from 1flowbase v0.5.0.',
-    productTabs: ['Orchestrate', 'Publish APIs', 'Usage & cost', 'Pages & assistant', 'MCP'],
-    productCaptions: ['Workflow orchestration: route each request to Claude, GPT, Gemini or DeepSeek by model name, then return the first available branch result in order.', 'Public API: every application publishes OpenAI-compatible, Anthropic-compatible and native agent endpoints with an OpenAPI 3.1 document.', 'Statistics: task counts, token totals, recorded cost and latency, broken down by model and by user.', 'Pages and AI assistant: edit the console pages in UI mode while the built-in assistant works alongside you.', 'MCP management: MCP instances, tool settings and third-party MCP servers in one place.'],
-    productPaths: ['orchestration', 'api', 'statistics', 'pages', 'mcp'],
-    screenshotNote: 'Screenshots from v0.5.0 · configurations shown are examples',
-    agentsEyebrow: 'BUILT FOR AGENTS', agentsTitle: 'One system.\nTwo ways to build.',
-    agentsText: 'People use the GUI and the built-in AI assistant. Agents reach the same API-first runtime through MCP. Your application becomes something both can work with.',
-    agentsSteps: [['list', 'Discover available tools'], ['get', 'Read the definition you need'], ['call', 'Use the capability']],
-    agentsStatusTitle: 'Built in the open. Still evolving.',
-    agentsStatus: 'The official 1flowbase MCP instance already groups more than a hundred tools by capability, and tool descriptions and defaults are still being refined. For complex applications, we currently recommend giving your coding agent the 1flowbase project context.',
-    audienceEyebrow: 'WHERE TO START', audienceTitle: 'Your gateway to what comes next.',
-    audiences: [
-      ['01', 'Enterprise AI teams', 'Unify model access across teams. Retain AI conversations and build internal applications on your own infrastructure.'],
-      ['02', 'AI product builders', 'Go from gateway to data, APIs, workflows and UI without treating each layer as a separate project.'],
-      ['03', 'Advanced individual users', 'Build your own model combinations, then use them through a familiar model API.'],
-    ],
-    installEyebrow: 'START BUILDING', installTitle: 'Your infrastructure.\nYour next idea.',
-    installText: 'Deploy with the official Docker script. Follow its setup prompts, then connect your first model.',
-    installNote: 'Requires Docker and access to your chosen model providers. Review the script before running it.',
-    installLink: 'Read the setup guides', reviewScript: 'Review deployment script',
-    copy: 'Copy command', copied: 'Copied', copyError: 'Could not copy. Select the command below to copy it manually.',
-    faqTitle: 'A few things worth knowing.', faqEyebrow: 'FAQ',
-    faqs: [
-      ['What is 1flowbase?', '1flowbase is an open-source, self-hostable AI Gateway and AI application runtime. It connects model access, workflows, conversation data, APIs, business data, MCP and React interfaces.'],
-      ['Which AI protocols are supported?', '1flowbase converts between Anthropic Messages, OpenAI Chat Completions and OpenAI Responses. Each application publishes /v1/messages, /v1/chat/completions, /v1/responses and /v1/models, plus a native agent API with WebSocket, cancel and resume. Both models and workflows can be published this way.'],
-      ['Where is my data stored?', 'PostgreSQL is the current primary data source. Gateway conversations are retained there, alongside your business data. Before production use, plan storage capacity, retention, backups and compliance for your workload.'],
-      ['Can an agent build a complete application?', 'The runtime is API-first and its capabilities are exposed through MCP, and the console includes a built-in AI assistant. The official tools and agent experience are still being improved. For complex applications, give your coding agent the project context rather than assuming fully autonomous setup.'],
-      ['Are application templates available?', 'Gateway applications can already be configured from Agent templates, and the extension center has a place for application templates. Ready-made business application templates are still in progress; they are not presented here as finished, one-click applications.'],
-      ['Is it free to use?', '1flowbase is open source under Apache License 2.0. You provide the hosting, database and model-provider access; those may have their own costs.'],
-    ],
-    finalTitle: 'Build with AI. Build for agents.', finalText: 'Start small. Keep the foundation open.', finalCta: 'Get started',
-  },
+export interface LocaleHomeCopy {
+  title: string;
+  heroDescription: string;
+  badge: string;
+  headlineDark: string;
+  headlineAccent: string;
+  subtitle: string;
+  leadBold: string;
+  leadBody: string;
+  heroChips: [string, string][];
+  primary: string;
+  secondary: string;
+  versionNote: string;
+  agentStripTitle: string;
+  modelStripTitle: string;
+  sections: {
+    memory: {
+      eyebrow: string;
+      title: string;
+      desc: string;
+      cards: [string, string][];
+    };
+    superagent: {
+      eyebrow: string;
+      title: string;
+      desc: string;
+      cards: [string, string][];
+    };
+    mcpChat: {
+      eyebrow: string;
+      title: string;
+      desc: string;
+    };
+    apps: {
+      eyebrow: string;
+      title: string;
+      desc: string;
+      tabs: [string, string, string];
+    };
+    governance: {
+      eyebrow: string;
+      title: string;
+      desc: string;
+      cards: [string, string][];
+    };
+  };
+  comparison: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    headers: [string, string, string];
+    rows: [string, string, string, string][];
+  };
+  install: {
+    eyebrow: string;
+    title: string;
+    text: string;
+    note: string;
+    link: string;
+    reviewScript: string;
+    copy: string;
+    copied: string;
+    copyError: string;
+  };
+  faqEyebrow: string;
+  faqTitle: string;
+  faqs: [string, string][];
+  closing: {
+    title: string;
+    sub: string;
+    ctaPrimary: string;
+    ctaSecondary: string;
+  };
+}
+
+export const homeCopy: Record<'zh' | 'en', LocaleHomeCopy> = {
   zh: {
-    title: '快速构建 AI 应用的 AI 应用底座',
-    heroDescription: '1flowbase 是基于 Rust 构建的 AI 应用底座，你可以用它：集中管理 Claude\u00A0Code、Codex 等本地 Agent 的聊天记录，整理成记忆和知识库；做 LLM 协议转换、路由与聚合分发；搭建定制化工作台、业务系统、报表等。',
-    badge: '开源 · 自托管',
-    headline: ['AI+ 1flowbase', '让好的想法快人一步'],
-    lead: '1flowbase 是基于 Rust 构建的 AI 应用底座，你可以用它：集中管理 Claude\u00A0Code、Codex 等本地 Agent 的聊天记录，整理成记忆和知识库；做 LLM 协议转换、路由与聚合分发；搭建定制化工作台、业务系统、报表等。',
-    primary: '本地安装', secondary: 'Docker 部署',
-    trust: ['Rust 构建', '开源 Apache 2.0', '自托管部署'],
-    diagramLabel: '一个相互连接的运行时', diagramCaption: '架构示意',
-    people: '开发者', agents: 'Agents', runtime: '你的 AI 应用',
-    protocolLabel: '三种 AI 协议，一个 GATEWAY',
-    valueEyebrow: '01 / 从网关开始', valueTitle: 'AI 基础设施，可以更进一步。',
-    valueText: '从一次模型调用开始，在自己的能力和数据之上，继续构建业务。',
-    features: [
-      ['route', 'AI Gateway', '统一入口，连接不同模型。', '通过插件接入 OpenAI、Anthropic、Gemini、DeepSeek、阿里云百炼或任意 OpenAI 兼容接口，在三种主流 AI 协议之间转换。每个网关应用都有独立的 Key、日志、监控与统计。'],
-      ['flow', 'Workflow', '一个模型，也可以是一条工作流。', '按模型名分发请求、在多个分支间兜底，或组合模型与工具形成新能力。发布后，像调用普通模型一样调用整条工作流。'],
-      ['database', '会话与成本', '让每次对话，成为自己的资产。', '每次经过网关的对话，连同模型、推理强度、状态、Token 与费用一起保存到 PostgreSQL；报表按模型和用户拆分用量。'],
-      ['code', 'API-first 后端', '从模型调用，走向业务系统。', '定义数据模型与数据源，提供 CRUD API，并可定时运行工作流。每个应用都会发布自己的 OpenAPI 3.1 文档。'],
-      ['spark', 'MCP Gateway', '让 Agent 按需发现系统能力。', '通过 list、get、call 渐进式发现并调用工具；在控制台统一管理 MCP 实例、Tool 配置与第三方 MCP。'],
-      ['layout', 'React 页面', '你的界面，直接用 React 构建。', '用原生 React 区块搭建页面，在 UI 模式下原地编辑，还能让内置 AI 助手和你一起操作页面。'],
+    title: '1flowbase — 企业 AI 应用基座 | 支持多人共享的开源应用底座',
+    heroDescription:
+      '支持多人共享的开源企业 AI 应用基座，连接人与每一个 Super-agent。集成 AI Gateway 模型分发与聚合、PostgreSQL 动态建表与 React 应用底座，以及人与 Agent 共用的 GUI 与渐进式 MCP。',
+    badge: '开源自托管 · Rust + PostgreSQL · Apache-2.0',
+    headlineDark: '企业 AI ',
+    headlineAccent: '应用基座',
+    subtitle: '支持多人共享的开源应用底座，连接人与每一个 Super-agent',
+    leadBold: '我们相信，AI 时代的应用一定是从数据层面长出来的。',
+    leadBody:
+      '日常的交互记录、文档资料与业务数据，共同构成了让 AI 理解全局的上下文。好的上下文能够降低 Agent 成本、提高 Agent 效率。',
+    heroChips: [
+      ['AI Gateway', '模型聚合分发 · 聊天记录留存'],
+      ['业务应用底座', '记忆 Wiki · 动态建表 · React 区块'],
+      ['GUI 与渐进式 MCP', '人操作界面 · Agent 接管接口'],
     ],
-    composeEyebrow: '02 / 组合智能', composeTitle: '让合适的模型，\n做合适的事。',
-    composeText: '高能力模型负责规划与审计，更快、更低成本的模型负责执行。把整个工作流发布为一个虚拟模型。',
-    composeNote: '按业务需要权衡能力、成本与速度。实际效果取决于选用的模型和任务。',
-    flow: [['01', '规划', '主模型'], ['02', '执行', '工作模型'], ['03', '审计', '主模型']],
-    flowInput: '一次 API 请求', flowOutput: '一个模型接口',
-    productEyebrow: '03 / 看见运行中的系统', productTitle: '从能力组合，到真实运行。',
-    productText: '编排网关应用、发布 API、追踪用量与成本，再和 AI 助手一起搭建页面。以下均为 1flowbase v0.5.0 的实际界面。',
-    productTabs: ['编排', '发布 API', '用量与成本', '页面与助手', 'MCP'],
-    productCaptions: ['工作流编排：按模型名把请求分发到 Claude、GPT、Gemini 或 DeepSeek，再按顺序返回第一个可用的分支结果。', '公开 API：每个应用都会发布 OpenAI 兼容、Anthropic 兼容与原生 Agent 接口，并附带 OpenAPI 3.1 文档。', '统计：任务数、Token 总量、已记录费用与耗时，可按模型和用户拆分。', '页面与 AI 助手：在 UI 模式下编辑控制台页面，内置 AI 助手在一旁协作。', 'MCP 管理：MCP 实例、Tool 配置与第三方 MCP 集中管理。'],
-    productPaths: ['orchestration', 'api', 'statistics', 'pages', 'mcp'],
-    screenshotNote: 'v0.5.0 实际截图 · 图中配置仅为示例',
-    agentsEyebrow: 'BUILT FOR AGENTS', agentsTitle: '同一个系统，\n两种构建方式。',
-    agentsText: '人使用 GUI 和内置 AI 助手，Agent 通过 MCP 访问同一个 API-first 运行时。让整个应用系统都能被理解、构建与管理。',
-    agentsSteps: [['list', '发现有哪些工具'], ['get', '获取所需工具的完整定义'], ['call', '调用真正需要的能力']],
-    agentsStatusTitle: '开放构建，持续完善。',
-    agentsStatus: '官方 1flowbase MCP 实例已按能力分组提供上百个工具，工具描述与默认配置仍在持续优化。复杂应用场景下，目前仍建议让 Coding Agent 在 1flowbase 项目上下文中工作。',
-    audienceEyebrow: '从你的场景出发', audienceTitle: '一个起点，更多可能。',
-    audiences: [
-      ['01', '企业 AI 团队', '为不同团队统一分发 AI 能力，掌握自己的会话数据，在自己的基础设施上构建内部应用。'],
-      ['02', 'AI 产品团队', '从 Gateway 继续扩展数据、API、工作流和界面，让每一层能力相互连接。'],
-      ['03', '高级个人用户', '构建自己的模型组合策略，再通过熟悉的模型 API 使用它。'],
-    ],
-    installEyebrow: '开始构建', installTitle: '你的基础设施，\n你的下一个想法。',
-    installText: '运行官方 Docker 部署脚本，按照提示完成配置，然后接入你的第一个模型。',
-    installNote: '需要 Docker 及所选模型供应商的访问权限。运行前，请先审阅部署脚本。',
-    installLink: '阅读部署文档', reviewScript: '查看部署脚本',
-    copy: '复制命令', copied: '已复制', copyError: '复制失败，请选中下方命令手动复制。',
-    faqEyebrow: '常见问题', faqTitle: '开始之前，你可能想知道。',
+    primary: '本地安装',
+    secondary: 'Docker 部署',
+    versionNote: 'Apache-2.0 开源 · 支持 Windows、macOS、Linux 原生包与一键 Docker 部署',
+    agentStripTitle: '连接的 AGENT 与交互入口',
+    modelStripTitle: '支持的模型协议与供应商',
+    sections: {
+      memory: {
+        eyebrow: '会话记忆与 AGENT-LOGS',
+        title: '网关对话与本地 Agent 轨迹，全量沉淀为长期记忆。',
+        desc: '经过网关的每一次调用自动按三级轨迹入库；不走网关的本地 Claude Code、Codex、DeepSeek Harness 与 OpenCode，也可安装轻量采集 CLI 无侵入集中归档。',
+        cards: [
+          ['三级轨迹全链路回放', '从会话摘要、消息流到底层请求载荷与输入/模型/工具耗时甘特条，清晰可查。'],
+          ['端侧 CLI 无侵入同步', '保留现有开发习惯与代理配置，一键把多台开发机的历史对话汇聚到团队底座。'],
+          ['记忆数据开放 API', '聊天记录天然具备查询接口，可随时交由定时工作流交叉核对并生成团队日报。'],
+        ],
+      },
+      superagent: {
+        eyebrow: '工作流 · 事件中心 · 通讯渠道',
+        title: '不用重启后端、不用轮询盯屏，事件与微信指令即刻唤醒。',
+        desc: '如果说 React 区块是前端 GUI 扩展，那么工作流就是系统不重启时的后端动态扩展——支持自定义接口扩展、接口请求前/响应后事件钩子、定时任务与 JS/SQL 节点，并直连微信自定义斜杠指令。',
+        cards: [
+          ['请求前/响应后事件钩子', '数据入库或文件上传完成瞬间自动触发下游工作流，彻底告别定时轮询脚本。'],
+          ['热发布自定义业务接口', '无需重启服务，用工作流组合 SQL、JS 与分支判断，直接发布同步或异步 API。'],
+          ['微信私聊斜杠指令触发', '接入日常高频使用的通讯工具，手机发一条 /指令 即可驱动后台复杂工作流并返回结论。'],
+        ],
+      },
+      mcpChat: {
+        eyebrow: '渐进式 MCP 引擎',
+        title: '上百个系统接口，仅靠 4 个元工具按需接管，绝不撑爆上下文。',
+        desc: '传统做法把上百个工具 Schema 一次性塞进系统提示词，既烧 Token 又稀释注意力。1flowbase 只注册 list / get / call / result 四个渐进式元工具，按目录发现、大结果分页提取。',
+      },
+      apps: {
+        eyebrow: '真实构建案例',
+        title: '连上 MCP、给张参考图，在底座上长出真正的业务系统。',
+        desc: '物理表自动生成 CRUD 接口，工作流承载解析与调度，原生 React TSX 1:1 还原界面审美——从公开趋势榜、标书规则审校到研发复盘日报，皆可直接构建运行。',
+        tabs: ['GitHub 官方日榜（导出海报）', '标书规则检测与逐页解析', '每日报告 · Daily Reports'],
+      },
+      governance: {
+        eyebrow: '多人共享与企业治理',
+        title: '精细到每一个 API 接口的权限点，消费额度算得清清楚楚。',
+        desc: '从单人工作台平滑扩展至多部门协同：组织与角色权限精细到单个后端 API 开关，人与 MCP Agent 严格遵循同一套鉴权边界，并内置用户余额预留与扣费流水。',
+        cards: [
+          ['接口级 RBAC 权限开关', '按动态路由、数据表与后台设置精细勾选每个 GET/POST/DELETE 接口权限。'],
+          ['人机同源安全边界', 'Agent 通过 MCP 调用任何模块均受角色权限约束，杜绝后台越权改表或删库。'],
+          ['余额预留与扣费审计', '内置运行中额度预留、自动扣费、手动调整与退款流水，内部分摊或商业交付开箱即用。'],
+        ],
+      },
+    },
+    comparison: {
+      eyebrow: '生态定位',
+      title: '与常见生态产品的定位与区别',
+      subtitle: '明确各产品的核心优势与侧重点，便于按个人、团队或上游接入场景选型与配合。',
+      headers: ['产品', '核心优点与定位', '1flowbase 的区别与配合'],
+      rows: [
+        [
+          'DSH (DeepSeek Harness)',
+          '个人可扩展 Agent 工作台',
+          '对个人使用非常友好，架构灵活，支持自由组合各类插件与模块来构建个人工作台。',
+          '拥有完善的多人用户体系与接口级权限底座，支持 Rust 原生编译，并可集中采集归档多端 DSH 会话。',
+        ],
+        [
+          'NocoBase',
+          '数据表驱动低代码平台',
+          '低代码建模与传统业务应用系统构建成熟完备，适合快速搭建标准化表单与企业管理后台。',
+          'Rust 原生架构，核心优势在于内置事件中心、AI 网关多模式分发及 AI 应用构建，覆盖传统低代码之外的 AI 场景。',
+        ],
+        [
+          'Magpie',
+          'AI 自动路由与多账号反代',
+          '自动路由与多账号反代体验出色，专注 AI 网关层的模型调度与切换（不含低代码及集中式数据管理）。',
+          '非常适合作为 1flowbase 的上游模型供应商接入；1flowbase 进一步提供低代码/TSX 应用构建与集中式存储管理聊天记录，盘活聊天资产。',
+        ],
+        [
+          'Langfuse',
+          'LLM 可观测性与聊天记录管理',
+          '专注于 LLM 链路追踪（Tracing）、Prompt 管理与评测分析，聊天记录管理与指标可观测性非常成熟。',
+          '支持将 1flowbase 留存与采集的聊天记录直接导入 Langfuse 分析；同时可在 1flowbase 内基于聊天数据直接构建工作流与业务应用。',
+        ],
+        [
+          'LiteLLM',
+          '通用多模型 API 代理',
+          '上游模型协议适配广泛、Python 生态成熟，专注于多厂商模型 API 的统一代理与转发。',
+          'Rust 单体原生编译，在多模式 AI 网关之外，一体化融合 PostgreSQL 动态物理表、工作流与前端业务界面。',
+        ],
+        [
+          'Dots / Grok Bot',
+          '常驻智能助手与 Bot',
+          '官方一体化常驻体验顺滑、开箱即用；采用闭源形态，主要面向单人场景独立使用。',
+          'Apache-2.0 开源自托管，支持多人共享使用；面向多个专属 Bot（如多个 Grok Bot 实例）的统一管理与指挥能力完善中。',
+        ],
+      ],
+    },
+    install: {
+      eyebrow: '快速部署',
+      title: '一行命令，私有化跑起来。',
+      text: '在你的服务器或本地运行官方 Docker 脚本即可启动，数据与密钥 100% 留在自有环境。',
+      note: '需安装 Docker 环境。Windows / macOS / Linux 原生独立安装包可在页面顶部直接下载。',
+      link: '查看完整部署文档',
+      reviewScript: '审阅部署脚本',
+      copy: '复制',
+      copied: '已复制',
+      copyError: '请手动选中复制',
+    },
+    faqEyebrow: '常见问题',
+    faqTitle: '开始之前，你可能想了解。',
     faqs: [
-      ['1flowbase 是什么？', '1flowbase 是开源、可自托管的 AI Gateway 与 AI 应用运行时。它把模型接入、Workflow、完整会话数据、API、业务数据、MCP 与 React 界面连接在同一个系统中。'],
-      ['支持哪些 AI 协议？', '当前支持 Anthropic Messages、OpenAI Chat Completions 与 OpenAI Responses 之间的协议转换。每个应用都会发布 /v1/messages、/v1/chat/completions、/v1/responses 与 /v1/models，以及支持 WebSocket、取消与恢复的原生 Agent API。模型与工作流都可以这样对外发布。'],
-      ['数据存储在哪里？', '目前使用 PostgreSQL 作为主数据源，保存经过 Gateway 的完整 AI 会话，也支持业务数据。用于生产环境前，请评估存储容量、保留周期、备份策略及合规要求。'],
-      ['Agent 现在能直接构建完整应用吗？', '底层运行时采用 API-first 架构，能力已通过 MCP 暴露，控制台也内置了 AI 助手。官方工具定义和 Agent 使用体验仍在优化；复杂应用场景下，建议提供项目源码上下文，不应假设已经可以完全自主配置。'],
-      ['开箱即用的应用模板已经上线了吗？', '网关应用已经可以通过 Agent 模板配置，扩展中心也提供了应用模板入口；现成的业务应用模板仍在建设中，本网站不将其描述为已经完成的一键应用。'],
-      ['使用 1flowbase 需要付费吗？', '1flowbase 基于 Apache License 2.0 开源。自托管所需的服务器、数据库和模型供应商可能产生各自的费用。'],
+      [
+        '1flowbase 适合个人还是企业使用？',
+        '两者兼顾。底层具备企业级多空间隔离、接口级权限点与用户余额管控，同时支持单机一行命令启动，个人可直接用内置的网关模板和 Wiki 模板管理日常模型与知识库。',
+      ],
+      [
+        '怎么采集本地 Claude Code、Codex、DSH 的聊天记录做记忆？',
+        '既可以把客户端接入 1flowbase 网关自动记录，也可以不改现有网关，在后台安装对应平台的采集 CLI 分发包，端侧历史轨迹就会自动按三级日志同步至服务器。',
+      ],
+      [
+        '工作流与原生 React TSX 区块是如何配合构建应用的？',
+        '在主数据源动态创建物理表后自动生成 CRUD API；复杂后端逻辑、定时抓取或事件后置处理用工作流扩展（无需重启服务），前端界面用 AI 最熟悉的原生 TSX 区块直连 API 渲染。',
+      ],
+      [
+        '为什么渐进式 MCP 不会撑爆模型上下文窗口？',
+        '系统不把上百个接口 Schema 一次性塞进提示词，只暴露 mcp_list、mcp_get、mcp_call、mcp_result 四个元工具，Agent 按目录树检索并在返回值过大时分页读取。',
+      ],
     ],
-    finalTitle: '用 AI 构建。为 Agent 构建。', finalText: '从小处开始，让底座保持开放。', finalCta: '开始使用',
+    closing: {
+      title: '沉淀私有上下文，筑牢企业 AI 应用基座。',
+      sub: 'Apache-2.0 开源 · Rust 构建 · 支持 macOS、Windows、Linux 与 Docker。',
+      ctaPrimary: '立即部署',
+      ctaSecondary: '在 GitHub 上查看',
+    },
   },
-} as const;
+  en: {
+    title: '1flowbase — Enterprise AI App Foundation | Open-Source Multi-User Runtime',
+    heroDescription:
+      'An open-source multi-user Enterprise AI App Foundation connecting humans and every Super-agent—unifying AI Gateway routing & fusion, dynamic PostgreSQL + React app building, and shared GUI + Progressive MCP.',
+    badge: 'Open Source · Rust + PostgreSQL · Apache-2.0',
+    headlineDark: 'Enterprise AI',
+    headlineAccent: 'App Foundation',
+    subtitle: 'An open-source multi-user app foundation connecting humans and every Super-agent',
+    leadBold: 'We believe AI-era applications grow from the data layer up. ',
+    leadBody:
+      'Daily interaction logs, docs, and live business tables together form the context AI needs to understand the whole picture. Good context lowers Agent cost and boosts Agent efficiency.',
+    heroChips: [
+      ['AI Gateway', 'Model Routing & Fusion · Chat Logs'],
+      ['App Foundation', 'Memory Wiki · Dynamic Tables · React'],
+      ['GUI & Progressive MCP', 'UI for Humans · MCP APIs for Agents'],
+    ],
+    primary: 'Local install',
+    secondary: 'Docker deploy',
+    versionNote: 'Apache-2.0 Open Source · Native binaries for Windows, macOS, Linux & one-line Docker script',
+    agentStripTitle: 'WORKS WITH YOUR AGENTS & CHANNELS',
+    modelStripTitle: 'SUPPORTED PROTOCOLS & PROVIDERS',
+    sections: {
+      memory: {
+        eyebrow: 'TRAJECTORY MEMORY & AGENT-LOGS',
+        title: 'Gateway traffic and local Agent sessions become shared memory.',
+        desc: 'Every gateway call is logged across 3 detail tiers automatically—and for local Claude Code, Codex, DeepSeek Harness, or OpenCode sessions, the lightweight collector CLI syncs trajectories without changing your proxy.',
+        cards: [
+          ['3-tier trajectory replay', 'Inspect session summaries, full message streams, raw payloads, and Input/LLM/Tool Gantt bars.'],
+          ['Zero-proxy CLI collectors', 'Sync local coding agent histories across workstations straight into self-hosted PostgreSQL.'],
+          ['API-ready memory assets', 'Query conversation tables directly from scheduled workflows to generate auditable daily reports.'],
+        ],
+      },
+      superagent: {
+        eyebrow: 'WORKFLOWS, EVENTS & IM CHANNELS',
+        title: 'Extend backends without restarts. Wake flows from events or WeChat.',
+        desc: 'React blocks extend the frontend UI; workflows extend the backend without restarting—supporting custom API endpoints, pre/post API event hooks, cron jobs, JS/SQL nodes, and WeChat slash commands.',
+        cards: [
+          ['Pre/Post API event hooks', 'Trigger downstream pipelines the instant records land or uploads finish—zero polling scripts.'],
+          ['Hot-published API extensions', 'Compose SQL, JS, loops, and LLMs into custom sync/async REST endpoints with zero downtime.'],
+          ['WeChat slash commands', 'Connect everyday messaging so a single /command triggers complex backend workflows on the go.'],
+        ],
+      },
+      mcpChat: {
+        eyebrow: 'PROGRESSIVE MCP ENGINE',
+        title: 'Hundreds of system APIs through 4 lean meta-tools. Zero context bloat.',
+        desc: 'Dumping 200+ tool schemas into prompts wastes tokens and degrades reasoning. 1flowbase exposes just mcp_list, mcp_get, mcp_call, and paginated mcp_result so Agents discover capabilities on demand.',
+      },
+      apps: {
+        eyebrow: 'BUILT ON 1FLOWBASE',
+        title: 'Connect MCP, drop a reference screenshot, and grow real business apps.',
+        desc: 'Physical PostgreSQL tables generate CRUD APIs, workflows power document parsing & scheduling, and native React TSX delivers pixel-accurate UIs.',
+        tabs: ['GitHub Trending (Poster Export)', 'Bid Document Rule Audit', 'Daily Engineering Reports'],
+      },
+      governance: {
+        eyebrow: 'MULTI-USER GOVERNANCE & RBAC',
+        title: 'Endpoint-granular RBAC switches and transparent credit quotas.',
+        desc: 'Scale smoothly across teams: lock role permissions down to individual REST paths—enforced identically across human GUI users and MCP Agents—with built-in credit reservation and ledgers.',
+        cards: [
+          ['Per-endpoint RBAC toggles', 'Grant or revoke individual GET/POST/PATCH/DELETE operations across tables, routes, and settings.'],
+          ['Unified human & Agent guardrails', 'MCP Agents inherit exact role boundaries, preventing unauthorized schema or billing changes.'],
+          ['Credit reservation & ledger', 'Track live in-flight credit holds, deductions, top-ups, and refunds out of the box.'],
+        ],
+      },
+    },
+    comparison: {
+      eyebrow: 'ECOSYSTEM POSITIONING',
+      title: 'Positioning & distinctions across ecosystem tools',
+      subtitle: 'A clear look at each product’s core strengths and focus—whether choosing for solo workflows, team foundations, or upstream integration.',
+      headers: ['Product', 'Core Strengths & Focus', '1flowbase Distinction & Synergy'],
+      rows: [
+        [
+          'DSH (DeepSeek Harness)',
+          'Personal extensible Agent workbench',
+          'Friendly for solo users with a flexible architecture to freely combine plugins and build a personal Agent workbench.',
+          'Complete multi-user & endpoint RBAC foundation, compiled natively in Rust—plus centralized multi-device DSH log collection.',
+        ],
+        [
+          'NocoBase',
+          'Data-model-driven low-code platform',
+          'Mature low-code modeling and traditional business system builder for standardized forms and enterprise admin panels.',
+          'Rust-native architecture featuring an Event Center, multi-mode AI Gateway dispatch, and AI app building beyond traditional low-code.',
+        ],
+        [
+          'Magpie',
+          'AI auto-router & reverse proxy',
+          'Strong auto-routing and multi-account reverse proxy focused on the AI gateway layer (without low-code or centralized chat storage).',
+          'Fits directly as an upstream model provider for 1flowbase, which adds low-code/TSX apps and centralized chat storage to activate chat assets.',
+        ],
+        [
+          'Langfuse',
+          'LLM observability & chat log management',
+          'Mature LLM tracing, prompt management, and evaluation analytics dedicated to chat log management and observability.',
+          'Supports importing chat logs retained or collected in 1flowbase directly into Langfuse, while building workflows and business apps on top of chat data inside 1flowbase.',
+        ],
+        [
+          'LiteLLM',
+          'Universal multi-LLM API proxy',
+          'Broad upstream protocol support and mature Python ecosystem focused on unified multi-provider model API forwarding.',
+          'Single-binary Rust runtime uniting AI Gateway routing, dynamic PostgreSQL tables, workflows, and business UIs in one stack.',
+        ],
+        [
+          'Dots / Grok Bot',
+          'Always-on assistant & Bot',
+          'Turnkey always-on assistant experience out of the box; closed-source and designed primarily for single-user use.',
+          'Apache-2.0 open-source & self-hosted with multi-user sharing; unified management & command for multiple dedicated Bots (e.g., Grok Bot instances) is in progress.',
+        ],
+      ],
+    },
+    install: {
+      eyebrow: 'SELF-HOSTED',
+      title: 'Up and running in one command.',
+      text: 'Run the official Docker deployment script on your server or workstation. Keys and data stay 100% yours.',
+      note: 'Requires Docker. Native installers for Windows, macOS, and Linux are available in the top download button.',
+      link: 'Read deployment docs',
+      reviewScript: 'Inspect install script',
+      copy: 'Copy',
+      copied: 'Copied',
+      copyError: 'Select manually to copy',
+    },
+    faqEyebrow: 'FAQ',
+    faqTitle: 'Common questions, direct answers.',
+    faqs: [
+      [
+        'Is 1flowbase built for individuals or enterprises?',
+        'Both. It ships enterprise workspaces, endpoint-granular RBAC, and user credit quotas out of the box, while remaining a single-command install for solo builders using built-in Gateway and Wiki templates.',
+      ],
+      [
+        'How do I collect local Claude Code, Codex, or DSH logs into shared memory?',
+        'Either route clients through 1flowbase’s AI Gateway, or install the platform collector CLI from the agent-logs app to sync full 3-tier trajectories without changing your existing proxy.',
+      ],
+      [
+        'How do workflows and native React TSX blocks work together?',
+        'Dynamic physical tables expose instant CRUD APIs; workflows add custom backend endpoints, cron jobs, and pre/post event hooks without restarts; native TSX blocks render custom UIs directly against those APIs.',
+      ],
+      [
+        'How does Progressive MCP prevent context window bloat?',
+        'Instead of dumping 200+ endpoint schemas into prompts, 1flowbase exposes just mcp_list, mcp_get, mcp_call, and paginated mcp_result so Agents fetch schemas and large outputs on demand.',
+      ],
+    ],
+    closing: {
+      title: 'Own your context. Build on an Enterprise AI App Foundation.',
+      sub: 'Apache-2.0 Open Source · Built in Rust · macOS, Windows, Linux & Docker.',
+      ctaPrimary: 'Deploy now',
+      ctaSecondary: 'View on GitHub',
+    },
+  },
+};

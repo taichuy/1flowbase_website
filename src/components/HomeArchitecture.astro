@@ -1,97 +1,419 @@
 ---
 import type { Locale } from '../config';
-interface Props { lang: Locale; }
+
+interface Props {
+  lang: Locale;
+}
+
 const { lang } = Astro.props;
 const zh = lang === 'zh';
 
 type Item = [string, string];
-interface Layer { name: string; role: string; items: Item[]; tone?: 'dark' | 'soft' | 'dashed'; }
-interface View { tab: string; layers: Layer[]; crossName: string; cross: Item[]; note: string; }
+interface Layer {
+  name: string;
+  role: string;
+  items: Item[];
+  tone?: 'dark' | 'soft' | 'dashed';
+}
+interface View {
+  tab: string;
+  layers: Layer[];
+  crossName: string;
+  cross: Item[];
+  note: string;
+}
 
 const heading = zh
-  ? { eyebrow: '系统架构', title: '分层看 1flowbase：业务怎么用，技术怎么搭。', tabs: '选择架构视图' }
-  : { eyebrow: 'SYSTEM ARCHITECTURE', title: 'Two layered views: how it is used, and how it is built.', tabs: 'Choose an architecture view' };
+  ? {
+      eyebrow: 'ARCHITECTURE',
+      title: '分层看清 1flowbase：业务怎么长出来，底层怎么撑得住',
+      subtitle: '同一套自托管底座，向上连接人与 Super-agent 业务应用，向下沉淀数据、事件与权限治理。',
+      tabs: '切换架构视图',
+    }
+  : {
+      eyebrow: 'ARCHITECTURE',
+      title: 'Two layered views: how apps grow on top, and how the Rust core runs underneath',
+      subtitle: 'One self-hosted foundation connecting humans and Super-agents above while governing context, events, and permissions below.',
+      tabs: 'Switch architecture view',
+    };
 
-const views: View[] = zh ? [
-  {
-    tab: '业务架构',
-    layers: [
-      { name: '使用者', role: '谁在使用', items: [['业务用户', '在权限范围内操作应用'], ['管理员', '配置模型、权限与工作空间'], ['Agent', '通过 MCP 调用已开放能力'], ['AI 应用 / SDK', '把 1flowbase 当作模型入口']] },
-      { name: '接入渠道', role: '从哪里进入', items: [['GUI 控制台', '图形界面查看与管理'], ['MCP / WebMCP', 'list / get / call 渐进发现工具'], ['兼容模型 API', 'Anthropic Messages · OpenAI Chat / Responses']] },
-      { name: '业务应用', role: '你构建的应用（示例）', tone: 'soft', items: [['知识库', '整理可复用知识'], ['业务管理', '基于自有数据的业务工具'], ['报表', '汇总并展示数据'], ['用量分析', '分析模型与 Token 使用']] },
-      { name: '平台能力', role: '1flowbase 提供', tone: 'dark', items: [['AI Gateway', '协议翻译 · 模型调度 · 对话日志'], ['应用后端', '数据模型 · CRUD API · Workflow'], ['React Block', '原生 React / TSX 界面区块']] },
-      { name: '业务资源', role: '被使用的资源', tone: 'dashed', items: [['模型供应商', 'OpenAI · Anthropic · Gemini · DeepSeek …'], ['业务数据', '你定义和管理的数据'], ['对话记录', '按配置保留与授权访问'], ['文件', '上传文件与附件']] },
-    ],
-    crossName: '治理与扩展',
-    cross: [['身份与权限', '用户、角色、授权规则'], ['工作空间', '多空间隔离资源'], ['插件', '模型供应商与能力插件'], ['观测与审计', '调用证据与操作审计']],
-    note: '自上而下：使用者经接入渠道使用业务应用，业务应用建立在平台能力之上，平台能力调度底层资源；治理贯穿每一层。业务应用为场景示例，需按需配置与开发。',
-  },
-  {
-    tab: '技术架构',
-    layers: [
-      { name: '前端层', role: 'web 容器', items: [['React 控制台', 'React 19 · antd 6 · TanStack Router · Zustand · Vite'], ['Nginx', '静态资源托管 · /api 反向代理到 api-server']] },
-      { name: '协议适配层', role: 'api-server · Axum', items: [['HTTP / SSE', 'REST 与流式响应'], ['WebSocket', '长连接交互'], ['MCP / WebMCP', 'Agent 工具协议'], ['模型兼容入口', 'Anthropic · OpenAI 协议']] },
-      { name: '统一接口层', role: 'interface-runtime', tone: 'dark', items: [['Definition / Binding', '每个入口唯一绑定'], ['冻结执行计划', 'Registry snapshot'], ['认证关联', '调用身份不可变'], ['终态收尾', '取消 · 超时 · 有界收尾']] },
-      { name: '应用服务层', role: 'control-plane', items: [['Use Case', '业务决策与状态写入口'], ['事务与审计', '命名 service command'], ['access-control', '权限目录 · 角色 · 授权']] },
-      { name: '运行时层', role: 'runtime-*', items: [['runtime-core', 'Registry · Slot 引擎 · 六个 Runtime Port'], ['orchestration-runtime', '编排编译执行 · provider-routing'], ['runtime-extension-host', 'Worker 与插件进程生命周期']] },
-      { name: '存储适配层', role: 'storage/*', items: [['Durable', 'storage-durable-postgres · SQL · migration'], ['Ephemeral', '会话 / 缓存 / Lease · 内存或 Redis'], ['Object', '业务文件对象存储 driver']] },
-      { name: '领域与契约', role: '最稳定的核心', tone: 'soft', items: [['domain', '领域对象 · 不变量 · 作用域'], ['*-contracts', '端口 trait · wire type · 错误契约']] },
-      { name: '基础设施', role: '外部依赖', tone: 'dashed', items: [['PostgreSQL 18', 'db 容器 · 持久化与工作流状态'], ['上游模型 API', '经网络出口访问'], ['文件卷', '上传文件持久化']] },
-    ],
-    crossName: '横切关注点',
-    cross: [['plugin-framework', 'manifest · 安装 · 扩展图'], ['Host Extensions', 'identity · workspace · file · plugin · orchestration · local-infra'], ['供应商插件', '.1flowbasepkg 包'], ['observability', '日志 · trace · metrics']],
-    note: '依赖只能自上而下指向更稳定的层，不允许循环（见仓库 api/crates/AGENTS.md）；横切关注点由 api-server 组合根装配进各层。',
-  },
-] : [
-  {
-    tab: 'Business',
-    layers: [
-      { name: 'Actors', role: 'Who uses it', items: [['Business users', 'Operate apps within their permissions'], ['Admins', 'Configure models, access and workspaces'], ['Agents', 'Call exposed capabilities through MCP'], ['AI apps / SDKs', 'Use 1flowbase as the model endpoint']] },
-      { name: 'Channels', role: 'Where they enter', items: [['GUI console', 'Review and manage visually'], ['MCP / WebMCP', 'Progressive list / get / call'], ['Compatible model APIs', 'Anthropic Messages · OpenAI Chat / Responses']] },
-      { name: 'Applications', role: 'What you build (examples)', tone: 'soft', items: [['Knowledge base', 'Organize reusable knowledge'], ['Business tools', 'Tools built on your own data'], ['Reports', 'Aggregate and present data'], ['Usage analytics', 'Analyze model and token usage']] },
-      { name: 'Platform', role: 'What 1flowbase provides', tone: 'dark', items: [['AI Gateway', 'Protocol translation · dispatch · chat logs'], ['Application backend', 'Data models · CRUD APIs · workflows'], ['React Blocks', 'Native React / TSX interface blocks']] },
-      { name: 'Resources', role: 'What gets used', tone: 'dashed', items: [['Model providers', 'OpenAI · Anthropic · Gemini · DeepSeek …'], ['Business data', 'Data you define and manage'], ['Conversation records', 'Retained and accessed as configured'], ['Files', 'Uploads and attachments']] },
-    ],
-    crossName: 'Governance & extension',
-    cross: [['Identity & access', 'Users, roles, authorization rules'], ['Workspaces', 'Isolate resources per space'], ['Plugins', 'Model providers and capability plugins'], ['Observability & audit', 'Call evidence and operation audit']],
-    note: 'Top to bottom: actors use applications through channels, applications are built on platform capabilities, and the platform dispatches underlying resources. Governance spans every layer. Applications are examples that require configuration and development.',
-  },
-  {
-    tab: 'Technical',
-    layers: [
-      { name: 'Frontend', role: 'web container', items: [['React console', 'React 19 · antd 6 · TanStack Router · Zustand · Vite'], ['Nginx', 'Static hosting · reverse-proxies /api to api-server']] },
-      { name: 'Protocol adapters', role: 'api-server · Axum', items: [['HTTP / SSE', 'REST and streaming responses'], ['WebSocket', 'Long-lived sessions'], ['MCP / WebMCP', 'Agent tool protocols'], ['Model-compatible ingress', 'Anthropic · OpenAI protocols']] },
-      { name: 'Unified interface', role: 'interface-runtime', tone: 'dark', items: [['Definition / Binding', 'Exactly one binding per endpoint'], ['Frozen plan', 'Registry snapshot'], ['Auth correlation', 'Immutable call identity'], ['Finalization', 'Cancel · timeout · bounded cleanup']] },
-      { name: 'Application services', role: 'control-plane', items: [['Use cases', 'Business decisions and state writes'], ['Transactions & audit', 'Named service commands'], ['access-control', 'Permission catalog · roles · authorization']] },
-      { name: 'Runtime', role: 'runtime-*', items: [['runtime-core', 'Registry · slot engine · six runtime ports'], ['orchestration-runtime', 'Compile and run · provider-routing'], ['runtime-extension-host', 'Worker and plugin process lifecycle']] },
-      { name: 'Storage adapters', role: 'storage/*', items: [['Durable', 'storage-durable-postgres · SQL · migrations'], ['Ephemeral', 'Sessions / cache / leases · memory or Redis'], ['Object', 'Business file object storage driver']] },
-      { name: 'Domain & contracts', role: 'Most stable core', tone: 'soft', items: [['domain', 'Domain objects · invariants · scopes'], ['*-contracts', 'Port traits · wire types · error contracts']] },
-      { name: 'Infrastructure', role: 'External dependencies', tone: 'dashed', items: [['PostgreSQL 18', 'db container · durable and workflow state'], ['Upstream model APIs', 'Reached through network egress'], ['File volumes', 'Persisted uploads']] },
-    ],
-    crossName: 'Cross-cutting',
-    cross: [['plugin-framework', 'Manifests · install · extension graph'], ['Host extensions', 'identity · workspace · file · plugin · orchestration · local-infra'], ['Provider plugins', '.1flowbasepkg packages'], ['observability', 'Logs · traces · metrics']],
-    note: 'Dependencies only point downward to more stable layers, with no cycles (see api/crates/AGENTS.md in the repository). Cross-cutting concerns are assembled into each layer by the api-server composition root.',
-  },
-];
+const views: View[] = zh
+  ? [
+      {
+        tab: '业务架构',
+        layers: [
+          {
+            name: '使用者',
+            role: '谁在协同',
+            items: [
+              ['业务成员', '在授权空间内使用系统与看板'],
+              ['管理员', '配置组织、角色权限、额度与模型'],
+              ['Super-agent / 本地 Agent', '经 MCP 与事件流自动分工执行'],
+              ['外部应用 / SDK', '将 1flowbase 作为统一模型入口'],
+            ],
+          },
+          {
+            name: '接入渠道',
+            role: '从哪里交互',
+            items: [
+              ['GUI 控制台', '网页操作、可视化与 TSX 页面'],
+              ['通讯中心', '微信等 IM 消息接入与 /指令 触发'],
+              ['渐进式 MCP / WebMCP', 'list / get / call / result 按需调用'],
+              ['模型兼容 API & Logs CLI', '三协议网关入口 · 本地 Agent 轨迹采集'],
+            ],
+          },
+          {
+            name: '业务应用',
+            role: '从数据长出的系统',
+            tone: 'soft',
+            items: [
+              ['记忆系统 & 企业 Wiki', '内置知识库模板 · 多会话共享记忆'],
+              ['AI 网关与路由中心', '内置网关模板 · 多模型组合分发'],
+              ['CRM / SEO / 自动营销', '围绕自有业务表定制的多人系统'],
+              ['用量审计与日报看板', 'Token 成本核算 · 团队进展自动汇总'],
+            ],
+          },
+          {
+            name: '平台能力',
+            role: '1flowbase 核心提供',
+            tone: 'dark',
+            items: [
+              ['AI Gateway & 三级轨迹', '三协议互转 · 模型调度 · 全量会话入库'],
+              ['事件中心 & 协同工作流', '请求前后拦截 · 定时/消息触发 · Fusion 并发'],
+              ['动态应用后端', '同步物理表（普通/树状/文件表）· CRUD API'],
+              ['React Block', '原生 React / TSX 代码区块界面'],
+            ],
+          },
+          {
+            name: '底层资源',
+            role: '私有化沉淀资产',
+            tone: 'dashed',
+            items: [
+              ['多会话记忆与轨迹', '网关对话与端侧 Agent 完整记录'],
+              ['业务物理表数据', '你定义并完全掌控的 PostgreSQL 表'],
+              ['知识文档与文件', '上传附件与关联文件表资产'],
+              ['上游模型供应商', 'OpenAI · Anthropic · Gemini · DeepSeek …'],
+            ],
+          },
+        ],
+        crossName: '企业治理与扩展',
+        cross: [
+          ['身份、接口权限 & 额度', '组织架构 · 接口级 RBAC · 消费配额上限'],
+          ['多工作空间', '跨部门/跨项目隔离上下文与资源边界'],
+          ['插件与内置模板', '供应商协议包 · 开箱应用模板扩展'],
+          ['全链路观测与审计', '三级日志证据 · 成本拆分 · 状态变更审计'],
+        ],
+        note: '自上而下：人与 Super-agent 经多元渠道访问业务系统；业务系统生长在四大平台能力与私有数据资源之上，权限、空间隔离与额度治理贯穿每一层。',
+      },
+      {
+        tab: '技术架构',
+        layers: [
+          {
+            name: '前端层',
+            role: 'web 容器',
+            items: [
+              ['React 19 控制台 & Block Runtime', 'React 19 · antd 6 · TanStack Router · 原生 TSX 区块运行时'],
+              ['Nginx 网关托管', '静态资源分发 · /api 反向代理至 Rust api-server'],
+            ],
+          },
+          {
+            name: '协议适配层',
+            role: 'api-server · Axum',
+            items: [
+              ['HTTP / SSE / WebSocket', 'REST 接口、流式响应与原生 Agent 长连接'],
+              ['通讯渠道与采集适配', '微信等 IM 事件接入 · agent-logs CLI 同步'],
+              ['渐进式 MCP 网关', '4 元工具协议 · 异步游标分页提取'],
+              ['三协议模型入口', 'OpenAI Chat / Responses · Anthropic Messages'],
+            ],
+          },
+          {
+            name: '统一接口层',
+            role: 'interface-runtime',
+            tone: 'dark',
+            items: [
+              ['Definition / Binding', '每个动态或内置入口唯一绑定'],
+              ['冻结执行计划', 'Registry snapshot 确定性快照'],
+              ['身份与配额关联', '调用身份不可变 · 额度前置校验'],
+              ['有界终态收尾', '取消 · 超时 · 资源安全回收'],
+            ],
+          },
+          {
+            name: '应用服务层',
+            role: 'control-plane',
+            items: [
+              ['Use Case 状态写入口', '业务决策、动态物理表同步与命名事务命令'],
+              ['事件中心总线', '捕获 API 请求前 / 响应后事件唤醒工作流'],
+              ['access-control & Quota', '接口权限目录 · 角色授权 · 用户额度计量'],
+            ],
+          },
+          {
+            name: '运行时层',
+            role: 'runtime-*',
+            items: [
+              ['runtime-core', 'Registry · Slot 引擎 · 六大 Runtime Port'],
+              ['orchestration & sync-js', '工作流/Fusion 编译执行 · 内置 JS / SQL 节点'],
+              ['extension-host & package', '插件进程隔离生命周期 · .1flowbasepkg 加载'],
+            ],
+          },
+          {
+            name: '存储适配层',
+            role: 'storage/*',
+            items: [
+              ['Durable 持久化', 'storage-durable-postgres · 动态 DDL 同步与迁移'],
+              ['Ephemeral 状态', '会话状态 / 缓存 / 分布式 Lease（内存或 Redis）'],
+              ['Object 文件存储', '关联文件表与业务附件对象存储 Driver'],
+            ],
+          },
+          {
+            name: '领域与契约',
+            role: '最稳定的核心',
+            tone: 'soft',
+            items: [
+              ['domain 核心域', '领域对象 · 核心不变量 · 多空间作用域'],
+              ['*-contracts 契约', '端口 Trait · 协议 Wire Type · 统一错误契约'],
+            ],
+          },
+          {
+            name: '基础设施',
+            role: '私有化依赖',
+            tone: 'dashed',
+            items: [
+              ['PostgreSQL 18', '持久化会话记忆、业务物理表与工作流状态'],
+              ['上游模型 API', '经受控网络出口访问各模型服务商'],
+              ['持久化文件卷', '上传文档与静态产物本地/对象存储'],
+            ],
+          },
+        ],
+        crossName: '横切关注点',
+        cross: [
+          ['plugin-framework', 'Manifest 校验 · 依赖扩展图 · 热装配'],
+          ['Host Extensions', 'identity · workspace · file · plugin · orchestration · local-infra'],
+          ['供应商与渠道插件', '模型协议插件包 · 外部通讯连接器'],
+          ['observability', '结构化日志 · 执行 Trace · 用量 Metrics'],
+        ],
+        note: '严格遵循单向稳定依赖（自上而下指向领域与契约层，零循环依赖）；横切能力由 Rust api-server 组合根统一装配。',
+      },
+    ]
+  : [
+      {
+        tab: 'Business View',
+        layers: [
+          {
+            name: 'Actors',
+            role: 'Who collaborates',
+            items: [
+              ['Team members', 'Operate business apps & boards within role bounds'],
+              ['Administrators', 'Configure orgs, permissions, quotas & providers'],
+              ['Super-agent & Local Agents', 'Coordinate via MCP and background event flows'],
+              ['External Apps / SDKs', 'Call 1flowbase as a unified model endpoint'],
+            ],
+          },
+          {
+            name: 'Channels',
+            role: 'Where they connect',
+            items: [
+              ['GUI Console', 'Visual management & custom TSX workspaces'],
+              ['Communication Hub', 'WeChat & IM slash-command triggers'],
+              ['Progressive MCP / WebMCP', 'On-demand list / get / call / result'],
+              ['Model APIs & Logs CLI', '3-protocol ingress · local agent log collector'],
+            ],
+          },
+          {
+            name: 'Applications',
+            role: 'Grown from your data',
+            tone: 'soft',
+            items: [
+              ['Shared Memory & Wiki', 'Built-in knowledge template · session memory'],
+              ['AI Gateway & Router', 'Built-in gateway template · virtual models'],
+              ['CRM / SEO / Marketing', 'Multi-user domain apps on custom DB tables'],
+              ['Usage & Daily Briefings', 'Token attribution & automated team digests'],
+            ],
+          },
+          {
+            name: 'Platform Core',
+            role: 'Provided by 1flowbase',
+            tone: 'dark',
+            items: [
+              ['AI Gateway & 3-Tier Logs', 'Protocol translation · dispatch · full trajectories'],
+              ['Event Center & Workflows', 'Pre/Post API hooks · cron/IM triggers · Fusion'],
+              ['Dynamic App Backend', 'Physical tables (standard/tree/file) · CRUD APIs'],
+              ['React Blocks', 'Native React / TSX source code UI blocks'],
+            ],
+          },
+          {
+            name: 'Resources',
+            role: 'Self-hosted assets',
+            tone: 'dashed',
+            items: [
+              ['Session & Agent Memory', 'Gateway chats & local coding agent traces'],
+              ['Physical Business Tables', 'PostgreSQL schemas you own and control'],
+              ['Docs & File Objects', 'Uploaded files linked to business records'],
+              ['Model Providers', 'OpenAI · Anthropic · Gemini · DeepSeek …'],
+            ],
+          },
+        ],
+        crossName: 'Governance & Extensions',
+        cross: [
+          ['Identity, RBAC & Quotas', 'Orgs · API-level permissions · spend caps'],
+          ['Workspaces', 'Multi-space isolation for context & keys'],
+          ['Plugins & Templates', 'Provider packages · turnkey app templates'],
+          ['Observability & Audit', '3-tier trace evidence · cost ledger · audit'],
+        ],
+        note: 'Top to bottom: humans and Super-agents enter through unified channels to run applications grown atop platform capabilities and private PostgreSQL assets, governed across every layer.',
+      },
+      {
+        tab: 'Technical View',
+        layers: [
+          {
+            name: 'Frontend',
+            role: 'web container',
+            items: [
+              ['React 19 Console & Block Runtime', 'React 19 · antd 6 · TanStack Router · Native TSX block runtime'],
+              ['Nginx Ingress', 'Static asset serving · reverse-proxies /api to Rust api-server'],
+            ],
+          },
+          {
+            name: 'Protocol Adapters',
+            role: 'api-server · Axum',
+            items: [
+              ['HTTP / SSE / WebSocket', 'REST endpoints, streaming & native Agent sockets'],
+              ['IM & Collector Ingress', 'WeChat channel hooks · agent-logs CLI sync'],
+              ['Progressive MCP Gateway', '4 meta-tools · async cursor pagination'],
+              ['3-Protocol Model Ingress', 'OpenAI Chat / Responses · Anthropic Messages'],
+            ],
+          },
+          {
+            name: 'Unified Interface',
+            role: 'interface-runtime',
+            tone: 'dark',
+            items: [
+              ['Definition / Binding', 'Deterministic binding per dynamic endpoint'],
+              ['Frozen Execution Plan', 'Immutable registry snapshot per call'],
+              ['Identity & Quota Guard', 'Immutable caller correlation & budget check'],
+              ['Bounded Finalization', 'Clean cancellation, timeouts & teardown'],
+            ],
+          },
+          {
+            name: 'Application Services',
+            role: 'control-plane',
+            items: [
+              ['Use Cases & Schema Sync', 'State writes, live PostgreSQL DDL & transactions'],
+              ['Event Center Bus', 'Pre-request / post-response hooks waking workflows'],
+              ['access-control & Quota', 'Endpoint permission catalog · roles · metering'],
+            ],
+          },
+          {
+            name: 'Runtime',
+            role: 'runtime-*',
+            items: [
+              ['runtime-core', 'Registry · slot engine · six runtime ports'],
+              ['orchestration & sync-js', 'Workflow/Fusion execution · embedded JS & SQL'],
+              ['extension-host & package', 'Isolated worker lifecycle · .1flowbasepkg loader'],
+            ],
+          },
+          {
+            name: 'Storage Adapters',
+            role: 'storage/*',
+            items: [
+              ['Durable PostgreSQL', 'storage-durable-postgres · SQL & dynamic migrations'],
+              ['Ephemeral State', 'Sessions, cache & leases (in-memory or Redis)'],
+              ['Object Storage', 'File-linked table driver & upload persistence'],
+            ],
+          },
+          {
+            name: 'Domain & Contracts',
+            role: 'Most stable core',
+            tone: 'soft',
+            items: [
+              ['domain', 'Core entities, invariants & workspace scopes'],
+              ['*-contracts', 'Port traits, wire schemas & typed error contracts'],
+            ],
+          },
+          {
+            name: 'Infrastructure',
+            role: 'Self-hosted stack',
+            tone: 'dashed',
+            items: [
+              ['PostgreSQL 18', 'Stores trajectories, business tables & flow state'],
+              ['Upstream LLM APIs', 'Reached through governed server egress'],
+              ['Persistent Volumes', 'Local or mounted object file storage'],
+            ],
+          },
+        ],
+        crossName: 'Cross-Cutting',
+        cross: [
+          ['plugin-framework', 'Manifest validation · extension graph'],
+          ['Host Extensions', 'identity · workspace · file · plugin · orchestration · local-infra'],
+          ['Provider & Channel Pkgs', 'Model protocol plugins · IM connectors'],
+          ['observability', 'Structured logs · execution traces · metrics'],
+        ],
+        note: 'Dependencies point strictly downward toward stable domain contracts with zero cycles; cross-cutting extensions are wired at the Rust api-server composition root.',
+      },
+    ];
 ---
+
 <figure class="arch" aria-labelledby="arch-title" data-tabs>
   <figcaption class="arch-heading">
-    <div><h2 id="arch-title">{heading.title}</h2></div>
-    <div class="arch-tabs" role="tablist" aria-label={heading.tabs}>{views.map((view, i) => <button type="button" id={`arch-tab-${i}`} role="tab" aria-selected={i === 0 ? 'true' : 'false'} aria-controls={`arch-panel-${i}`} tabindex={i === 0 ? 0 : -1} data-tab={i}>{view.tab}</button>)}</div>
+    <div class="arch-intro">
+      <span class="arch-eyebrow">{heading.eyebrow}</span>
+      <h2 id="arch-title">{heading.title}</h2>
+      <p>{heading.subtitle}</p>
+    </div>
+    <div class="arch-tabs" role="tablist" aria-label={heading.tabs}>
+      {views.map((view, i) => (
+        <button
+          type="button"
+          id={`arch-tab-${i}`}
+          role="tab"
+          aria-selected={i === 0 ? 'true' : 'false'}
+          aria-controls={`arch-panel-${i}`}
+          tabindex={i === 0 ? 0 : -1}
+          data-tab={i}
+        >
+          {view.tab}
+        </button>
+      ))}
+    </div>
   </figcaption>
 
   {views.map((view, i) => (
-    <div class="arch-panel" id={`arch-panel-${i}`} role="tabpanel" aria-labelledby={`arch-tab-${i}`} tabindex="0" hidden={i !== 0} data-panel={i}>
+    <div
+      class="arch-panel"
+      id={`arch-panel-${i}`}
+      role="tabpanel"
+      aria-labelledby={`arch-tab-${i}`}
+      tabindex="0"
+      hidden={i !== 0}
+      data-panel={i}
+    >
       <div class="arch-grid" style={`--layers:${view.layers.length}`}>
-        <ol class="arch-layers">{view.layers.map((layer, n) => (
-          <li class:list={['arch-layer', layer.tone && `tone-${layer.tone}`]}>
-            <div class="arch-layer-label"><span>L{n + 1}</span><strong>{layer.name}</strong><em>{layer.role}</em></div>
-            <div class="arch-layer-items" style={`--cols:${layer.items.length}`}>{layer.items.map(([title, detail]) => <div class="arch-node"><strong>{title}</strong><span>{detail}</span></div>)}</div>
-          </li>
-        ))}</ol>
+        <ol class="arch-layers">
+          {view.layers.map((layer, n) => (
+            <li class:list={['arch-layer', layer.tone && `tone-${layer.tone}`]}>
+              <div class="arch-layer-label">
+                <span>L{n + 1}</span>
+                <strong>{layer.name}</strong>
+                <em>{layer.role}</em>
+              </div>
+              <div class="arch-layer-items" style={`--cols:${layer.items.length}`}>
+                {layer.items.map(([title, detail]) => (
+                  <div class="arch-node">
+                    <strong>{title}</strong>
+                    <span>{detail}</span>
+                  </div>
+                ))}
+              </div>
+            </li>
+          ))}
+        </ol>
         <aside class="arch-cross" aria-label={view.crossName}>
           <span class="arch-cross-title">{view.crossName}</span>
-          {view.cross.map(([title, detail]) => <div class="arch-node"><strong>{title}</strong><span>{detail}</span></div>)}
+          {view.cross.map(([title, detail]) => (
+            <div class="arch-node">
+              <strong>{title}</strong>
+              <span>{detail}</span>
+            </div>
+          ))}
         </aside>
       </div>
       <p class="arch-note">{view.note}</p>
@@ -100,43 +422,307 @@ const views: View[] = zh ? [
 </figure>
 
 <style>
-  .arch{margin:0;padding:26px;background:linear-gradient(145deg,#f2f5e9,#f8faf3);border:1px solid #d4dfd1;border-radius:14px;box-shadow:0 13px 50px #52634008;color:#183a30}
-  .arch-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:20px}
-  .arch-heading :is(h2,h3){font-size:clamp(19px,2vw,24px);font-weight:560;letter-spacing:-.03em;line-height:1.3;margin:10px 0 0}
-  .arch-tabs{display:inline-flex;flex-shrink:0;padding:3px;background:#e6eedb;border-radius:8px}
-  .arch-tabs button{min-height:44px;white-space:nowrap;padding:7px 14px;border:0;border-radius:6px;background:transparent;color:#4d6248;font:500 12.5px/1.4 var(--font-sans);cursor:pointer}
-  .arch-tabs button[aria-selected=true]{background:#1d4b3b;color:#fff}
-  .arch-tabs button:focus-visible{outline:2px solid #176e55;outline-offset:2px}
-  .arch-grid{display:grid;grid-template-columns:minmax(0,1fr) 210px;gap:10px}
-  .arch-layers{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
-  .arch-layer{position:relative;display:grid;grid-template-columns:132px minmax(0,1fr);gap:8px;padding:8px;background:#fff;border:1px solid #d4dfd1;border-radius:9px}
-  .arch-layer:not(:last-child)::after{content:'';position:absolute;left:66px;bottom:-7px;width:1px;height:6px;background:#9fb393}
-  .arch-layer-label{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:4px 6px;border-right:1px solid #e4ebdf}
-  .arch-layer-label span{font:600 10px/1.4 var(--font-mono);color:#7a8f72}
-  .arch-layer-label strong{font-size:13px;font-weight:640;line-height:1.3}
-  .arch-layer-label em{font:normal 10.5px/1.4 var(--font-mono);color:#6d7f66;overflow-wrap:anywhere}
-  .arch-layer-items{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));gap:6px}
-  .arch-node{display:flex;flex-direction:column;gap:3px;min-width:0;padding:9px 11px;background:#f5f8ef;border:1px solid #e1e9da;border-radius:7px}
-  .arch-node strong{font-size:12.5px;font-weight:620;line-height:1.35;overflow-wrap:anywhere}
-  .arch-node span{font-size:11px;line-height:1.5;color:#5a6d56;overflow-wrap:anywhere}
-  .tone-dark{background:#1d4b3b;border-color:#1d4b3b;color:#fff}
-  .tone-dark .arch-layer-label{border-color:#3d7259}
-  .tone-dark .arch-layer-label span,.tone-dark .arch-layer-label em{color:#a9c7b2}
-  .tone-dark .arch-node{background:#285b47;border-color:#3d7259}
-  .tone-dark .arch-node span{color:#c9ddcf}
-  .tone-soft{background:#e6eedb;border-color:#ccdabc}
-  .tone-soft .arch-node{background:#f8faf3;border-color:#d4dfc8}
-  .tone-dashed{background:transparent;border-style:dashed;border-color:#afc6a3}
-  .tone-dashed .arch-node{background:#fff}
-  .arch-cross{display:flex;flex-direction:column;gap:6px;padding:10px;background:repeating-linear-gradient(135deg,#eef3e6 0 8px,#f5f8ef 8px 16px);border:1px dashed #9fb393;border-radius:9px}
-  .arch-cross-title{font:600 10px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:#4d6248;padding:2px 2px 4px}
-  .arch-cross .arch-node{flex:1;justify-content:center;background:#fff}
-  .arch-note{margin:14px 0 0;font-size:11px;line-height:1.6;color:#75816f}
-  @media(max-width:960px){.arch-grid{grid-template-columns:minmax(0,1fr)}.arch-cross{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.arch-cross-title{grid-column:1/-1}}
-  @media(max-width:780px){.arch-heading{display:block}.arch-tabs{margin-top:14px}.arch-layer-items{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  @media(max-width:560px){.arch{padding:18px 12px}.arch-layer{grid-template-columns:minmax(0,1fr)}.arch-layer-label{flex-direction:row;align-items:baseline;flex-wrap:wrap;gap:6px;border-right:0;border-bottom:1px solid #e4ebdf;padding:2px 4px 8px}.tone-dark .arch-layer-label{border-color:#3d7259}.arch-layer:not(:last-child)::after{left:50%}.arch-layer-items,.arch-cross{grid-template-columns:minmax(0,1fr)}}
-  .arch-layer-label span,.arch-layer-label em{font:400 12px/1.5 var(--font-sans);color:var(--home-muted)}
-  .arch-note{font-size:12px;color:var(--home-muted)}
-  .arch-node span{font-size:12px}
-  .arch-cross-title{font-family:var(--font-sans);font-size:12px;letter-spacing:0;text-transform:none}
+  .arch {
+    margin: 0;
+    padding: 32px;
+    background: linear-gradient(155deg, #f3fcf8 0%, #ffffff 55%, #f4faff 100%);
+    border: 1px solid #d4eae2;
+    border-radius: 22px;
+    box-shadow: 0 22px 60px rgb(4 61 49 / 6%);
+    color: #08231c;
+  }
+
+  .arch-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+
+  .arch-eyebrow {
+    display: inline-block;
+    font: 700 11px/1.4 var(--font-mono);
+    letter-spacing: 0.1em;
+    color: #059669;
+    margin-bottom: 6px;
+  }
+
+  .arch-intro h2 {
+    font-size: clamp(22px, 2.5vw, 30px);
+    font-weight: 780;
+    letter-spacing: -0.035em;
+    line-height: 1.22;
+    margin: 0 0 8px;
+    color: #08231c;
+  }
+
+  .arch-intro p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.65;
+    color: #4f6962;
+    max-width: 680px;
+  }
+
+  .arch-tabs {
+    display: inline-flex;
+    flex-shrink: 0;
+    padding: 4px;
+    background: #e6f5ef;
+    border: 1px solid #cde7dc;
+    border-radius: 999px;
+  }
+
+  .arch-tabs button {
+    min-height: 38px;
+    white-space: nowrap;
+    padding: 6px 16px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: #3a5c52;
+    font: 650 13px/1.4 var(--font-sans);
+    cursor: pointer;
+    transition: all 0.16s ease;
+  }
+
+  .arch-tabs button[aria-selected='true'] {
+    background: #064e3b;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgb(6 78 59 / 20%);
+  }
+
+  .arch-tabs button:focus-visible {
+    outline: 2px solid #059669;
+    outline-offset: 2px;
+  }
+
+  .arch-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 225px;
+    gap: 12px;
+  }
+
+  .arch-layers {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .arch-layer {
+    position: relative;
+    display: grid;
+    grid-template-columns: 142px minmax(0, 1fr);
+    gap: 10px;
+    padding: 10px;
+    background: #ffffff;
+    border: 1px solid #d7ebe3;
+    border-radius: 12px;
+  }
+
+  .arch-layer:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 71px;
+    bottom: -9px;
+    width: 1px;
+    height: 8px;
+    background: #9dd4c0;
+  }
+
+  .arch-layer-label {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    padding: 4px 8px;
+    border-right: 1px solid #e5f2ed;
+  }
+
+  .arch-layer-label span {
+    font: 700 10.5px/1.4 var(--font-mono);
+    color: #059669;
+  }
+
+  .arch-layer-label strong {
+    font-size: 13.5px;
+    font-weight: 720;
+    line-height: 1.3;
+  }
+
+  .arch-layer-label em {
+    font: normal 11.5px/1.4 var(--font-sans);
+    color: #56736a;
+    overflow-wrap: anywhere;
+  }
+
+  .arch-layer-items {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .arch-node {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    padding: 10px 12px;
+    background: #f6fcfa;
+    border: 1px solid #e1f1eb;
+    border-radius: 9px;
+  }
+
+  .arch-node strong {
+    font-size: 12.5px;
+    font-weight: 700;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  .arch-node span {
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: #4f6b63;
+    overflow-wrap: anywhere;
+  }
+
+  .tone-dark {
+    background: linear-gradient(135deg, #064e3b 0%, #075e46 100%);
+    border-color: #064e3b;
+    color: #ffffff;
+  }
+
+  .tone-dark .arch-layer-label {
+    border-color: rgb(255 255 255 / 16%);
+  }
+
+  .tone-dark .arch-layer-label span {
+    color: #64e3b1;
+  }
+
+  .tone-dark .arch-layer-label em {
+    color: #bde8d7;
+  }
+
+  .tone-dark .arch-node {
+    background: rgb(255 255 255 / 10%);
+    border-color: rgb(255 255 255 / 16%);
+  }
+
+  .tone-dark .arch-node span {
+    color: #d4f3e7;
+  }
+
+  .tone-soft {
+    background: #e8f8f1;
+    border-color: #bfe8d7;
+  }
+
+  .tone-soft .arch-node {
+    background: #ffffff;
+    border-color: #d3eee2;
+  }
+
+  .tone-dashed {
+    background: rgb(255 255 255 / 65%);
+    border-style: dashed;
+    border-color: #96d2bc;
+  }
+
+  .tone-dashed .arch-node {
+    background: #ffffff;
+  }
+
+  .arch-cross {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background: repeating-linear-gradient(135deg, #eef9f4 0 8px, #f7fcfa 8px 16px);
+    border: 1px dashed #96d2bc;
+    border-radius: 12px;
+  }
+
+  .arch-cross-title {
+    font: 700 12px/1.4 var(--font-sans);
+    color: #065f46;
+    padding: 2px 2px 4px;
+  }
+
+  .arch-cross .arch-node {
+    flex: 1;
+    justify-content: center;
+    background: #ffffff;
+  }
+
+  .arch-note {
+    margin: 16px 0 0;
+    font-size: 12px;
+    line-height: 1.65;
+    color: #56726a;
+  }
+
+  @media (max-width: 960px) {
+    .arch-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .arch-cross {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .arch-cross-title {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 780px) {
+    .arch-heading {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .arch-layer-items {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 560px) {
+    .arch {
+      padding: 20px 14px;
+    }
+
+    .arch-layer {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .arch-layer-label {
+      flex-direction: row;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 6px;
+      border-right: 0;
+      border-bottom: 1px solid #e5f2ed;
+      padding: 2px 4px 8px;
+    }
+
+    .tone-dark .arch-layer-label {
+      border-color: rgb(255 255 255 / 16%);
+    }
+
+    .arch-layer:not(:last-child)::after {
+      left: 50%;
+    }
+
+    .arch-layer-items,
+    .arch-cross {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
 </style>

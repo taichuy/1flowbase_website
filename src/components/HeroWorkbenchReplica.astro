@@ -1,0 +1,3194 @@
+---
+import type { Locale } from '../config';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const zh = lang === 'zh';
+
+const topTabs = zh
+  ? ['AI Gateway', '应用底座', 'GUI & MCP']
+  : ['AI Gateway', 'App Foundation', 'GUI & MCP'];
+
+const gwSubTabs = zh
+  ? ['智能路由', 'Fusion 并行', '按模型分发', '轮询 · 重试轮询']
+  : ['Smart Routing', 'Fusion Parallel', 'Model Dispatch', 'Round-Robin & Retry'];
+
+const gwDescs = zh
+  ? [
+      '主模型理解用户意图，按需调用底部挂载的专长分支模型（工具模式：智能路由），兼顾效果与成本。',
+      '主模型一次触发多路分支模型并行推理，经汇总节点合并为单一 Tool Result 返回（源自 Fusion 画布）。',
+      '内置 AI 网关工作流模板：按客户端请求的 model 条件分发至对应模型分支，自动互转三大协议。',
+      '模型供应商「主实例 · 聚合视图」：多账号密钥注入同一模型，支持按分组顺序轮询与 429 自动顺延重试。',
+    ]
+  : [
+      'A primary LLM挂载 specialized branch LLMs in Smart Routing tool mode, dispatching sub-tasks by intent.',
+      'One tool trigger fans out to parallel branch LLMs and merges through a synthesizer node into one Tool Result.',
+      'Built-in gateway workflow template: branches by requested model ID with automatic 3-protocol translation.',
+      'Provider Main Instance Aggregation View: pool multiple keys under one model with round-robin & auto-retry.',
+    ];
+---
+
+<div class="wb-shell" data-wb-replica data-active-scene="0" data-gw-descs={JSON.stringify(gwDescs)}>
+  <!-- Real 1flowbase top bar with clickable synchronized tabs & authentic UI / AI mode chips -->
+  <div class="wb-topbar">
+    <div class="wb-brand">
+      <img src="/favicon.svg" alt="" width="18" height="18" />
+      <strong>1flowbase</strong>
+    </div>
+
+    <div class="wb-nav" role="tablist" aria-label={zh ? '切换首屏核心场景' : 'Switch core capability view'}>
+      {topTabs.map((tab, idx) => (
+        <button
+          type="button"
+          role="tab"
+          class:list={['wb-tab-btn', idx === 0 && 'active']}
+          aria-selected={idx === 0 ? 'true' : 'false'}
+          data-wb-tab={idx}
+        >
+          {tab}
+        </button>
+      ))}
+    </div>
+
+    <div class="wb-actions" aria-hidden="true">
+      <span class="wb-mode-chip" data-wb-badge="0">▷ {zh ? '预览' : 'Preview'} · {zh ? '发布' : 'publish'}</span>
+      <span class="wb-mode-chip ui-mode" data-wb-badge="1" hidden>+ {zh ? '添加菜单' : 'Menu'} · <b>UI</b></span>
+      <span class="wb-mode-chip dual-mode" data-wb-badge="2" hidden>
+        <b class="b-ui">UI</b>
+        <i>·</i>
+        <b class="b-ai">AI · MCP</b>
+      </span>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       SCENE 0 (1): AI Gateway -> 4 Authentic 1flowbase Views from 1flowbase-readme.md
+       0: 智能路由 (image-20261111231330735.png + smart-routing)
+       1: Fusion 并行 (fusion-workflow-canvas.png)
+       2: 按模型分发 (image-20261111224458906.png)
+       3: 轮询 · 重试轮询 (image-20261111222043915.png + 222108505.png)
+       ===================================================================== -->
+  <div class="wb-scene" data-wb-panel="0">
+    <div class="gw-native-shell">
+      <!-- Top Mode Bar -->
+      <div class="gw-top-strip">
+        <div class="gw-seg-pills" role="tablist" aria-label={zh ? '切换 1flowbase 网关模式' : 'Switch 1flowbase gateway mode'}>
+          {gwSubTabs.map((lbl, idx) => (
+            <button
+              type="button"
+              role="tab"
+              class:list={['gw-seg-btn', idx === 0 && 'active']}
+              aria-selected={idx === 0 ? 'true' : 'false'}
+              data-gw-mode={idx}
+            >
+              {lbl}
+            </button>
+          ))}
+        </div>
+        <p class="gw-mode-desc" data-gw-desc>{gwDescs[0]}</p>
+      </div>
+
+      <!-- MODE 0: 智能路由 (Authentic 1flowbase Agent Flow: Start -> Main LLM -> Answer + Mounted Smart-Routing Tool Branches) -->
+      <div class="gw-subpanel dot-canvas" data-gw-panel="0" data-canvas-gw="0">
+        <canvas class="wb-wire-canvas" data-gw-canvas="0" aria-hidden="true"></canvas>
+
+        <div class="af-top-chain">
+          <div class="af-node">
+            <div class="af-hd"><span class="af-ico start">▷</span><strong>Start</strong></div>
+            <div class="af-bd muted">{zh ? '工作流入口。' : 'Workflow entry.'}</div>
+            <i class="af-port p-r" data-port="m0-start-r"></i>
+          </div>
+
+          <div class="af-node af-active">
+            <i class="af-port p-l" data-port="m0-main-l"></i>
+            <div class="af-hd">
+              <span class="af-ico llm">⚡</span>
+              <strong>LLM</strong>
+              <em class="af-chip">{zh ? '挂载 LLM' : 'Mount LLM'}</em>
+            </div>
+            <div class="af-bd model-row">
+              <span class="v-dot claude">AI</span>
+              <div><small>Anthropic</small><b>claude-opus-4-6</b></div>
+            </div>
+            <i class="af-port p-r" data-port="m0-main-r"></i>
+            <div class="af-b-ports">
+              <i class="af-port" data-port="m0-main-b1"></i>
+              <i class="af-port" data-port="m0-main-b2"></i>
+            </div>
+          </div>
+
+          <div class="af-node">
+            <i class="af-port p-l" data-port="m0-ans-l"></i>
+            <div class="af-hd"><span class="af-ico ans">💬</span><strong>Answer</strong></div>
+            <div class="af-bd muted">{zh ? '向用户返回最终文本结果。' : 'Return final response.'}</div>
+          </div>
+        </div>
+
+        <!-- Bottom mounted Smart-Routing tool branches -->
+        <div class="sr-branches">
+          <div class="sr-branch-row hit">
+            <span class="sr-mode-tag">{zh ? '工具模式：智能路由 · 已命中' : 'Tool Mode: Smart Routing · Hit'}</span>
+            <div class="af-node af-active">
+              <i class="af-port p-l" data-port="m0-b1-l"></i>
+              <div class="af-hd"><span class="af-ico llm">⚡</span><strong>backend_dev</strong></div>
+              <div class="af-bd model-row">
+                <span class="v-dot deepseek">D</span>
+                <div><small>DeepSeek · {zh ? '后端开发' : 'Backend'}</small><b>deepseek-v4.1-flash</b></div>
+              </div>
+              <i class="af-port p-r" data-port="m0-b1-r"></i>
+            </div>
+
+            <div class="af-node af-active">
+              <i class="af-port p-l" data-port="m0-tr1-l"></i>
+              <div class="af-hd"><span class="af-ico ans">💬</span><strong>Tool Result</strong></div>
+              <div class="af-bd muted">{zh ? '定义工具调用返回内容。' : 'Return branch tool output.'}</div>
+            </div>
+          </div>
+
+          <div class="sr-branch-row">
+            <div class="af-node">
+              <i class="af-port p-l" data-port="m0-b2-l"></i>
+              <div class="af-hd"><span class="af-ico llm">⚡</span><strong>image_llm</strong></div>
+              <div class="af-bd model-row">
+                <span class="v-dot gemini">✦</span>
+                <div><small>GLM / Gemini · {zh ? '视觉识图' : 'Vision'}</small><b>glm-4.6v-flash</b></div>
+              </div>
+              <i class="af-port p-r" data-port="m0-b2-r"></i>
+            </div>
+
+            <div class="af-node">
+              <i class="af-port p-l" data-port="m0-tr2-l"></i>
+              <div class="af-hd"><span class="af-ico ans">💬</span><strong>Tool Result2</strong></div>
+              <div class="af-bd muted">{zh ? '按需挂载视觉分支返回。' : 'Return vision output.'}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODE 1: Fusion 并行 (1:1 Replica of fusion-workflow-canvas.png) -->
+      <div class="gw-subpanel dot-canvas" data-gw-panel="1" data-canvas-gw="1" hidden>
+        <canvas class="wb-wire-canvas" data-gw-canvas="1" aria-hidden="true"></canvas>
+
+        <div class="af-top-chain">
+          <div class="af-node">
+            <div class="af-hd"><span class="af-ico start">▷</span><strong>Start</strong></div>
+            <div class="af-bd muted">{zh ? '工作流入口。' : 'Workflow entry.'}</div>
+            <i class="af-port p-r" data-port="m1-start-r"></i>
+          </div>
+
+          <div class="af-node af-active">
+            <i class="af-port p-l" data-port="m1-main-l"></i>
+            <div class="af-hd"><span class="af-ico llm">⚡</span><strong>LLM</strong></div>
+            <div class="af-bd model-row">
+              <span class="v-dot claude">AI</span>
+              <div><small>Anthropic</small><b>claude-opus-4-6</b></div>
+            </div>
+            <i class="af-port p-r" data-port="m1-main-r"></i>
+            <div class="af-b-ports single">
+              <i class="af-port" data-port="m1-main-b"></i>
+            </div>
+          </div>
+
+          <div class="af-node">
+            <i class="af-port p-l" data-port="m1-ans-l"></i>
+            <div class="af-hd"><span class="af-ico ans">💬</span><strong>Answer</strong></div>
+            <div class="af-bd muted">{zh ? '向用户返回最终文本结果。' : 'Return final response.'}</div>
+          </div>
+        </div>
+
+        <!-- Exact Red-Boxed Parallel Fan-out -> Merge -> Tool Result from fusion-workflow-canvas.png -->
+        <div class="fusion-box-replica">
+          <span class="fusion-badge">工具模式：fusion · {zh ? '多节点并行汇聚' : 'Parallel Fan-out & Merge'}</span>
+
+          <div class="fusion-col-workers">
+            <div class="af-node compact af-active">
+              <i class="af-port p-l" data-port="m1-w1-l"></i>
+              <div class="af-hd"><span class="af-ico llm">⚡</span><strong>LLM1</strong></div>
+              <div class="af-bd model-row">
+                <span class="v-dot claude">AI</span>
+                <div><small>Anthropic</small><b>claude-sonnet-4</b></div>
+              </div>
+              <i class="af-port p-r" data-port="m1-w1-r"></i>
+            </div>
+
+            <div class="af-node compact af-active">
+              <i class="af-port p-l" data-port="m1-w2-l"></i>
+              <div class="af-hd"><span class="af-ico llm">⚡</span><strong>LLM2</strong></div>
+              <div class="af-bd model-row">
+                <span class="v-dot gemini">✦</span>
+                <div><small>Gemini</small><b>gemini-3-flash</b></div>
+              </div>
+              <i class="af-port p-r" data-port="m1-w2-r"></i>
+            </div>
+
+            <div class="af-node compact af-active">
+              <i class="af-port p-l" data-port="m1-w3-l"></i>
+              <div class="af-hd"><span class="af-ico llm">⚡</span><strong>LLM3</strong></div>
+              <div class="af-bd model-row">
+                <span class="v-dot openai">◎</span>
+                <div><small>OpenAI</small><b>gpt-5.4</b></div>
+              </div>
+              <i class="af-port p-r" data-port="m1-w3-r"></i>
+            </div>
+          </div>
+
+          <div class="af-node compact af-active">
+            <i class="af-port p-l" data-port="m1-merge-l"></i>
+            <div class="af-hd"><span class="af-ico llm">⚡</span><strong>LLM4 · {zh ? '汇总' : 'Merge'}</strong></div>
+            <div class="af-bd model-row">
+              <span class="v-dot deepseek">D</span>
+              <div><small>DeepSeek</small><b>deepseek-v4</b></div>
+            </div>
+            <i class="af-port p-r" data-port="m1-merge-r"></i>
+          </div>
+
+          <div class="af-node compact af-active">
+            <i class="af-port p-l" data-port="m1-tr-l"></i>
+            <div class="af-hd"><span class="af-ico ans">💬</span><strong>Tool Result1</strong></div>
+            <div class="af-bd muted">{zh ? '定义工具调用返回内容。' : 'Merged tool output.'}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODE 2: 按模型分发 (1:1 Replica of image-20261111224458906.png: 请求输入 -> 按模型分发 -> 模型列 -> 选取已执行分支 -> 直接回复) -->
+      <div class="gw-subpanel dot-canvas" data-gw-panel="2" data-canvas-gw="2" hidden>
+        <canvas class="wb-wire-canvas" data-gw-canvas="2" aria-hidden="true"></canvas>
+
+        <div class="dispatch-5col">
+          <div class="af-node compact">
+            <div class="af-hd"><span class="af-ico start">▷</span><strong>{zh ? '请求输入' : 'Request In'}</strong></div>
+            <div class="af-bd muted">{zh ? '工作流入口。' : 'Gateway entry.'}</div>
+            <i class="af-port p-r" data-port="m2-in-r"></i>
+          </div>
+
+          <div class="af-node dispatch-switch af-active">
+            <i class="af-port p-l" data-port="m2-sw-l"></i>
+            <div class="af-hd"><span class="af-ico route">⇆</span><strong>{zh ? '按模型分发' : 'Model Switch'}</strong></div>
+            <div class="af-bd muted">{zh ? '按 model 选择路径' : 'Branch by model'}</div>
+            <div class="sw-r-ports">
+              <i class="af-port" data-port="m2-sw-1"></i>
+              <i class="af-port" data-port="m2-sw-2"></i>
+              <i class="af-port" data-port="m2-sw-3"></i>
+            </div>
+          </div>
+
+          <div class="dispatch-models-col">
+            <div class="af-node compact af-active">
+              <i class="af-port p-l" data-port="m2-m1-l"></i>
+              <div class="af-hd"><span class="af-ico llm">⚡</span><strong>deepseek-flash</strong></div>
+              <div class="af-bd model-row">
+                <span class="v-dot deepseek">D</span>
+                <div><small>deepseek</small><b>deepseek-v4.1-flash</b></div>
+              </div>
+              <i class="af-port p-r" data-port="m2-m1-r"></i>
+            </div>
+
+            <div class="af-node compact">
+              <i class="af-port p-l" data-port="m2-m2-l"></i>
+              <div class="af-hd"><span class="af-ico llm">⚡</span><strong>gpt-5.4</strong></div>
+              <div class="af-bd model-row">
+                <span class="v-dot openai">◎</span>
+                <div><small>openai</small><b>gpt-5.4</b></div>
+              </div>
+              <i class="af-port p-r" data-port="m2-m2-r"></i>
+            </div>
+
+            <div class="af-node compact">
+              <i class="af-port p-l" data-port="m2-m3-l"></i>
+              <div class="af-hd"><span class="af-ico llm">⚡</span><strong>claude-opus-4</strong></div>
+              <div class="af-bd model-row">
+                <span class="v-dot claude">AI</span>
+                <div><small>anthropic</small><b>claude-opus-4-6</b></div>
+              </div>
+              <i class="af-port p-r" data-port="m2-m3-r"></i>
+            </div>
+          </div>
+
+          <div class="af-node compact af-active">
+            <i class="af-port p-l" data-port="m2-pick-l"></i>
+            <div class="af-hd"><span class="af-ico pick">◫</span><strong>{zh ? '选取分支' : 'Pick Branch'}</strong></div>
+            <div class="af-bd muted">{zh ? '取首个已执行值' : 'First active value'}</div>
+            <i class="af-port p-r" data-port="m2-pick-r"></i>
+          </div>
+
+          <div class="af-node compact af-active">
+            <i class="af-port p-l" data-port="m2-out-l"></i>
+            <div class="af-hd"><span class="af-ico ans">💬</span><strong>{zh ? '直接回复' : 'Direct Reply'}</strong></div>
+            <div class="af-bd muted">{zh ? '流式返回结果' : 'Stream reply'}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODE 3: 轮询 · 重试轮询 (1:1 Replica of image-20261111222043915.png + 222108505.png: 模型供应商 -> 主实例 [聚合视图] & 来源管理) -->
+      <div class="gw-subpanel provider-pool-panel" data-gw-panel="3" hidden>
+        <div class="pp-modal-card">
+          <div class="pp-head">
+            <div class="pp-title-grp">
+              <strong>{zh ? 'DeepSeek / Anthropic 实例 · 主实例' : 'Main Instance'}</strong>
+              <span class="pp-agg-badge">{zh ? '聚合视图' : 'Aggregate View'}</span>
+              <span class="pp-cnt">{zh ? '实例: 3 · 模型: 1' : 'Instances: 3 · Models: 1'}</span>
+            </div>
+            <div class="pp-auto-switch">
+              <span>{zh ? '新实例自动注入主实例' : 'Auto-inject new instances'}</span>
+              <i class="sw-on" aria-hidden="true"></i>
+            </div>
+          </div>
+
+          <!-- Main Instance Aggregation Row (from image-20261111222043915.png) -->
+          <div class="pp-policy-bar">
+            <div class="pp-col">
+              <small>{zh ? '模型 ID' : 'Model ID'}</small>
+              <code>deepseek/deepseek-v4.1-flash</code>
+            </div>
+            <div class="pp-col">
+              <small>{zh ? '参与分组顺序' : 'Group Order'}</small>
+              <div class="pp-tags">
+                <span class="ptag green">commandcode</span>
+                <span class="ptag sky">team-prod</span>
+                <span class="ptag purple">opencode</span>
+              </div>
+            </div>
+            <div class="pp-col">
+              <small>{zh ? '分发规则' : 'Distribution Rule'}</small>
+              <span class="pp-select">{zh ? '重试轮询 ▾' : 'Retry round robin ▾'}</span>
+            </div>
+          </div>
+
+          <!-- Injected Source Instances List (from image-20261111222108505.png) -->
+          <div class="pp-sources-list">
+            <div class="pp-src-row warn">
+              <span class="drag-h">⠿</span>
+              <strong>commandcode</strong>
+              <b class="st-badge amber">{zh ? '429 限流 · 自动顺延' : '429 · Skipped'}</b>
+              <span class="src-url">https://api.commandcode.ai/provider/v1</span>
+              <span class="inj-lbl">{zh ? '注入主实例' : 'Injected'} <i class="sw-on sm"></i></span>
+            </div>
+
+            <div class="pp-src-row active">
+              <span class="drag-h">⠿</span>
+              <strong>team-prod</strong>
+              <b class="st-badge ready">ready · {zh ? '轮询接管' : 'Active'}</b>
+              <span class="src-url">https://api.deepseek.com/v1</span>
+              <span class="inj-lbl">{zh ? '注入主实例' : 'Injected'} <i class="sw-on sm"></i></span>
+            </div>
+
+            <div class="pp-src-row">
+              <span class="drag-h">⠿</span>
+              <strong>opencode</strong>
+              <b class="st-badge ready">ready</b>
+              <span class="src-url">https://openrouter.ai/api/v1</span>
+              <span class="inj-lbl">{zh ? '注入主实例' : 'Injected'} <i class="sw-on sm"></i></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Native 1flowbase AI chat history footer bar -->
+      <div class="gw-log-strip">
+        <div class="gls-left">
+          <span class="gls-dot"></span>
+          <strong>AI chat history</strong>
+          <span class="gls-sub">{zh ? '网关经过的所有会话与工具轨迹自动三级留存入库' : 'All gateway sessions & tool traces auto-saved in 3 tiers'}</span>
+        </div>
+        <div class="gls-gantt" aria-hidden="true">
+          <span>{zh ? '输入' : 'In'} <i class="g-gray" style="width:16px"></i></span>
+          <span>{zh ? '模型' : 'LLM'} <i class="g-purple" style="width:34px"></i></span>
+          <span>{zh ? '工具' : 'Tool'} <i class="g-orange" style="width:22px"></i></span>
+        </div>
+        <span class="gls-ok">PostgreSQL ✓</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       SCENE 1 (3): 业务应用底座 -> 三幕真实操作动画（不拥挤，全宽逐幕演示）
+       Act 0: 主数据源动态建物理表 (image-20261115095705519.png)
+       Act 1: TSX 编辑器编写并点击 [运行] (5155c1d0445f71f6d088c33937a57da50e7af1fb.png)
+       Act 2: 渲染交付完整企业 Wiki 业务系统 (6bc0a78473668d4ef7bc88a51865dfe7a33ff310.jpeg)
+       ===================================================================== -->
+  <div class="wb-scene" data-wb-panel="1" hidden>
+    <div class="s1-demo-shell">
+      <div class="s1-stage" data-s1-stage>
+        <!-- Animated Pointer + Click Ripple Overlay -->
+        <div class="s1-cursor" data-s1-cursor aria-hidden="true">
+          <span class="s1-ripple" data-s1-ripple></span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M5.5 3.5L19 10.8L12.2 12.9L9.8 19.8L5.5 3.5Z"
+              fill="#0f172a"
+              stroke="#ffffff"
+              stroke-width="1.8"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+
+        <!-- ACT 0: Full-width replica of 主数据源 · 动态物理表 (095705519.png) -->
+        <div class="s1-act is-active" data-s1-act="0">
+          <div class="ds-screen">
+            <div class="ds-crumb">⌂ {zh ? '数据源管理' : 'Data Sources'} / <b>{zh ? '主数据源' : 'Primary DB'}</b></div>
+
+            <div class="ds-toolbar">
+              <div class="ds-title-row">
+                <span class="ds-back">←</span>
+                <strong>🗄 {zh ? '主数据源' : 'Primary PostgreSQL'}</strong>
+                <b class="ds-ready">{zh ? '就绪' : 'Ready'}</b>
+              </div>
+              <div class="ds-actions-row">
+                <span class="ds-new-btn">+ {zh ? '新建数据表' : 'New Table'}</span>
+                <span class="ds-open-toggle">{zh ? '开放' : 'Open'} <i></i></span>
+              </div>
+            </div>
+
+            <div class="ds-table">
+              <div class="ds-thead">
+                <span></span>
+                <span>Data Model</span>
+                <span>{zh ? '表类型' : 'Type'}</span>
+                <span>API {zh ? '状态' : 'Status'}</span>
+                <span>{zh ? '字段数' : 'Cols'}</span>
+                <span>{zh ? '操作' : 'Action'}</span>
+              </div>
+
+              <div class="ds-trow selected">
+                <span class="ds-radio on"></span>
+                <div class="ds-model-cell">
+                  <strong>Enterprise Wiki Documents</strong>
+                  <code>wiki_documents</code>
+                </div>
+                <span class="ds-type">{zh ? '树状表' : 'Tree'}</span>
+                <span class="ds-api-pill" data-s1-target="0">✓ {zh ? '开放 API' : 'Open API'}</span>
+                <b class="ds-cnt">16</b>
+                <span class="ds-edit">✎ {zh ? '编辑' : 'Edit'}</span>
+              </div>
+
+              <div class="ds-trow">
+                <span class="ds-radio"></span>
+                <div class="ds-model-cell">
+                  <strong>Application conversations</strong>
+                  <code>application_conversations</code>
+                </div>
+                <span class="ds-type">{zh ? '普通表' : 'Standard'}</span>
+                <span class="ds-api-pill">✓ {zh ? '开放 API' : 'Open API'}</span>
+                <b class="ds-cnt">14</b>
+                <span class="ds-edit">✎ {zh ? '编辑' : 'Edit'}</span>
+              </div>
+
+              <div class="ds-trow">
+                <span class="ds-radio"></span>
+                <div class="ds-model-cell">
+                  <strong>CRM &amp; GitHub Trending</strong>
+                  <code>business_records</code>
+                </div>
+                <span class="ds-type">{zh ? '文件/业务表' : 'File/CRUD'}</span>
+                <span class="ds-api-pill">✓ {zh ? '开放 API' : 'Open API'}</span>
+                <b class="ds-cnt">22</b>
+                <span class="ds-edit">✎ {zh ? '编辑' : 'Edit'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACT 1: Full-width replica of TSX 编辑器 + UI 模式画布 (5155c1d0...png) -->
+        <div class="s1-act" data-s1-act="1">
+          <div class="ui-mode-backdrop">
+            <span class="ui-block-handle" aria-hidden="true">+ ❐ ≣</span>
+
+            <div class="tsx-modal-replica">
+              <div class="tm-header">
+                <div class="tm-title">
+                  <strong>TSX {zh ? '编辑器' : 'Editor'}</strong>
+                  <span>{zh ? '已同步' : 'Synced'}</span>
+                </div>
+                <div class="tm-btns">
+                  <span>{zh ? '上下文' : 'Context'}</span>
+                  <span class="muted">{zh ? '重置' : 'Reset'}</span>
+                  <span class="muted">{zh ? '保存' : 'Save'}</span>
+                  <b class="tm-run-btn" data-s1-target="1">{zh ? '运行' : 'Run'}</b>
+                </div>
+              </div>
+
+              <div class="tm-file-bar">
+                <span>{zh ? '企业知识库与记忆 Wiki.tsx' : 'EnterpriseWiki.tsx'}</span>
+              </div>
+
+              <div class="tm-body">
+                <div class="tm-lines" aria-hidden="true">
+                  <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span>
+                </div>
+                <pre class="tm-code"><code><span class="kw">import</span> React <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> &#123; Tree, Tag, Card &#125; <span class="kw">from</span> <span class="str">'antd'</span>;
+
+<span class="cm">// {zh ? '直连主数据源开放的物理表与聊天记忆接口' : 'Bind live physical table & chat memory APIs'}</span>
+<span class="kw">export default function</span> <span class="fn">EnterpriseWiki</span>() &#123;
+  <span class="kw">const</span> docs = useTree(<span class="str">'/api/wiki_documents'</span>);
+  <span class="kw">const</span> logs = useTable(<span class="str">'/api/application_conversations'</span>);
+  <span class="kw">return</span> &lt;<span class="fn">WikiWorkspace</span> tree=&#123;docs&#125; memories=&#123;logs&#125; /&gt;;
+&#125;</code></pre>
+                <div class="tm-gutter" aria-hidden="true">
+                  <span class="on">&gt;_</span>
+                  <span>📄</span>
+                  <span>⚙</span>
+                  <span>▷</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="ui-create-block-btn" aria-hidden="true">+ {zh ? '创建区块' : 'Create Block'}</div>
+          </div>
+        </div>
+
+        <!-- ACT 2: Full-width replica of rendered 企业 Wiki 知识库 (6bc0a7...jpeg) -->
+        <div class="s1-act" data-s1-act="2">
+          <div class="wiki-full-replica">
+            <div class="wf-top-tag">{zh ? '企业 Wiki 知识库' : 'Enterprise Wiki'}</div>
+
+            <div class="wf-split">
+              <aside class="wf-tree-pane">
+                <div class="wf-search-row">
+                  <span class="wf-search">🔍 {zh ? '搜索文档...' : 'Search...'}</span>
+                  <b class="wf-new">+ {zh ? '新建' : 'New'}</b>
+                </div>
+
+                <div class="wf-group">▾ 📁 {zh ? '提示词与规范' : 'Prompts & SOPs'}</div>
+                <div class="wf-doc active" data-s1-target="2">📄 {zh ? 'web: 开发 AI gateway' : 'AI Gateway SOP'}</div>
+                <div class="wf-doc">📄 {zh ? 'github 日榜采集关键词' : 'GitHub Trending'}</div>
+                <div class="wf-doc">📄 {zh ? 'agent-logs 提示词模板' : 'Agent-Logs Digest'}</div>
+
+                <div class="wf-group">▾ 📁 {zh ? '业务与记忆沉淀' : 'Business & Memory'}</div>
+                <div class="wf-doc">📄 {zh ? 'React 区块开发规范' : 'React TSX Guide'}</div>
+                <div class="wf-doc">📄 {zh ? '客户跟进与 CRM 台账' : 'CRM Delivery Ledger'}</div>
+              </aside>
+
+              <div class="wf-reader-pane">
+                <div class="wf-reader-top">
+                  <small>{zh ? '提示词与规范 / web: 开发 AI gateway' : 'SOPs / AI Gateway SOP'}</small>
+                  <div class="wf-reader-btns">
+                    <span class="btn-edit">✎ {zh ? '编辑' : 'Edit'}</span>
+                    <span class="btn-del">{zh ? '删除' : 'Delete'}</span>
+                  </div>
+                </div>
+
+                <h4>{zh ? 'web: 开发 AI gateway' : 'AI Gateway & Context Spec'}</h4>
+
+                <div class="wf-chips">
+                  <span>AI gateway</span>
+                  <span>MCP</span>
+                  <span>PostgreSQL</span>
+                  <span>{zh ? '共享记忆' : 'Shared Memory'}</span>
+                </div>
+
+                <div class="wf-quote">
+                  {zh
+                    ? '基于树状物理表与聊天记录表长出的原生应用，人与 Agent 实时读写同一份企业知识库。'
+                    : 'Grown directly on tree tables & chat logs—humans and Agents co-maintain the same Wiki.'}
+                </div>
+
+                <div class="wf-env-box">
+                  <code>base_url: http://127.0.0.1:7800/v1</code>
+                  <code>table: wiki_documents (16 cols · OpenAPI) · linked: 18 chat_logs</code>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom 3-Act Stepper Bar -->
+      <div class="s1-stepper-bar" role="group" aria-label={zh ? '切换应用底座构建步骤' : 'Switch app building step'}>
+        {[
+          [zh ? '01 动态建物理表' : '01 Create DB Tables', zh ? '主数据源自动开放 API' : 'PostgreSQL · Open API'],
+          [zh ? '02 编写 TSX 区块' : '02 Native TSX Editor', zh ? '直连数据接口并点击运行' : 'Bind APIs & click Run'],
+          [zh ? '03 生成业务系统' : '03 Live Business App', zh ? '企业 Wiki · 记忆库 · 日榜' : 'Wiki · Memory · CRM'],
+        ].map(([title, sub], idx) => (
+          <button type="button" class:list={['s2-step-btn', idx === 0 && 'active']} data-s1-step={idx}>
+            <strong>{title}</strong>
+            <span>{sub}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       SCENE 2 (2): GUI 与渐进式 MCP -> 动态视窗 · 慢节奏逐节点点亮演进
+       Human → GUI ─┐
+                    ├→ API → AI Gateway / Workflow / Data / React UI → AI Application
+       Agent → MCP ─┘
+       ===================================================================== -->
+  <div class="wb-scene" data-wb-panel="2" hidden>
+    <div class="s2-cinema-shell">
+      <!-- Dynamic Panning Viewport Window (no crowding: wide 1060px world inside clean viewport) -->
+      <div class="s2-viewport" data-s2-viewport>
+        <div class="s2-world" data-canvas-scene="2" data-s2-world>
+          <canvas class="wb-wire-canvas" data-scene-canvas="2" aria-hidden="true"></canvas>
+
+          <!-- Stage 0: Dual Entry (Human -> GUI & Agent -> MCP) -->
+          <div class="s2-col-entries">
+            <div class="s2-node entry-card tone-blue" data-s2-node="gui">
+              <div class="s2-entry-top">
+                <span class="s2-role">👤 Human</span>
+                <i class="s2-arrow">→</i>
+                <b class="s2-badge blue">GUI</b>
+              </div>
+              <p>{zh ? '浏览器可视化点选配置与日常协作' : 'Visual browser configuration & daily ops'}</p>
+              <i class="af-port p-r" data-port="s2-gui-r"></i>
+            </div>
+
+            <div class="s2-node entry-card tone-emerald" data-s2-node="mcp">
+              <div class="s2-entry-top">
+                <span class="s2-role">🤖 Agent</span>
+                <i class="s2-arrow">→</i>
+                <b class="s2-badge emerald">MCP</b>
+              </div>
+              <p><code>mcp_list · get · call · result</code></p>
+              <i class="af-port p-r" data-port="s2-mcp-r"></i>
+            </div>
+          </div>
+
+          <!-- Stage 1: Unified System API Hub -->
+          <div class="s2-node api-hub-card" data-s2-node="api">
+            <i class="af-port p-l" data-port="s2-api-l"></i>
+            <img src="/favicon.svg" alt="" width="28" height="28" />
+            <strong>API</strong>
+            <span>{zh ? '统一系统接口' : 'Unified System API'}</span>
+            <em>RBAC {zh ? '鉴权' : 'Auth'}</em>
+            <i class="af-port p-r" data-port="s2-api-r"></i>
+          </div>
+
+          <!-- Stage 2: 4 Core Dev Modules (lit sequentially one by one!) -->
+          <div class="s2-col-modules">
+            <div class="s2-stage-caption">{zh ? '核心开发模块 · AI 按序接管操作' : 'Core Dev Modules · AI-Operable'}</div>
+
+            <div class="s2-node mod-card" data-s2-node="m0">
+              <i class="af-port p-l" data-port="s2-m0-l"></i>
+              <span class="mod-idx">01</span>
+              <div>
+                <strong>AI Gateway</strong>
+                <small>{zh ? '配置模型供应商与分发路由' : 'Configure providers & routing'}</small>
+              </div>
+              <i class="af-port p-r" data-port="s2-m0-r"></i>
+            </div>
+
+            <div class="s2-node mod-card" data-s2-node="m1">
+              <i class="af-port p-l" data-port="s2-m1-l"></i>
+              <span class="mod-idx">02</span>
+              <div>
+                <strong>Workflow</strong>
+                <small>{zh ? '编排 Agent 分支与事件钩子' : 'Orchestrate flows & event hooks'}</small>
+              </div>
+              <i class="af-port p-r" data-port="s2-m1-r"></i>
+            </div>
+
+            <div class="s2-node mod-card" data-s2-node="m2">
+              <i class="af-port p-l" data-port="s2-m2-l"></i>
+              <span class="mod-idx">03</span>
+              <div>
+                <strong>Data</strong>
+                <small>{zh ? '动态创建 PostgreSQL 物理表' : 'Create physical Postgres tables'}</small>
+              </div>
+              <i class="af-port p-r" data-port="s2-m2-r"></i>
+            </div>
+
+            <div class="s2-node mod-card" data-s2-node="m3">
+              <i class="af-port p-l" data-port="s2-m3-l"></i>
+              <span class="mod-idx">04</span>
+              <div>
+                <strong>React UI</strong>
+                <small>{zh ? '编写原生 TSX 页面与业务菜单' : 'Write native TSX UI & menus'}</small>
+              </div>
+              <i class="af-port p-r" data-port="s2-m3-r"></i>
+            </div>
+          </div>
+
+          <!-- Stage 3: Final Deliverable -> Complete AI Application -->
+          <div class="s2-node app-target-card" data-s2-node="app">
+            <i class="af-port p-l" data-port="s2-app-l"></i>
+            <span class="app-crown-pill">{zh ? '最终产出 · 应用系统' : 'OUTPUT · AI APPLICATION'}</span>
+
+            <div class="app-target-hd">
+              <strong>AI Application</strong>
+              <small>{zh ? '直接长出可多人共享的完整业务系统' : 'Complete multi-user business systems'}</small>
+            </div>
+
+            <div class="app-deliverables">
+              <div class="app-deliv-row">
+                <span>🧠</span>
+                <div>
+                  <b>{zh ? '记忆与企业知识库 Wiki' : 'Memory & Enterprise Wiki'}</b>
+                  <small>{zh ? '多端轨迹沉淀与文档共享' : 'Shared trajectories & docs'}</small>
+                </div>
+              </div>
+
+              <div class="app-deliv-row">
+                <span>📊</span>
+                <div>
+                  <b>{zh ? 'CRM 与传统业务后台' : 'CRM & Business Backoffice'}</b>
+                  <small>{zh ? '客户线索 · 工单审批 · 台账' : 'Leads, tickets & ledgers'}</small>
+                </div>
+              </div>
+
+              <div class="app-deliv-row">
+                <span>🚀</span>
+                <div>
+                  <b>{zh ? 'SEO 与自动营销系统' : 'SEO & Automated Marketing'}</b>
+                  <small>{zh ? '事件唤醒 · 后台持续运转' : 'Event-driven 24/7 execution'}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calm 4-Stage Progress & Click-to-Pan Stepper Bar -->
+      <div class="s2-stepper-bar" role="group" aria-label={zh ? '切换演进阶段视角' : 'Jump to pipeline stage'}>
+        {[
+          [zh ? '01 双端接入' : '01 Human & Agent', zh ? 'GUI / MCP' : 'GUI / MCP'],
+          [zh ? '02 统一接口' : '02 Unified API', 'REST · RBAC'],
+          [zh ? '03 逐模块点亮' : '03 Dev Modules', 'Gateway · Flow · Data · UI'],
+          [zh ? '04 产出应用系统' : '04 AI Application', zh ? 'Wiki · CRM · 营销' : 'Wiki · CRM · Ops'],
+        ].map(([title, sub], sIdx) => (
+          <button type="button" class:list={['s2-step-btn', sIdx === 0 && 'active']} data-s2-step={sIdx}>
+            <strong>{title}</strong>
+            <span>{sub}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  type WireTuple = [string, string, 'h' | 'down' | 'rev', boolean];
+
+  // Authentic 1flowbase workflow wires per Gateway sub-mode: [from, to, curveMode, isActivePulse]
+  const GW_WIRES: Record<number, WireTuple[]> = {
+    // Mode 0: 智能路由 (Start -> LLM -> Answer, plus bottom-mounted Smart Routing tool branches)
+    0: [
+      ['m0-start-r', 'm0-main-l', 'h', true],
+      ['m0-main-r', 'm0-ans-l', 'h', true],
+      ['m0-main-b1', 'm0-b1-l', 'down', true],
+      ['m0-b1-r', 'm0-tr1-l', 'h', true],
+      ['m0-main-b2', 'm0-b2-l', 'down', false],
+      ['m0-b2-r', 'm0-tr2-l', 'h', false],
+    ],
+    // Mode 1: Fusion 并行 (Start -> LLM -> Answer, plus 1 bottom port fanning out to 3 parallel LLMs -> Merge -> Tool Result1)
+    1: [
+      ['m1-start-r', 'm1-main-l', 'h', true],
+      ['m1-main-r', 'm1-ans-l', 'h', true],
+      ['m1-main-b', 'm1-w1-l', 'down', true],
+      ['m1-main-b', 'm1-w2-l', 'down', true],
+      ['m1-main-b', 'm1-w3-l', 'down', true],
+      ['m1-w1-r', 'm1-merge-l', 'h', true],
+      ['m1-w2-r', 'm1-merge-l', 'h', true],
+      ['m1-w3-r', 'm1-merge-l', 'h', true],
+      ['m1-merge-r', 'm1-tr-l', 'h', true],
+    ],
+    // Mode 2: 按模型分发 (请求输入 -> 按模型分发 -> 3 models -> 选取已执行分支 -> 直接回复)
+    2: [
+      ['m2-in-r', 'm2-sw-l', 'h', true],
+      ['m2-sw-1', 'm2-m1-l', 'h', true],
+      ['m2-sw-2', 'm2-m2-l', 'h', false],
+      ['m2-sw-3', 'm2-m3-l', 'h', false],
+      ['m2-m1-r', 'm2-pick-l', 'h', true],
+      ['m2-m2-r', 'm2-pick-l', 'h', false],
+      ['m2-m3-r', 'm2-pick-l', 'h', false],
+      ['m2-pick-r', 'm2-out-l', 'h', true],
+    ],
+  };
+
+  interface S2WireDef {
+    id: string;
+    from: string;
+    to: string;
+    color: string;
+  }
+
+  const S2_WIRES: S2WireDef[] = [
+    { id: 'gui-api', from: 's2-gui-r', to: 's2-api-l', color: '#2563eb' },
+    { id: 'mcp-api', from: 's2-mcp-r', to: 's2-api-l', color: '#059669' },
+    { id: 'api-m0', from: 's2-api-r', to: 's2-m0-l', color: '#0d9488' },
+    { id: 'api-m1', from: 's2-api-r', to: 's2-m1-l', color: '#059669' },
+    { id: 'api-m2', from: 's2-api-r', to: 's2-m2-l', color: '#0284c7' },
+    { id: 'api-m3', from: 's2-api-r', to: 's2-m3-l', color: '#2563eb' },
+    { id: 'm0-app', from: 's2-m0-r', to: 's2-app-l', color: '#059669' },
+    { id: 'm1-app', from: 's2-m1-r', to: 's2-app-l', color: '#059669' },
+    { id: 'm2-app', from: 's2-m2-r', to: 's2-app-l', color: '#059669' },
+    { id: 'm3-app', from: 's2-m3-r', to: 's2-app-l', color: '#059669' },
+  ];
+
+  // Calm, unhurried 8-beat sequential lighting schedule (16.8 seconds total cycle -> 2.1s per beat!)
+  interface S2Beat {
+    pan: number;
+    stepIdx: number;
+    current: string[];
+    lit: string[];
+    activeWires: string[];
+    litWires: string[];
+  }
+
+  const S2_BEATS: S2Beat[] = [
+    {
+      pan: 0.0,
+      stepIdx: 0,
+      current: ['gui'],
+      lit: [],
+      activeWires: ['gui-api'],
+      litWires: [],
+    },
+    {
+      pan: 0.02,
+      stepIdx: 0,
+      current: ['mcp'],
+      lit: ['gui'],
+      activeWires: ['mcp-api'],
+      litWires: ['gui-api'],
+    },
+    {
+      pan: 0.34,
+      stepIdx: 1,
+      current: ['api'],
+      lit: ['gui', 'mcp'],
+      activeWires: ['api-m0'],
+      litWires: ['gui-api', 'mcp-api'],
+    },
+    {
+      pan: 0.56,
+      stepIdx: 2,
+      current: ['m0'],
+      lit: ['gui', 'mcp', 'api'],
+      activeWires: ['api-m1'],
+      litWires: ['gui-api', 'mcp-api', 'api-m0'],
+    },
+    {
+      pan: 0.58,
+      stepIdx: 2,
+      current: ['m1'],
+      lit: ['gui', 'mcp', 'api', 'm0'],
+      activeWires: ['api-m2'],
+      litWires: ['gui-api', 'mcp-api', 'api-m0', 'api-m1'],
+    },
+    {
+      pan: 0.62,
+      stepIdx: 2,
+      current: ['m2'],
+      lit: ['gui', 'mcp', 'api', 'm0', 'm1'],
+      activeWires: ['api-m3'],
+      litWires: ['gui-api', 'mcp-api', 'api-m0', 'api-m1', 'api-m2'],
+    },
+    {
+      pan: 0.86,
+      stepIdx: 2,
+      current: ['m3'],
+      lit: ['gui', 'mcp', 'api', 'm0', 'm1', 'm2'],
+      activeWires: ['m0-app', 'm1-app', 'm2-app', 'm3-app'],
+      litWires: ['gui-api', 'mcp-api', 'api-m0', 'api-m1', 'api-m2', 'api-m3'],
+    },
+    {
+      pan: 1.0,
+      stepIdx: 3,
+      current: ['app'],
+      lit: ['gui', 'mcp', 'api', 'm0', 'm1', 'm2', 'm3'],
+      activeWires: ['m0-app', 'm1-app', 'm2-app', 'm3-app'],
+      litWires: ['gui-api', 'mcp-api', 'api-m0', 'api-m1', 'api-m2', 'api-m3', 'm0-app', 'm1-app', 'm2-app', 'm3-app'],
+    },
+  ];
+
+  const STEP_TO_BEAT = [1, 2, 5, 7];
+  const BEAT_MS = 2150; // Slow, meditative 2.15s per node (~17.2s full journey)
+
+  document.querySelectorAll<HTMLElement>('[data-wb-replica]').forEach((root) => {
+    const gwDescs: string[] = JSON.parse(root.getAttribute('data-gw-descs') || '[]');
+    const heroSection = root.closest('.runtime-hero') ?? document;
+    const leftTriggers = Array.from(heroSection.querySelectorAll<HTMLButtonElement>('[data-hero-trigger]'));
+    const topTabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-wb-tab]'));
+    const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-wb-panel]'));
+    const badges = Array.from(root.querySelectorAll<HTMLElement>('[data-wb-badge]'));
+
+    const gwBtns = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-gw-mode]'));
+    const gwPanels = Array.from(root.querySelectorAll<HTMLElement>('[data-gw-panel]'));
+    const gwDescEl = root.querySelector<HTMLElement>('[data-gw-desc]');
+
+    // Scene 1 (App Foundation 3-Act Operation Animation) refs
+    const s1Stage = root.querySelector<HTMLElement>('[data-s1-stage]');
+    const s1Acts = Array.from(root.querySelectorAll<HTMLElement>('[data-s1-act]'));
+    const s1StepBtns = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-s1-step]'));
+    const s1Cursor = root.querySelector<HTMLElement>('[data-s1-cursor]');
+    const s1Ripple = root.querySelector<HTMLElement>('[data-s1-ripple]');
+
+    // Scene 2 Dynamic Camera Viewport refs
+    const s2Viewport = root.querySelector<HTMLElement>('[data-s2-viewport]');
+    const s2World = root.querySelector<HTMLElement>('[data-s2-world]');
+    const s2Nodes = new Map<string, HTMLElement>();
+    root.querySelectorAll<HTMLElement>('[data-s2-node]').forEach((el) => {
+      const k = el.getAttribute('data-s2-node');
+      if (k) s2Nodes.set(k, el);
+    });
+    const s2StepBtns = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-s2-step]'));
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let currentScene = 0;
+    let currentGwMode = 0;
+    let raf = 0;
+    let visible = true;
+
+    // Scene 1 3-act timing & smooth cursor state
+    const S1_ACT_MS = 4600;
+    let s1StartTime = performance.now();
+    let s1LastFrame = performance.now();
+    let s1AppliedAct = -1;
+    let s1PinnedAct: number | null = null;
+    let s1CurX = 240;
+    let s1CurY = 180;
+    let s1ClickedInAct = false;
+
+    // Scene 2 camera & sequential state
+    let s2StartTime = performance.now();
+    let s2LastFrame = performance.now();
+    let s2CamX = 0;
+    let s2AppliedBeat = -1;
+    let s2PinnedBeat: number | null = null;
+
+    const getGwSurface = (gwIdx: number) => {
+      const wrap = root.querySelector<HTMLElement>(`[data-canvas-gw="${gwIdx}"]`);
+      const canvas = root.querySelector<HTMLCanvasElement>(`[data-gw-canvas="${gwIdx}"]`);
+      const ctx = canvas?.getContext('2d') ?? null;
+      return { wrap, canvas, ctx };
+    };
+
+    const getS2Surface = () => {
+      const wrap = root.querySelector<HTMLElement>('[data-canvas-scene="2"]');
+      const canvas = root.querySelector<HTMLCanvasElement>('[data-scene-canvas="2"]');
+      const ctx = canvas?.getContext('2d') ?? null;
+      return { wrap, canvas, ctx };
+    };
+
+    const resizeSurface = (wrap: HTMLElement | null, canvas: HTMLCanvasElement | null, ctx: CanvasRenderingContext2D | null) => {
+      if (!wrap || !canvas || !ctx) return;
+      const rect = wrap.getBoundingClientRect();
+      if (rect.width < 10) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+      canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+
+    const getPortPos = (wrap: HTMLElement, name: string, baseRect: DOMRect) => {
+      const el = wrap.querySelector<HTMLElement>(`[data-port="${name}"]`);
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      return {
+        x: r.left - baseRect.left + r.width / 2,
+        y: r.top - baseRect.top + r.height / 2,
+      };
+    };
+
+    const cubicPoint = (
+      p0: { x: number; y: number },
+      p1: { x: number; y: number },
+      p2: { x: number; y: number },
+      p3: { x: number; y: number },
+      t: number
+    ) => {
+      const u = 1 - t;
+      const tt = t * t;
+      const uu = u * u;
+      return {
+        x: uu * u * p0.x + 3 * uu * t * p1.x + 3 * u * tt * p2.x + tt * t * p3.x,
+        y: uu * u * p0.y + 3 * uu * t * p1.y + 3 * u * tt * p2.y + tt * t * p3.y,
+      };
+    };
+
+    const drawGwWires = (now: number) => {
+      const wires = GW_WIRES[currentGwMode];
+      if (!wires) return;
+      const { wrap, ctx } = getGwSurface(currentGwMode);
+      if (!wrap || !ctx) return;
+      const rect = wrap.getBoundingClientRect();
+      if (rect.width < 10) return;
+      ctx.clearRect(0, 0, rect.width, rect.height);
+      const phase = (now * 0.00048) % 1;
+
+      wires.forEach(([from, to, mode, active], idx) => {
+        const p0 = getPortPos(wrap, from, rect);
+        const p3 = getPortPos(wrap, to, rect);
+        if (!p0 || !p3) return;
+
+        let p1 = { x: p0.x, y: p0.y };
+        let p2 = { x: p3.x, y: p3.y };
+
+        if (mode === 'down') {
+          p1 = { x: p0.x, y: p0.y + Math.max(28, (p3.y - p0.y) * 0.65) };
+          p2 = { x: p3.x - 28, y: p3.y };
+        } else {
+          const dx = Math.max(14, Math.abs(p3.x - p0.x) * 0.48);
+          p1 = { x: p0.x + dx, y: p0.y };
+          p2 = { x: p3.x - dx, y: p3.y };
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(p0.x, p0.y);
+        ctx.bezierCurveTo(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+        ctx.strokeStyle = active ? 'rgba(104, 146, 132, 0.78)' : 'rgba(168, 192, 184, 0.45)';
+        ctx.lineWidth = active ? 1.55 : 1.25;
+        ctx.stroke();
+
+        if (active && !reduced) {
+          const t = (phase + idx * 0.14) % 1;
+          const pt = cubicPoint(p0, p1, p2, p3, t);
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, 3.2, 0, Math.PI * 2);
+          ctx.fillStyle = '#1677ff';
+          ctx.shadowColor = '#1677ff';
+          ctx.shadowBlur = 6;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        }
+      });
+    };
+
+    const applyS2BeatDOM = (beatIdx: number) => {
+      if (s2AppliedBeat === beatIdx) return;
+      s2AppliedBeat = beatIdx;
+      const beat = S2_BEATS[beatIdx] ?? S2_BEATS[0];
+
+      s2Nodes.forEach((el, key) => {
+        const isCurrent = beat.current.includes(key);
+        const isLit = beat.lit.includes(key);
+        el.classList.toggle('is-current', isCurrent);
+        el.classList.toggle('is-lit', isLit);
+        el.classList.toggle('is-dim', !isCurrent && !isLit);
+      });
+
+      s2StepBtns.forEach((btn, idx) => {
+        btn.classList.toggle('active', idx === beat.stepIdx);
+      });
+    };
+
+    const drawScene2Parity = (now: number) => {
+      const { wrap, ctx } = getS2Surface();
+      if (!wrap || !ctx || !s2Viewport || !s2World) return;
+
+      const dt = Math.min(64, Math.max(1, now - s2LastFrame));
+      s2LastFrame = now;
+
+      const totalCycle = S2_BEATS.length * BEAT_MS;
+      const elapsed = (now - s2StartTime) % totalCycle;
+      const autoBeatIdx = Math.min(S2_BEATS.length - 1, Math.floor(elapsed / BEAT_MS));
+      const beatIdx = s2PinnedBeat !== null ? s2PinnedBeat : reduced ? 7 : autoBeatIdx;
+      const beat = S2_BEATS[beatIdx] ?? S2_BEATS[0];
+
+      applyS2BeatDOM(beatIdx);
+
+      // Smooth damped camera pan across the 1060px world
+      const worldW = s2World.offsetWidth;
+      const viewW = s2Viewport.clientWidth;
+      const maxPan = Math.max(0, worldW - viewW);
+      const targetCamX = maxPan * beat.pan;
+
+      if (reduced) {
+        s2CamX = targetCamX;
+      } else {
+        // Silky slow cinema camera glide (~750ms time constant)
+        const alpha = 1 - Math.exp(-dt * 0.0036);
+        s2CamX += (targetCamX - s2CamX) * alpha;
+      }
+      s2World.style.transform = `translate3d(${-s2CamX.toFixed(2)}px, 0, 0)`;
+
+      const rect = wrap.getBoundingClientRect();
+      if (rect.width < 10) return;
+      ctx.clearRect(0, 0, worldW, s2World.offsetHeight);
+
+      // Smooth ease-in-out orb progress within the current 2.15s beat
+      const rawBeatT = s2PinnedBeat !== null ? ((now * 0.00045) % 1) : (elapsed % BEAT_MS) / BEAT_MS;
+      const clampedT = Math.max(0, Math.min(1, (rawBeatT - 0.08) / 0.82));
+      const smoothT = clampedT * clampedT * (3 - 2 * clampedT);
+
+      S2_WIRES.forEach((wire) => {
+        const p0 = getPortPos(wrap, wire.from, rect);
+        const p3 = getPortPos(wrap, wire.to, rect);
+        if (!p0 || !p3) return;
+
+        const dx = Math.max(24, Math.abs(p3.x - p0.x) * 0.52);
+        const p1 = { x: p0.x + dx, y: p0.y };
+        const p2 = { x: p3.x - dx, y: p3.y };
+
+        const isActive = beat.activeWires.includes(wire.id);
+        const isLit = beat.litWires.includes(wire.id);
+
+        ctx.beginPath();
+        ctx.moveTo(p0.x, p0.y);
+        ctx.bezierCurveTo(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+
+        if (isActive) {
+          ctx.strokeStyle = wire.color;
+          ctx.lineWidth = 2;
+        } else if (isLit) {
+          ctx.strokeStyle = 'rgba(16, 185, 129, 0.52)';
+          ctx.lineWidth = 1.6;
+        } else {
+          ctx.strokeStyle = 'rgba(168, 192, 184, 0.35)';
+          ctx.lineWidth = 1.3;
+        }
+        ctx.stroke();
+
+        if (isActive && !reduced) {
+          const pt = cubicPoint(p0, p1, p2, p3, smoothT);
+          // Soft outer halo
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, 7.5, 0, Math.PI * 2);
+          ctx.fillStyle = wire.color === '#2563eb' ? 'rgba(37, 99, 235, 0.18)' : 'rgba(5, 150, 105, 0.2)';
+          ctx.fill();
+
+          // Crisp core orb
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, 3.8, 0, Math.PI * 2);
+          ctx.fillStyle = wire.color;
+          ctx.fill();
+          ctx.lineWidth = 1.5;
+          ctx.strokeStyle = '#ffffff';
+          ctx.stroke();
+        }
+      });
+    };
+
+    const updateScene1Demo = (now: number) => {
+      if (!s1Stage) return;
+      const dt = Math.min(64, Math.max(1, now - s1LastFrame));
+      s1LastFrame = now;
+
+      const totalCycle = 3 * S1_ACT_MS;
+      const elapsed = (now - s1StartTime) % totalCycle;
+      const autoAct = Math.min(2, Math.floor(elapsed / S1_ACT_MS));
+      const actIdx = s1PinnedAct !== null ? s1PinnedAct : reduced ? 2 : autoAct;
+      const actProgress = s1PinnedAct !== null ? 0.55 : (elapsed % S1_ACT_MS) / S1_ACT_MS;
+
+      if (s1AppliedAct !== actIdx) {
+        s1AppliedAct = actIdx;
+        s1ClickedInAct = false;
+        s1Acts.forEach((el, idx) => {
+          el.classList.toggle('is-active', idx === actIdx);
+        });
+        s1StepBtns.forEach((btn, idx) => {
+          btn.classList.toggle('active', idx === actIdx);
+        });
+      }
+
+      if (s1Cursor) {
+        if (reduced) {
+          s1Cursor.style.opacity = '0';
+          return;
+        }
+        s1Cursor.style.opacity = '1';
+        const stageRect = s1Stage.getBoundingClientRect();
+        const targetEl = s1Stage.querySelector<HTMLElement>(`[data-s1-target="${actIdx}"]`);
+
+        let tx = stageRect.width * 0.55;
+        let ty = stageRect.height * 0.55;
+        if (targetEl && stageRect.width > 20) {
+          const r = targetEl.getBoundingClientRect();
+          tx = r.left - stageRect.left + r.width * 0.58;
+          ty = r.top - stageRect.top + r.height * 0.58;
+        }
+
+        const alpha = 1 - Math.exp(-dt * 0.0055);
+        s1CurX += (tx - s1CurX) * alpha;
+        s1CurY += (ty - s1CurY) * alpha;
+
+        // Trigger a gentle click ripple around 62% through each act
+        const clicking = s1PinnedAct === null && actProgress > 0.62 && actProgress < 0.76;
+        if (clicking && !s1ClickedInAct && s1Ripple) {
+          s1ClickedInAct = true;
+          s1Ripple.classList.remove('pop');
+          void s1Ripple.offsetWidth;
+          s1Ripple.classList.add('pop');
+        }
+        if (targetEl) {
+          targetEl.classList.toggle('is-clicked', clicking);
+        }
+
+        const scale = clicking ? 0.88 : 1;
+        s1Cursor.style.transform = `translate3d(${s1CurX.toFixed(1)}px, ${s1CurY.toFixed(1)}px, 0) scale(${scale})`;
+      }
+    };
+
+    const refreshActiveCanvas = () => {
+      cancelAnimationFrame(raf);
+      if (currentScene === 0 && GW_WIRES[currentGwMode]) {
+        const { wrap, canvas, ctx } = getGwSurface(currentGwMode);
+        requestAnimationFrame(() => {
+          resizeSurface(wrap, canvas, ctx);
+          tick(performance.now());
+        });
+      } else if (currentScene === 1) {
+        requestAnimationFrame(() => {
+          tick(performance.now());
+        });
+      } else if (currentScene === 2) {
+        const { wrap, canvas, ctx } = getS2Surface();
+        requestAnimationFrame(() => {
+          resizeSurface(wrap, canvas, ctx);
+          tick(performance.now());
+        });
+      }
+    };
+
+    const tick = (now: number) => {
+      if (currentScene === 0 && GW_WIRES[currentGwMode]) {
+        drawGwWires(now);
+      } else if (currentScene === 1) {
+        updateScene1Demo(now);
+      } else if (currentScene === 2) {
+        drawScene2Parity(now);
+      }
+
+      const needsLoop =
+        visible &&
+        !reduced &&
+        ((currentScene === 0 && Boolean(GW_WIRES[currentGwMode])) || currentScene === 1 || currentScene === 2);
+      if (needsLoop) {
+        raf = requestAnimationFrame(tick);
+      }
+    };
+
+    const applyGwMode = (mIdx: number) => {
+      currentGwMode = mIdx;
+      gwBtns.forEach((b, i) => {
+        const active = i === mIdx;
+        b.classList.toggle('active', active);
+        b.setAttribute('aria-selected', String(active));
+      });
+      gwPanels.forEach((p, i) => {
+        p.hidden = i !== mIdx;
+      });
+      if (gwDescEl && gwDescs[mIdx]) {
+        gwDescEl.textContent = gwDescs[mIdx];
+      }
+      refreshActiveCanvas();
+    };
+
+    const setScene = (index: number) => {
+      currentScene = index;
+      root.setAttribute('data-active-scene', String(index));
+
+      leftTriggers.forEach((btn, i) => {
+        const active = i === index;
+        btn.classList.toggle('is-active', active);
+        btn.setAttribute('aria-pressed', String(active));
+      });
+
+      topTabs.forEach((tab, i) => {
+        const active = i === index;
+        tab.classList.toggle('active', active);
+        tab.setAttribute('aria-selected', String(active));
+      });
+
+      panels.forEach((panel, i) => {
+        panel.hidden = i !== index;
+      });
+
+      badges.forEach((b, i) => {
+        b.hidden = i !== index;
+      });
+
+      if (index === 1) {
+        s1PinnedAct = null;
+        s1AppliedAct = -1;
+        s1StartTime = performance.now();
+        s1LastFrame = s1StartTime;
+      } else if (index === 2) {
+        s2PinnedBeat = null;
+        s2AppliedBeat = -1;
+        s2CamX = 0;
+        s2StartTime = performance.now();
+        s2LastFrame = s2StartTime;
+      }
+
+      refreshActiveCanvas();
+    };
+
+    s1StepBtns.forEach((btn, idx) => {
+      btn.addEventListener('click', () => {
+        s1PinnedAct = idx;
+        s1AppliedAct = -1;
+        updateScene1Demo(performance.now());
+      });
+    });
+
+    s1Stage?.addEventListener('pointerleave', () => {
+      if (s1PinnedAct !== null) {
+        s1StartTime = performance.now() - s1PinnedAct * S1_ACT_MS;
+        s1PinnedAct = null;
+      }
+    });
+
+    s2StepBtns.forEach((btn, sIdx) => {
+      btn.addEventListener('click', () => {
+        const targetBeat = STEP_TO_BEAT[sIdx] ?? 0;
+        s2PinnedBeat = targetBeat;
+        s2AppliedBeat = -1;
+        if (reduced) {
+          drawScene2Parity(performance.now());
+        }
+      });
+    });
+
+    s2Viewport?.addEventListener('pointerleave', () => {
+      if (s2PinnedBeat !== null) {
+        s2StartTime = performance.now() - s2PinnedBeat * BEAT_MS;
+        s2PinnedBeat = null;
+      }
+    });
+
+    gwBtns.forEach((btn, mIdx) => {
+      btn.addEventListener('click', () => {
+        applyGwMode(mIdx);
+      });
+    });
+
+    leftTriggers.forEach((btn, idx) => {
+      btn.addEventListener('click', () => setScene(idx));
+      btn.addEventListener('pointerenter', () => setScene(idx));
+    });
+
+    topTabs.forEach((tab, idx) => {
+      tab.addEventListener('click', () => setScene(idx));
+    });
+
+    const ro = new ResizeObserver(() => refreshActiveCanvas());
+    ro.observe(root);
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        visible = Boolean(entries[0]?.isIntersecting);
+        if (!visible) cancelAnimationFrame(raf);
+        else refreshActiveCanvas();
+      },
+      { threshold: 0.05 }
+    );
+    io.observe(root);
+
+    applyGwMode(0);
+    setScene(0);
+  });
+</script>
+
+<style>
+  .wb-shell {
+    border-radius: 18px;
+    border: 1px solid #d2e7df;
+    background: #ffffff;
+    box-shadow:
+      0 26px 68px rgb(4 61 49 / 9%),
+      0 2px 6px rgb(4 61 49 / 4%);
+    overflow: hidden;
+  }
+
+  .wb-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0 14px;
+    height: 42px;
+    background: linear-gradient(90deg, #effaf5 0%, #f8fcfa 50%, #effaf5 100%);
+    border-bottom: 1px solid #dfeee8;
+    font-size: 11.5px;
+  }
+
+  .wb-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #08231c;
+    font-size: 12.5px;
+    flex-shrink: 0;
+  }
+
+  .wb-nav {
+    display: flex;
+    align-items: stretch;
+    height: 100%;
+    gap: 4px;
+  }
+
+  .wb-tab-btn {
+    position: relative;
+    padding: 0 11px;
+    border: 0;
+    background: transparent;
+    color: #5b756d;
+    font-size: 12px;
+    font-weight: 580;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.16s ease;
+  }
+
+  .wb-tab-btn:hover {
+    color: #08231c;
+  }
+
+  .wb-tab-btn.active {
+    color: #047857;
+    font-weight: 740;
+  }
+
+  .wb-tab-btn.active::after {
+    content: '';
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: #059669;
+  }
+
+  .wb-mode-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 6px;
+    background: #e6f7ef;
+    border: 1px solid #bde8d4;
+    font-size: 10.5px;
+    font-weight: 680;
+    color: #065f46;
+    white-space: nowrap;
+  }
+
+  .wb-mode-chip[hidden] {
+    display: none;
+  }
+
+  .wb-mode-chip.ui-mode {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    color: #1d4ed8;
+  }
+
+  .wb-mode-chip.ui-mode b {
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: #2563eb;
+    color: #ffffff;
+  }
+
+  .wb-mode-chip.dual-mode {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #475569;
+  }
+
+  .wb-mode-chip.dual-mode .b-ui {
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: #dbeafe;
+    color: #1d4ed8;
+  }
+
+  .wb-mode-chip.dual-mode .b-ai {
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: #d1fae5;
+    color: #047857;
+  }
+
+  .wb-mode-chip.dual-mode i {
+    font-style: normal;
+    color: #94a3b8;
+  }
+
+  .wb-wire-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* =====================================================================
+     SCENE 0: Authentic 1flowbase AI Gateway (Agent Flow + Provider Pool)
+     ===================================================================== */
+  .gw-native-shell {
+    min-height: 438px;
+    padding: 12px 14px;
+    box-sizing: border-box;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .gw-top-strip {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .gw-seg-pills {
+    display: inline-flex;
+    align-self: flex-start;
+    align-items: center;
+    padding: 3px;
+    border-radius: 9px;
+    background: #eef6f2;
+    border: 1px solid #dcece5;
+    gap: 2px;
+  }
+
+  .gw-seg-btn {
+    border: 0;
+    background: transparent;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 580;
+    color: #4b685f;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .gw-seg-btn:hover {
+    color: #08231c;
+  }
+
+  .gw-seg-btn.active {
+    background: #ffffff;
+    color: #047857;
+    font-weight: 740;
+    box-shadow: 0 1px 3px rgb(4 61 49 / 9%);
+  }
+
+  .gw-mode-desc {
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.45;
+    color: #4a635b;
+  }
+
+  .gw-subpanel {
+    position: relative;
+    flex: 1;
+    min-height: 300px;
+    border-radius: 12px;
+    border: 1px solid #dfece6;
+    box-sizing: border-box;
+  }
+
+  .gw-subpanel[hidden] {
+    display: none;
+  }
+
+  .dot-canvas {
+    padding: 12px 14px;
+    border: 1px solid #ddece6;
+    background-color: #f7fcfa;
+    background-image: radial-gradient(#cbdcd5 1px, transparent 1px);
+    background-size: 13px 13px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  /* Authentic 1flowbase Agent Flow Node Anatomy (matching fusion-workflow-canvas.png & 224458906.png) */
+  .af-node {
+    position: relative;
+    z-index: 2;
+    border-radius: 10px;
+    border: 1px solid #d5e5f2;
+    background: #ffffff;
+    box-shadow: 0 3px 10px rgb(15 23 42 / 4%);
+    min-width: 0;
+  }
+
+  .af-node.af-active {
+    border-color: #93c5fd;
+    box-shadow: 0 5px 14px rgb(22 119 255 / 8%);
+  }
+
+  .af-hd {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 9px;
+    border-bottom: 1px solid #edf3f7;
+  }
+
+  .af-hd strong {
+    font-size: 10.5px;
+    font-weight: 740;
+    color: #0f172a;
+    white-space: nowrap;
+  }
+
+  .af-chip {
+    margin-left: auto;
+    font-style: normal;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: #dcfce7;
+    color: #15803d;
+    font-size: 8.5px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .af-ico {
+    width: 15px;
+    height: 15px;
+    border-radius: 4px;
+    display: inline-grid;
+    place-items: center;
+    font-size: 9px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .af-ico.start,
+  .af-ico.llm,
+  .af-ico.route,
+  .af-ico.pick,
+  .af-ico.ans {
+    background: #eff6ff;
+    color: #1677ff;
+  }
+
+  .af-bd {
+    padding: 7px 9px;
+  }
+
+  .af-bd.muted {
+    font-size: 9.5px;
+    color: #64748b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .af-bd.model-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .v-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 8.5px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .v-dot.claude { background: #f5ebe1; color: #7c3f1d; }
+  .v-dot.deepseek { background: #dbeafe; color: #1d4ed8; }
+  .v-dot.gemini { background: #e0f2fe; color: #0284c7; }
+  .v-dot.openai { background: #e0f2fe; color: #0369a1; }
+
+  .model-row small {
+    display: block;
+    font-size: 8.5px;
+    line-height: 1.15;
+    color: #64748b;
+    white-space: nowrap;
+  }
+
+  .model-row b {
+    display: block;
+    font-size: 9.5px;
+    line-height: 1.25;
+    font-weight: 700;
+    color: #0f172a;
+    white-space: nowrap;
+  }
+
+  .af-node.compact .af-hd { padding: 5px 8px; }
+  .af-node.compact .af-bd { padding: 5px 8px; }
+
+  /* Authentic 1flowbase solid blue circular ports (#1677ff) */
+  .af-port {
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #1677ff;
+    border: 1.5px solid #ffffff;
+    box-shadow: 0 0 0 1px #93c5fd;
+    z-index: 3;
+  }
+
+  .p-l { left: -4px; top: 50%; transform: translateY(-50%); }
+  .p-r { right: -4px; top: 50%; transform: translateY(-50%); }
+
+  .af-b-ports {
+    position: absolute;
+    left: 20%;
+    right: 32%;
+    bottom: -4px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .af-b-ports.single {
+    left: 14%;
+    right: auto;
+    justify-content: flex-start;
+  }
+
+  .af-b-ports .af-port { position: static; }
+
+  /* MODE 0 layout */
+  .af-top-chain {
+    display: grid;
+    grid-template-columns: 0.68fr 1.12fr 0.96fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  .sr-branches {
+    margin-left: 29%;
+    display: grid;
+    gap: 8px;
+  }
+
+  .sr-branch-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 18px;
+    align-items: center;
+  }
+
+  .sr-branch-row.hit {
+    padding: 13px 8px 7px;
+    border-radius: 10px;
+    border: 1px dashed #34d399;
+    background: rgb(236 253 245 / 55%);
+  }
+
+  .sr-mode-tag {
+    position: absolute;
+    top: -8px;
+    left: 10px;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: #d1fae5;
+    border: 1px solid #6ee7b7;
+    font-size: 9px;
+    font-weight: 740;
+    color: #065f46;
+    white-space: nowrap;
+  }
+
+  /* MODE 1: Fusion layout (matching red box in fusion-workflow-canvas.png) */
+  .fusion-box-replica {
+    position: relative;
+    margin-left: 28%;
+    padding: 13px 9px 8px;
+    border-radius: 11px;
+    border: 1.5px dashed #10b981;
+    background: rgb(236 253 245 / 48%);
+    display: grid;
+    grid-template-columns: 1.08fr 0.92fr 0.92fr;
+    gap: 13px;
+    align-items: center;
+  }
+
+  .fusion-badge {
+    position: absolute;
+    top: -9px;
+    left: 10px;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: #d1fae5;
+    border: 1px solid #6ee7b7;
+    font-size: 9px;
+    font-weight: 750;
+    color: #065f46;
+    white-space: nowrap;
+  }
+
+  .fusion-col-workers {
+    display: grid;
+    gap: 5px;
+  }
+
+  /* MODE 2: 按模型分发 5-column layout (matching image-20261111224458906.png) */
+  .dispatch-5col {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 0.82fr 0.96fr 1.28fr 0.92fr 0.84fr;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .dispatch-switch {
+    min-height: 156px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sw-r-ports {
+    position: absolute;
+    right: -4px;
+    top: 28%;
+    bottom: 18%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .sw-r-ports .af-port { position: static; }
+
+  .dispatch-models-col {
+    display: grid;
+    gap: 8px;
+  }
+
+  /* MODE 3: 模型供应商 -> 主实例 [聚合视图] & 来源管理 (matching 222043915.png + 222108505.png) */
+  .provider-pool-panel {
+    background: #f5faf8;
+    border: 1px solid #dcece5;
+    padding: 11px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pp-modal-card {
+    flex: 1;
+    border-radius: 10px;
+    border: 1px solid #dfece6;
+    background: #ffffff;
+    padding: 11px 13px;
+    box-shadow: 0 6px 18px rgb(15 23 42 / 4%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 9px;
+  }
+
+  .pp-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #edf4f1;
+  }
+
+  .pp-title-grp {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .pp-title-grp strong {
+    font-size: 11.5px;
+    color: #0f172a;
+  }
+
+  .pp-agg-badge {
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-size: 9.5px;
+    font-weight: 700;
+  }
+
+  .pp-cnt {
+    font-size: 10px;
+    color: #64748b;
+  }
+
+  .pp-auto-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: #334155;
+    white-space: nowrap;
+  }
+
+  .sw-on {
+    display: inline-block;
+    width: 26px;
+    height: 14px;
+    border-radius: 999px;
+    background: #10b981;
+    position: relative;
+  }
+
+  .sw-on::after {
+    content: '';
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ffffff;
+  }
+
+  .sw-on.sm {
+    width: 22px;
+    height: 12px;
+  }
+
+  .sw-on.sm::after {
+    width: 8px;
+    height: 8px;
+  }
+
+  .pp-policy-bar {
+    display: grid;
+    grid-template-columns: 1.15fr 1.2fr 0.78fr;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: #f8fcfa;
+    border: 1px solid #e3f0eb;
+  }
+
+  .pp-col small {
+    display: block;
+    font-size: 9.5px;
+    color: #64748b;
+    margin-bottom: 3px;
+  }
+
+  .pp-col code {
+    font: 600 10px/1.3 var(--font-mono);
+    color: #0f172a;
+  }
+
+  .pp-tags {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .ptag {
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 9.5px;
+    font-weight: 660;
+  }
+
+  .ptag.green { background: #dcfce7; color: #15803d; }
+  .ptag.sky { background: #e0f2fe; color: #0369a1; }
+  .ptag.purple { background: #ede9fe; color: #6d28d9; }
+
+  .pp-select {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    font-size: 10px;
+    font-weight: 680;
+    color: #0f172a;
+    white-space: nowrap;
+  }
+
+  .pp-sources-list {
+    display: grid;
+    gap: 6px;
+  }
+
+  .pp-src-row {
+    display: grid;
+    grid-template-columns: auto auto auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    border: 1px solid #e6efec;
+    background: #fbfdfc;
+    font-size: 10.5px;
+  }
+
+  .pp-src-row.active {
+    background: #e6f8f0;
+    border-color: #6ee7b7;
+  }
+
+  .pp-src-row.warn {
+    background: #fffdf5;
+    border-color: #fde68a;
+  }
+
+  .drag-h {
+    color: #94a3b8;
+    font-size: 11px;
+  }
+
+  .pp-src-row strong {
+    color: #0f172a;
+    white-space: nowrap;
+  }
+
+  .st-badge {
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 9.5px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .st-badge.ready {
+    background: #dcfce7;
+    color: #15803d;
+  }
+
+  .st-badge.amber {
+    background: #fef3c7;
+    color: #b45309;
+  }
+
+  .src-url {
+    font: 500 9.5px/1.2 var(--font-mono);
+    color: #64748b;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .inj-lbl {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 9.5px;
+    color: #475569;
+    white-space: nowrap;
+  }
+
+  /* Native 1flowbase AI chat history footer strip */
+  .gw-log-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 9px;
+    background: #f5fbf8;
+    border: 1px solid #dcece5;
+    font-size: 10px;
+  }
+
+  .gls-left {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .gls-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10b981;
+    flex-shrink: 0;
+  }
+
+  .gls-left strong {
+    color: #08231c;
+    font-weight: 740;
+    white-space: nowrap;
+  }
+
+  .gls-sub {
+    color: #5b756d;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .gls-gantt {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 9.5px;
+    color: #64748b;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .gls-gantt span {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .gls-gantt i {
+    height: 5px;
+    border-radius: 999px;
+    display: inline-block;
+  }
+
+  .g-gray { background: #94a3b8; }
+  .g-purple { background: #8b5cf6; }
+  .g-orange { background: #d97706; }
+
+  .gls-ok {
+    color: #047857;
+    font-weight: 740;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* =====================================================================
+     SCENE 1: 3-Act Authentic UI Operation Animation (Full-Width, Zero Crowding)
+     Act 0: 主数据源 (095705519.png)
+     Act 1: TSX 编辑器 + UI 模式 (5155c1d0...png)
+     Act 2: 企业 Wiki 知识库 (6bc0a7...jpeg)
+     ===================================================================== */
+  .s1-demo-shell {
+    min-height: 438px;
+    padding: 12px 14px;
+    box-sizing: border-box;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .s1-stage {
+    position: relative;
+    flex: 1;
+    min-height: 348px;
+    border-radius: 13px;
+    border: 1px solid #ddece6;
+    background: #f6fbf9;
+    overflow: hidden;
+  }
+
+  .s1-act {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: translateY(6px);
+    pointer-events: none;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .s1-act.is-active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    z-index: 2;
+  }
+
+  /* Smooth Animated Pointer + Click Ripple */
+  .s1-cursor {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 15;
+    pointer-events: none;
+    will-change: transform;
+    filter: drop-shadow(0 4px 8px rgb(15 23 42 / 22%));
+  }
+
+  .s1-ripple {
+    position: absolute;
+    left: -10px;
+    top: -10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid #10b981;
+    opacity: 0;
+    transform: scale(0.3);
+  }
+
+  .s1-ripple.pop {
+    animation: s1-click-ring 0.65s ease-out forwards;
+  }
+
+  @keyframes s1-click-ring {
+    0% { opacity: 0.95; transform: scale(0.35); }
+    100% { opacity: 0; transform: scale(1.75); }
+  }
+
+  /* ACT 0: 主数据源 · 动态物理表 (matching image-20261115095705519.png) */
+  .ds-screen {
+    flex: 1;
+    padding: 15px 18px;
+    background: #f6fbf9;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .ds-crumb {
+    font-size: 11px;
+    color: #059669;
+  }
+
+  .ds-crumb b {
+    color: #0f172a;
+    font-weight: 640;
+  }
+
+  .ds-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .ds-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ds-back {
+    font-size: 13px;
+    color: #475569;
+  }
+
+  .ds-title-row strong {
+    font-size: 15px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  .ds-ready {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #dcfce7;
+    color: #15803d;
+    font-size: 10px;
+    font-weight: 720;
+  }
+
+  .ds-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ds-new-btn {
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    color: #047857;
+    font-size: 11px;
+    font-weight: 720;
+  }
+
+  .ds-open-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 5px 3px 10px;
+    border-radius: 999px;
+    background: #10b981;
+    color: #ffffff;
+    font-size: 10.5px;
+    font-weight: 700;
+  }
+
+  .ds-open-toggle i {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: #ffffff;
+    display: inline-block;
+  }
+
+  .ds-table {
+    border-radius: 11px;
+    border: 1px solid #dfeee8;
+    background: #ffffff;
+    overflow: hidden;
+  }
+
+  .ds-thead,
+  .ds-trow {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1.5fr) 0.72fr 0.88fr 48px 54px;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+  }
+
+  .ds-thead {
+    background: #fafdfc;
+    border-bottom: 1px solid #edf4f1;
+    font-size: 10.5px;
+    font-weight: 680;
+    color: #64748b;
+  }
+
+  .ds-trow {
+    border-bottom: 1px solid #f1f6f4;
+    font-size: 11px;
+  }
+
+  .ds-trow:last-child {
+    border-bottom: 0;
+  }
+
+  .ds-trow.selected {
+    background: #ccf3e2;
+  }
+
+  .ds-radio {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    border: 1.5px solid #cbd5e1;
+    background: #ffffff;
+  }
+
+  .ds-radio.on {
+    border: 4px solid #059669;
+  }
+
+  .ds-model-cell strong {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 740;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ds-model-cell code {
+    display: inline-block;
+    margin-top: 2px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: rgb(255 255 255 / 72%);
+    border: 1px solid rgb(15 23 42 / 8%);
+    font: 500 9.5px/1.25 var(--font-mono);
+    color: #475569;
+  }
+
+  .ds-type {
+    font-size: 10.5px;
+    color: #475569;
+    white-space: nowrap;
+  }
+
+  .ds-api-pill {
+    justify-self: start;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: #e2f8ed;
+    border: 1px solid #a7f3d0;
+    color: #047857;
+    font-size: 10px;
+    font-weight: 720;
+    white-space: nowrap;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .ds-api-pill.is-clicked {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 3px rgb(16 185 129 / 25%);
+  }
+
+  .ds-cnt {
+    font-size: 11px;
+    color: #0f172a;
+  }
+
+  .ds-edit {
+    font-size: 10.5px;
+    color: #059669;
+    font-weight: 680;
+    white-space: nowrap;
+  }
+
+  /* ACT 1: TSX 编辑器 + UI 模式画布 (matching 5155c1d0...png) */
+  .ui-mode-backdrop {
+    position: relative;
+    flex: 1;
+    margin: 10px;
+    border-radius: 11px;
+    border: 1.5px solid #60a5fa;
+    background: #f8fbff;
+    padding: 14px 16px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .ui-block-handle {
+    position: absolute;
+    top: -1px;
+    right: 12px;
+    padding: 1px 8px;
+    border-radius: 0 0 6px 6px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 9.5px;
+    font-weight: 700;
+  }
+
+  .tsx-modal-replica {
+    border-radius: 11px;
+    border: 1px solid #dce6f0;
+    background: #ffffff;
+    box-shadow: 0 16px 38px rgb(15 23 42 / 10%);
+    overflow: hidden;
+  }
+
+  .tm-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    border-bottom: 1px solid #edf2f7;
+  }
+
+  .tm-title strong {
+    font-size: 12px;
+    color: #0f172a;
+  }
+
+  .tm-title span {
+    margin-left: 6px;
+    font-size: 10.5px;
+    color: #94a3b8;
+  }
+
+  .tm-btns {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tm-btns span {
+    padding: 3px 9px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    font-size: 10.5px;
+    color: #334155;
+  }
+
+  .tm-btns span.muted {
+    background: #f8fafc;
+    color: #94a3b8;
+  }
+
+  .tm-run-btn {
+    padding: 3px 11px;
+    border-radius: 6px;
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    color: #15803d;
+    font-size: 10.5px;
+    font-weight: 760;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
+  }
+
+  .tm-run-btn.is-clicked {
+    transform: scale(0.93);
+    background: #bbf7d0;
+    box-shadow: 0 0 0 4px rgb(16 185 129 / 25%);
+  }
+
+  .tm-file-bar {
+    padding: 6px 14px;
+    background: #fafcfe;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 11px;
+    font-weight: 650;
+    color: #334155;
+  }
+
+  .tm-body {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr) 28px;
+    align-items: stretch;
+  }
+
+  .tm-lines {
+    padding: 10px 0;
+    background: #fcfdfe;
+    border-right: 1px solid #f1f5f9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font: 500 10.5px/1.64 var(--font-mono);
+    color: #94a3b8;
+  }
+
+  .tm-code {
+    margin: 0;
+    padding: 10px 14px;
+    background: #ffffff;
+    font: 11px/1.64 var(--font-mono);
+    color: #1e293b;
+    overflow: hidden;
+  }
+
+  .tm-code .kw { color: #7c3aed; font-weight: 600; }
+  .tm-code .str { color: #059669; }
+  .tm-code .fn { color: #2563eb; }
+  .tm-code .cm { color: #64748b; }
+
+  .tm-gutter {
+    border-left: 1px solid #f1f5f9;
+    background: #fcfdfe;
+    padding: 8px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    color: #94a3b8;
+  }
+
+  .tm-gutter .on {
+    padding: 2px 4px;
+    border-radius: 4px;
+    background: #dbeafe;
+    color: #2563eb;
+    font-weight: 700;
+  }
+
+  .ui-create-block-btn {
+    align-self: flex-start;
+    margin-top: 8px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    background: #ffffff;
+    border: 1px solid #bfdbfe;
+    color: #2563eb;
+    font-size: 10px;
+    font-weight: 680;
+  }
+
+  /* ACT 2: Full-Width Rendered 企业 Wiki 知识库 (matching 6bc0a7...jpeg) */
+  .wiki-full-replica {
+    flex: 1;
+    padding: 12px 15px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .wf-top-tag {
+    align-self: flex-start;
+    padding: 2px 9px;
+    border-radius: 6px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .wf-split {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 188px minmax(0, 1fr);
+    border-radius: 10px;
+    border: 1px solid #e6efec;
+    overflow: hidden;
+  }
+
+  .wf-tree-pane {
+    padding: 10px;
+    background: #fbfdfc;
+    border-right: 1px solid #edf4f1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .wf-search-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 5px;
+  }
+
+  .wf-search {
+    flex: 1;
+    padding: 4px 7px;
+    border-radius: 6px;
+    border: 1px solid #e2ece8;
+    background: #ffffff;
+    font-size: 9.5px;
+    color: #94a3b8;
+    white-space: nowrap;
+  }
+
+  .wf-new {
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: #059669;
+    color: #ffffff;
+    font-size: 9.5px;
+    font-weight: 720;
+    white-space: nowrap;
+  }
+
+  .wf-group {
+    margin-top: 3px;
+    font-size: 10.5px;
+    font-weight: 740;
+    color: #1e293b;
+  }
+
+  .wf-doc {
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    color: #475569;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .wf-doc.active {
+    background: #e3f8ef;
+    color: #065f46;
+    font-weight: 700;
+  }
+
+  .wf-reader-pane {
+    padding: 12px 16px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 7px;
+  }
+
+  .wf-reader-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .wf-reader-top small {
+    font-size: 10px;
+    color: #64748b;
+  }
+
+  .wf-reader-btns {
+    display: flex;
+    gap: 6px;
+  }
+
+  .btn-edit {
+    padding: 3px 9px;
+    border-radius: 6px;
+    background: #059669;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .btn-del {
+    padding: 3px 9px;
+    border-radius: 6px;
+    border: 1px solid #fca5a5;
+    color: #ef4444;
+    font-size: 10px;
+  }
+
+  .wf-reader-pane h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 820;
+    color: #0f172a;
+  }
+
+  .wf-chips {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+
+  .wf-chips span {
+    padding: 1px 7px;
+    border-radius: 4px;
+    background: #e6f8f0;
+    color: #059669;
+    font-size: 9.5px;
+    font-weight: 680;
+  }
+
+  .wf-quote {
+    padding: 6px 10px;
+    border-left: 3px solid #cbd5e1;
+    background: #f8fafc;
+    font-size: 10.5px;
+    line-height: 1.5;
+    color: #475569;
+  }
+
+  .wf-env-box {
+    padding: 8px 10px;
+    border-radius: 7px;
+    background: #f8fafc;
+    border: 1px solid #edf2f7;
+    display: grid;
+    gap: 3px;
+  }
+
+  .wf-env-box code {
+    font: 500 10px/1.4 var(--font-mono);
+    color: #334155;
+  }
+
+  .s1-stepper-bar {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .ui-pill {
+    padding: 2px 7px;
+    border-radius: 5px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-size: 10px;
+    font-weight: 740;
+    white-space: nowrap;
+  }
+
+  /* =====================================================================
+     SCENE 2: Dynamic Camera Viewport + Slow Node-by-Node Lighting
+     Human -> GUI \
+                    -> API -> AI Gateway / Workflow / Data / React UI -> AI Application
+     Agent -> MCP /
+     ===================================================================== */
+  .s2-cinema-shell {
+    min-height: 438px;
+    padding: 12px 14px;
+    box-sizing: border-box;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .s2-viewport {
+    position: relative;
+    flex: 1;
+    min-height: 348px;
+    overflow: hidden;
+    border-radius: 13px;
+    border: 1px solid #ddece6;
+    background-color: #f8fcfa;
+    background-image: radial-gradient(#ccded7 1px, transparent 1px);
+    background-size: 16px 16px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Subtle left/right depth vignette so panning feels like an infinite canvas window */
+  .s2-viewport::before,
+  .s2-viewport::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 28px;
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  .s2-viewport::before {
+    left: 0;
+    background: linear-gradient(90deg, rgb(248 252 250 / 92%) 0%, rgb(248 252 250 / 0%) 100%);
+  }
+
+  .s2-viewport::after {
+    right: 0;
+    background: linear-gradient(270deg, rgb(248 252 250 / 92%) 0%, rgb(248 252 250 / 0%) 100%);
+  }
+
+  /* Spacious 1060px wide canvas world — zero cramping, generous 64px Bezier spans! */
+  .s2-world {
+    position: relative;
+    width: 1060px;
+    min-width: 1060px;
+    height: 348px;
+    padding: 18px 34px;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 204px 124px 232px 268px;
+    column-gap: 54px;
+    align-items: center;
+    will-change: transform;
+  }
+
+  /* Shared slow, calm lighting states for every node */
+  .s2-node {
+    position: relative;
+    z-index: 2;
+    background: #ffffff;
+    transition:
+      opacity 0.65s ease,
+      border-color 0.65s ease,
+      box-shadow 0.65s ease,
+      transform 0.65s ease,
+      background-color 0.65s ease;
+  }
+
+  .s2-node.is-dim {
+    opacity: 0.44;
+    border-color: #dce8e3;
+    box-shadow: none;
+  }
+
+  .s2-node.is-lit {
+    opacity: 0.9;
+    border-color: #86efac;
+    box-shadow: 0 6px 18px rgb(5 150 105 / 7%);
+  }
+
+  .s2-node.is-current {
+    opacity: 1;
+    transform: translateY(-2px);
+    border-color: #059669;
+    box-shadow:
+      0 0 0 3px rgb(16 185 129 / 15%),
+      0 14px 30px rgb(5 150 105 / 14%);
+  }
+
+  .s2-node.tone-blue.is-current {
+    border-color: #2563eb;
+    box-shadow:
+      0 0 0 3px rgb(37 99 235 / 14%),
+      0 14px 28px rgb(37 99 235 / 12%);
+  }
+
+  .s2-node.tone-blue.is-lit {
+    border-color: #93c5fd;
+  }
+
+  /* Stage 0: Dual Entries */
+  .s2-col-entries {
+    display: grid;
+    gap: 26px;
+  }
+
+  .entry-card {
+    padding: 14px 14px;
+    border-radius: 13px;
+    border: 1.5px solid #d8e8e2;
+  }
+
+  .s2-entry-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .s2-role {
+    font-size: 12.5px;
+    font-weight: 780;
+    color: #0f172a;
+    white-space: nowrap;
+  }
+
+  .s2-arrow {
+    font-style: normal;
+    color: #94a3b8;
+    font-size: 12px;
+  }
+
+  .s2-badge {
+    padding: 2px 9px;
+    border-radius: 6px;
+    font-size: 10.5px;
+    font-weight: 780;
+  }
+
+  .s2-badge.blue {
+    background: #dbeafe;
+    color: #1d4ed8;
+  }
+
+  .s2-badge.emerald {
+    background: #d1fae5;
+    color: #047857;
+  }
+
+  .entry-card p {
+    margin: 0;
+    font-size: 10.5px;
+    color: #5b726a;
+    line-height: 1.4;
+  }
+
+  .entry-card code {
+    font: 600 9.5px/1.3 var(--font-mono);
+    color: #065f46;
+    white-space: nowrap;
+  }
+
+  /* Stage 1: Unified API Hub */
+  .api-hub-card {
+    padding: 22px 12px;
+    border-radius: 15px;
+    border: 1.5px solid #cbdcd5;
+    background: linear-gradient(180deg, #ffffff 0%, #f2fbf7 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 5px;
+  }
+
+  .api-hub-card strong {
+    font-size: 15px;
+    font-weight: 840;
+    color: #064e3b;
+    margin-top: 2px;
+  }
+
+  .api-hub-card span {
+    font-size: 10px;
+    color: #4b685f;
+    white-space: nowrap;
+  }
+
+  .api-hub-card em {
+    margin-top: 3px;
+    font-style: normal;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #dcfce7;
+    color: #15803d;
+    font-size: 9.5px;
+    font-weight: 740;
+    white-space: nowrap;
+  }
+
+  /* Stage 2: 4 Core Dev Modules */
+  .s2-col-modules {
+    display: grid;
+    gap: 9px;
+  }
+
+  .s2-stage-caption {
+    font-size: 10px;
+    font-weight: 740;
+    color: #47665d;
+    letter-spacing: 0.02em;
+    padding-left: 2px;
+    margin-bottom: 1px;
+  }
+
+  .mod-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 11px;
+    border: 1.5px solid #d8e8e2;
+  }
+
+  .mod-idx {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: #f1f7f4;
+    color: #5b756d;
+    font: 700 10px/1 var(--font-mono);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    transition: background-color 0.5s ease, color 0.5s ease;
+  }
+
+  .mod-card.is-current .mod-idx,
+  .mod-card.is-lit .mod-idx {
+    background: #d1fae5;
+    color: #047857;
+  }
+
+  .mod-card strong {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 760;
+    color: #0f172a;
+    line-height: 1.2;
+  }
+
+  .mod-card small {
+    display: block;
+    font-size: 10px;
+    color: #64748b;
+    margin-top: 2px;
+    white-space: nowrap;
+  }
+
+  /* Stage 3: Highlighted Final Output -> AI Application */
+  .app-target-card {
+    padding: 18px 15px 15px;
+    border-radius: 15px;
+    border: 1.5px solid #6ee7b7;
+    background: linear-gradient(180deg, #ffffff 0%, #effaf4 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .app-crown-pill {
+    position: absolute;
+    top: -10px;
+    left: 14px;
+    padding: 2px 9px;
+    border-radius: 999px;
+    background: #059669;
+    color: #ffffff;
+    font-size: 9.5px;
+    font-weight: 760;
+    white-space: nowrap;
+  }
+
+  .app-target-hd strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 840;
+    color: #064e3b;
+  }
+
+  .app-target-hd small {
+    display: block;
+    font-size: 10px;
+    color: #047857;
+    margin-top: 3px;
+  }
+
+  .app-deliverables {
+    display: grid;
+    gap: 8px;
+  }
+
+  .app-deliv-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 10px;
+    border-radius: 9px;
+    background: #ffffff;
+    border: 1px solid #cdeade;
+  }
+
+  .app-deliv-row > span {
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .app-deliv-row b {
+    display: block;
+    font-size: 11px;
+    font-weight: 750;
+    color: #0f172a;
+    line-height: 1.2;
+  }
+
+  .app-deliv-row small {
+    display: block;
+    font-size: 9.5px;
+    color: #64748b;
+    margin-top: 2px;
+  }
+
+  /* Bottom 4-Stage Stepper Bar */
+  .s2-stepper-bar {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .s2-step-btn {
+    border: 1px solid #e1efe9;
+    background: #f8fcfa;
+    border-radius: 9px;
+    padding: 6px 9px;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .s2-step-btn:hover {
+    border-color: #a7f3d0;
+  }
+
+  .s2-step-btn.active {
+    background: #ecfdf5;
+    border-color: #34d399;
+    box-shadow: 0 2px 8px rgb(5 150 105 / 8%);
+  }
+
+  .s2-step-btn strong {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 760;
+    color: #0f2922;
+    white-space: nowrap;
+  }
+
+  .s2-step-btn.active strong {
+    color: #047857;
+  }
+
+  .s2-step-btn span {
+    display: block;
+    font-size: 9px;
+    color: #647e76;
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @media (max-width: 820px) {
+    .af-top-chain,
+    .fusion-box-replica,
+    .dispatch-5col,
+    .pp-policy-bar,
+    .wf-split,
+    .s1-stepper-bar {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .sr-branches,
+    .fusion-box-replica {
+      margin-left: 0;
+    }
+    .s2-stepper-bar {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>
